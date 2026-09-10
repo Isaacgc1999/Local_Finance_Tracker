@@ -1,0 +1,28 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--ft-status-pill-h);
+  padding: 0 10px;
+  border-radius: var(--ft-radius-pill);
+  font: var(--ft-font-meta-strong);
+  white-space: nowrap;
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+  color: var(--ft-text-2);
+}
+
+.punto {
+  width: var(--ft-dot);
+  height: var(--ft-dot);
+  border-radius: var(--ft-radius-pill);
+  background: currentColor;
+}
+
+@each $tono in income, expense, investment, savings, accent {
+  :host(.tono-#{$tono}) {
+    background: var(--ft-#{$tono}-12);
+    border-color: transparent;
+    color: var(--ft-#{$tono});
+  }
+}

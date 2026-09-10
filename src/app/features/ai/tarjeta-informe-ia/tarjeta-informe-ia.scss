@@ -1,0 +1,207 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--ft-surface);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  min-width: 0;
+}
+
+:host(.expandida) {
+  border-color: var(--ft-accent);
+  padding: 24px;
+}
+
+:host(.fallida) {
+  border-color: var(--ft-expense);
+  gap: 12px;
+}
+
+:host(.compacta) {
+  padding: 16px;
+  gap: 14px;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.meta {
+  font: var(--ft-font-meta-strong);
+  color: var(--ft-text-3);
+}
+
+.veredicto {
+  font: var(--ft-font-title);
+  line-height: var(--ft-lh-title-long);
+  color: var(--ft-text-1);
+  max-width: 640px;
+}
+
+.titulo-error {
+  font: var(--ft-font-label);
+  line-height: 1.4;
+  color: var(--ft-text-1);
+}
+
+.ayuda {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-2);
+  overflow-wrap: anywhere;
+}
+
+.acciones-error {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hallazgos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hallazgo {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--ft-radius-control);
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+}
+
+.hallazgo__barra {
+  width: 6px;
+  flex: none;
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-accent);
+}
+
+.hallazgo__titulo {
+  font: var(--ft-font-label);
+  line-height: 1.4;
+  color: var(--ft-text-1);
+  margin-bottom: 6px;
+}
+
+.hallazgo__detalle {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-2);
+}
+
+.subtitulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+  margin-bottom: 14px;
+}
+
+.recomendaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recomendacion {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: var(--ft-radius-control);
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+
+  &--aplicada {
+    opacity: var(--ft-opacity-disabled);
+  }
+}
+
+.recomendacion__texto {
+  flex: 1;
+  min-width: 0;
+  font: var(--ft-font-label);
+  line-height: 1.4;
+  color: var(--ft-text-1);
+}
+
+.recomendacion__impacto {
+  font: 600 15px/1 var(--ft-font-family);
+  white-space: nowrap;
+  color: var(--ft-text-2);
+}
+
+// Casilla «La tengo en cuenta»: la app no ejecuta la recomendación, solo la marca.
+.recomendacion__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  font: var(--ft-font-meta-strong);
+  color: var(--ft-text-2);
+  white-space: nowrap;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--ft-accent);
+    cursor: pointer;
+  }
+}
+
+.colapsada {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.colapsada__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.resumen {
+  font: var(--ft-font-label);
+  line-height: 1.4;
+  color: var(--ft-text-1);
+}
+
+.expandir {
+  white-space: nowrap;
+}
+
+// 390: el handoff muestra texto + impacto en una línea; la acción va debajo,
+// discreta, para no perder la función de marcar como aplicada.
+:host(.compacta) {
+  .recomendacion {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 12px 14px;
+  }
+
+  .recomendacion__texto {
+    flex: 1 1 100%;
+  }
+
+  .recomendacion__impacto {
+    flex: 1;
+  }
+
+  .recomendacion__check {
+    min-height: var(--ft-touch-min);
+  }
+
+  .veredicto {
+    font-size: 22px;
+  }
+}

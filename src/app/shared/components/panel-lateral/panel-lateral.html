@@ -1,0 +1,26 @@
+@if (hoja()) {
+  <div class="asa" aria-hidden="true"></div>
+  <button #primero type="button" class="ft-sr-only cerrar-movil" (click)="onCerrar()">Cerrar {{ titulo() }}</button>
+} @else {
+  <header class="cabecera">
+    <h2 class="titulo">{{ titulo() }}</h2>
+    <button
+      #primero
+      type="button"
+      class="ft-btn ft-btn--icon cerrar"
+      aria-label="Cerrar"
+      aria-keyshortcuts="Escape"
+      (click)="onCerrar()"
+    >
+      ✕
+    </button>
+  </header>
+}
+
+<div class="cuerpo">
+  <ng-content />
+</div>
+
+<div class="pie">
+  <ng-content select="[pie]" />
+</div>

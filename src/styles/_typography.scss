@@ -1,0 +1,46 @@
+// Mixins de roles tipográficos (README «Tipografía»).
+
+@mixin ft-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ft-tracking-num);
+}
+
+@mixin ft-display {
+  font: var(--ft-font-display);
+  letter-spacing: var(--ft-tracking-display);
+  color: var(--ft-text-1);
+}
+
+@mixin ft-title($long: false) {
+  font: var(--ft-font-title);
+  color: var(--ft-text-1);
+  @if $long {
+    line-height: var(--ft-lh-title-long);
+  }
+}
+
+@mixin ft-label {
+  font: var(--ft-font-label);
+}
+
+@mixin ft-body {
+  font: var(--ft-font-body);
+}
+
+@mixin ft-meta($lh: 1) {
+  font: var(--ft-font-meta);
+  line-height: $lh;
+}
+
+@mixin ft-eyebrow {
+  font: var(--ft-font-eyebrow);
+  letter-spacing: var(--ft-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--ft-text-3);
+}
+
+@mixin ft-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

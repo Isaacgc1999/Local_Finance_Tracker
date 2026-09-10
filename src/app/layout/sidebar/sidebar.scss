@@ -1,0 +1,114 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: var(--ft-sidebar-w);
+  height: 100%;
+  padding: 20px 0;
+  background: var(--ft-surface);
+  border-right: 1px solid var(--ft-border);
+  flex: none;
+}
+
+:host(.collapsed) {
+  width: var(--ft-sidebar-collapsed-w);
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 24px;
+
+  :host(.collapsed) & {
+    padding: 0 0 24px;
+  }
+}
+
+// Marca oficial (design/mark.svg): el cuadrado acento lleva ya su radio.
+.logo__marca {
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+
+.logo__texto {
+  font: var(--ft-font-logo);
+  letter-spacing: var(--ft-tracking-num);
+  color: var(--ft-text-1);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
+  width: 100%;
+
+  :host(.collapsed) & {
+    padding: 0 11px;
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--ft-radius-control);
+  color: var(--ft-text-2);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ft-text-1);
+  }
+
+  &.activo {
+    background: var(--ft-surface-elevated);
+    color: var(--ft-text-1);
+  }
+}
+
+.item__label {
+  font: var(--ft-font-label);
+  white-space: nowrap;
+}
+
+.espacio {
+  flex: 1;
+}
+
+.estado {
+  margin: 0 20px;
+  padding: 12px;
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  background: var(--ft-surface-elevated);
+}
+
+.estado__fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.estado__punto {
+  width: var(--ft-dot);
+  height: var(--ft-dot);
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-income);
+}
+
+.estado__label {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-2);
+}
+
+.estado__meta {
+  font: var(--ft-font-meta);
+  line-height: 1.4;
+  color: var(--ft-text-3);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}

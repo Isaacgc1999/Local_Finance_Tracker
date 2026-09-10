@@ -1,0 +1,43 @@
+<div class="logo">
+  <svg class="logo__marca" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <rect width="64" height="64" rx="14" fill="#6E56F8" />
+    <g transform="translate(4,4) scale(0.875)" fill="#FFFFFF">
+      <rect x="10" y="8" width="10" height="48" rx="3" />
+      <rect x="24" y="10" width="30" height="10" rx="3" />
+      <rect x="24" y="25" width="20" height="10" rx="3" />
+    </g>
+  </svg>
+  @if (!collapsed()) {
+    <span class="logo__texto">Fintrack</span>
+  }
+</div>
+
+<nav class="nav" aria-label="Principal">
+  @for (item of items; track item.id) {
+    <a
+      class="item"
+      [routerLink]="item.path"
+      routerLinkActive="activo"
+      ariaCurrentWhenActive="page"
+      [attr.aria-label]="collapsed() ? item.label : null"
+      [attr.title]="collapsed() ? item.label : null"
+    >
+      <ft-icono [name]="item.id" />
+      @if (!collapsed()) {
+        <span class="item__label">{{ item.label }}</span>
+      }
+    </a>
+  }
+</nav>
+
+<div class="espacio"></div>
+
+@if (!collapsed()) {
+  <div class="estado">
+    <div class="estado__fila">
+      <span class="estado__punto" aria-hidden="true"></span>
+      <span class="estado__label">Datos locales</span>
+    </div>
+    <div class="estado__meta">{{ dbNombre() }} · {{ dbTamano() }}</div>
+  </div>
+}

@@ -1,0 +1,40 @@
+@let v = variante();
+
+<ft-cabecera-pagina titulo="Ajustes" />
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudieron cargar los ajustes" [texto]="errorTexto()" />
+} @else if (v === 'desktop') {
+  <div class="grid">
+    <div class="columna span-7">
+      <ft-fichero-datos />
+      <ft-ajustes-ollama />
+      <ft-lista-categorias />
+    </div>
+    <div class="columna span-5">
+      <ft-ingresos-recurrentes />
+      <ft-presupuestos />
+      <ft-moneda-formato />
+    </div>
+  </div>
+} @else if (v === 'tablet') {
+  <div class="columna">
+    <ft-fichero-datos />
+    <ft-ajustes-ollama />
+    <ft-lista-categorias />
+    <ft-ingresos-recurrentes />
+    <div class="par">
+      <ft-presupuestos />
+      <ft-moneda-formato />
+    </div>
+  </div>
+} @else {
+  <div class="columna">
+    <ft-fichero-datos />
+    <ft-ajustes-ollama />
+    <ft-lista-categorias />
+    <ft-ingresos-recurrentes />
+    <ft-presupuestos />
+    <ft-moneda-formato />
+  </div>
+}

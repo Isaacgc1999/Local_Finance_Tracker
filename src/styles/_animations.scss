@@ -1,0 +1,26 @@
+// Las dos únicas animaciones permitidas por el handoff.
+@keyframes shim {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-skeleton,
+  .ft-spinner {
+    animation: none !important;
+  }
+}

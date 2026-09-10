@@ -1,0 +1,25 @@
+<button type="button" class="control num" aria-haspopup="dialog" [attr.aria-expanded]="open()" (click)="open.update(v => !v)">
+  {{ texto() }}<span class="flecha" aria-hidden="true">▾</span>
+</button>
+@if (open()) {
+  <div class="panel" role="dialog" aria-label="Rango de fechas">
+    <div class="atajos">
+      @for (p of presets; track p.label) {
+        <button type="button" class="atajo" (click)="aplicarPreset(p)">{{ p.label }}</button>
+      }
+    </div>
+    <div class="fechas">
+      <label class="ft-field">
+        <span class="ft-field__label">Desde</span>
+        <input class="ft-input num" type="date" [value]="value().from" (change)="setFrom($event)" />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">Hasta</span>
+        <input class="ft-input num" type="date" [value]="value().to" (change)="setTo($event)" />
+      </label>
+    </div>
+    <div class="pie">
+      <button type="button" class="ft-btn ft-btn--elevated ft-btn--compact" (click)="open.set(false)">Listo</button>
+    </div>
+  </div>
+}

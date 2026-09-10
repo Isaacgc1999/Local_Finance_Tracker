@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/node-spec",
+    "types": ["node", "vitest/globals"],
+    "experimentalDecorators": false
+  },
+  "include": ["src/**/*.node.spec.ts", "tools/**/*.ts", "scripts/**/*.ts", "vitest.node.config.ts"]
+}

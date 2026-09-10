@@ -1,0 +1,27 @@
+<div class="cabecera">
+  <span class="titulo">Saldo acumulado</span>
+  @if (variante() === 'desktop') {
+    <div class="leyenda">
+      @for (item of leyenda(); track item.label) {
+        <span class="leyenda__item"><span class="leyenda__linea" [class.leyenda__linea--discontinua]="item.dashed" [style.background]="item.color"></span>{{ item.label }}</span>
+      }
+    </div>
+  }
+</div>
+<div class="area" [class.area--movil]="variante() === 'mobile'" [scrollEnd]="vista()">
+  <div class="grafico" [chart]="option()" chartId="analytics-saldo" [style.width]="ancho()" role="img" aria-label="Saldo acumulado y media móvil"></div>
+</div>
+@if (variante() === 'mobile') {
+  <span class="saldo-movil num">{{ saldoActual() }}</span>
+} @else {
+  <div class="pie">
+    <div>
+      <span class="pie__label">Saldo actual</span>
+      <span class="pie__valor num">{{ saldoActual() }}</span>
+    </div>
+    <div>
+      <span class="pie__label">{{ variacionLabel() }}</span>
+      <span class="pie__valor num" [class.ft-c-income]="variacionPositiva()" [class.ft-c-expense]="!variacionPositiva()">{{ variacion() }}</span>
+    </div>
+  </div>
+}

@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 20px;
+  border-radius: var(--ft-radius-card);
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+  min-width: 0;
+}
+
+.operacion {
+  font: var(--ft-font-body);
+  line-height: 1;
+  color: var(--ft-text-3);
+  min-height: 15px;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.error {
+  font: var(--ft-font-meta);
+  line-height: 1.4;
+  color: var(--ft-expense);
+  text-align: right;
+}
+
+.resultado {
+  font: var(--ft-font-display);
+  letter-spacing: var(--ft-tracking-display);
+  color: var(--ft-text-1);
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+// 390: la hoja modal aprieta el padding y el hueco (handoff, frame de móvil).
+:host(.compacta) {
+  padding: 18px;
+  gap: 6px;
+}

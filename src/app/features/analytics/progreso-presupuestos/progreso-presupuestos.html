@@ -1,0 +1,33 @@
+<div class="cabecera">
+  <h2 class="ft-card__title">Presupuestos</h2>
+  @if (filas().length > 0) {
+    <span class="periodo">{{ periodo() }}</span>
+  }
+</div>
+
+@for (f of filas(); track f.id) {
+  <div class="presupuesto">
+    <div class="linea">
+      <span class="nombre">{{ f.label }}</span>
+      <span class="cifras num"><strong>{{ f.actual }}</strong> de {{ f.target }}</span>
+      <span class="pct num" [class]="'tono-' + f.tono">{{ f.pct }}</span>
+    </div>
+    <div
+      class="barra"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="f.pctNum"
+      [attr.aria-label]="f.label + ': ' + f.pct"
+    >
+      <span class="relleno" [class]="'relleno tono-' + f.tono" [style.width.%]="f.ancho"></span>
+    </div>
+    <p class="nota" [class]="'nota tono-' + f.tono">{{ f.nota }}</p>
+  </div>
+} @empty {
+  <p class="vacio">
+    Todavía no has definido presupuestos.
+    <a routerLink="/settings">Configúralos en Ajustes</a>
+    y aquí verás hasta dónde has llegado en cada uno.
+  </p>
+}

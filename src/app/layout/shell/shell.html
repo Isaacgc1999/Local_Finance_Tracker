@@ -1,0 +1,68 @@
+<a class="saltar ft-sr-only" href="#contenido">Saltar al contenido</a>
+
+<div class="marco">
+  @if (!bp.isMobile()) {
+    <ft-sidebar [collapsed]="bp.isTablet()" [dbNombre]="dbNombre()" [dbTamano]="dbTamano()" />
+  }
+
+  <main id="contenido" class="contenido" tabindex="-1">
+    @switch (status.boot()) {
+      @case ('ready') {
+        <router-outlet />
+      }
+      @case ('error') {
+        <ft-tarjeta-error
+          titulo="No se pudo abrir la base de datos"
+          [texto]="bootErrorText()"
+          accionLabel="Reintentar"
+          (accion)="reintentar()"
+        />
+      }
+      @default {
+        <div class="arranque" aria-busy="true">
+          <ft-skeleton variant="tarjeta" />
+          <ft-skeleton variant="grafico" [height]="160" />
+          <ft-skeleton variant="fila" [rows]="4" />
+        </div>
+      }
+    }
+  </main>
+</div>
+
+<!-- La calculadora es un panel del layout, nunca una ruta: abrirla no
+     desmonta la vista de detrás (handoff, pantalla 5). El chunk se descarga
+     en el primer hueco libre y se monta al abrir. -->
+@defer (when calc.open(); prefetch on idle) {
+  @if (calc.open()) {
+    @if (!bp.isDesktop()) {
+      <div class="velo" (click)="calc.close()"></div>
+    }
+    <ft-panel-lateral
+      titulo="Calculadora"
+      [hoja]="bp.isMobile()"
+      [class.flotante]="bp.isTablet()"
+      (cerrar)="calc.close()"
+    >
+      <ft-calculadora />
+      <button pie type="button" class="ft-btn ft-btn--primary ft-btn--block" [disabled]="!calc.usableAmount()" (click)="usarImporte()">
+        {{ calc.usableLabel() }}
+      </button>
+    </ft-panel-lateral>
+  }
+}
+
+@if (status.toasts().length > 0) {
+  <div class="toasts" aria-live="polite">
+    @for (toast of status.toasts(); track toast.id) {
+      <ft-pill-estado [tono]="toast.tone" [punto]="toast.tone !== 'neutral'">{{ toast.text }}</ft-pill-estado>
+    }
+  </div>
+}
+
+@if (fabVisible()) {
+  <ft-fab />
+}
+
+@if (bp.isMobile()) {
+  <ft-tab-bar />
+}

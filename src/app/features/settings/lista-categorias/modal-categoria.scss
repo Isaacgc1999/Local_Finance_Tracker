@@ -1,0 +1,37 @@
+.colores {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+// Muestra de 28px del handoff: fondo del color al 12 %, borde a plena opacidad.
+.muestra {
+  width: var(--ft-swatch);
+  height: var(--ft-swatch);
+  border-radius: var(--ft-radius-control);
+  border: 1px solid;
+  cursor: pointer;
+
+  &.activa {
+    box-shadow: var(--ft-focus-ring);
+  }
+}
+
+.confirmar {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-expense);
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.borrar {
+  margin-right: auto;
+  color: var(--ft-expense);
+  border-color: var(--ft-expense);
+}

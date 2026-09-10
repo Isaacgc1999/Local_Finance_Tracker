@@ -1,0 +1,46 @@
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: var(--ft-z-menu);
+  width: 280px;
+  max-width: calc(100vw - 32px);
+  padding: 12px;
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.vacio {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--ft-border);
+  padding-top: 10px;
+}
+
+.ft-link:disabled {
+  opacity: var(--ft-opacity-disabled);
+  cursor: default;
+}

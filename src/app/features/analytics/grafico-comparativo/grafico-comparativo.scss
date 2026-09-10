@@ -1,0 +1,73 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: var(--ft-card-padding);
+  background: var(--ft-surface);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.pista {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.leyenda {
+  display: flex;
+  gap: 16px;
+}
+
+.leyenda__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-2);
+}
+
+.leyenda__cuadro {
+  width: var(--ft-legend-sq);
+  height: var(--ft-legend-sq);
+  border-radius: var(--ft-radius-legend);
+}
+
+// Contenedor con scroll horizontal: solo aparece la barra cuando el gráfico
+// es más ancho que la tarjeta (más periodos de los que caben a la vista).
+// La altura va en el gráfico, no aquí: la barra se añade debajo en vez de
+// encoger el gráfico, que si no cambiaría de alto al aparecer y dispararía
+// otra vez el ResizeObserver en el mismo frame.
+.area {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ft-border) transparent;
+
+  &--movil {
+    padding-bottom: 4px;
+  }
+}
+
+.grafico {
+  width: 100%;
+  height: var(--ft-compare-chart-h);
+
+  .area--movil & {
+    height: 176px;
+  }
+}

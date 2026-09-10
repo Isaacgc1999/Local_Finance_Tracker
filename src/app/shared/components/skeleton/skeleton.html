@@ -1,0 +1,27 @@
+@switch (variant()) {
+  @case ('fila') {
+    @for (fila of filas(); track $index) {
+      <div class="fila">
+        <span class="bloque avatar"></span>
+        <span class="lineas">
+          <span class="bloque linea" [style.width]="fila[0]" style="height: 12px"></span>
+          <span class="bloque linea" [style.width]="fila[1]" style="height: 10px"></span>
+        </span>
+        <span class="bloque importe"></span>
+      </div>
+    }
+  }
+  @case ('tarjeta') {
+    <div class="tarjeta ft-card">
+      <span class="bloque linea" style="width: 40%; height: 12px"></span>
+      <span class="bloque linea" style="width: 60%; height: 24px"></span>
+      <span class="bloque linea" style="width: 30%; height: 10px"></span>
+    </div>
+  }
+  @case ('grafico') {
+    <div class="tarjeta ft-card">
+      <span class="bloque linea" style="width: 32%; height: 12px"></span>
+      <span class="bloque area" [style.height.px]="height()"></span>
+    </div>
+  }
+}

@@ -1,0 +1,22 @@
+<button
+  type="button"
+  class="ft-btn ft-btn--primary disparador"
+  [class.ft-btn--compact]="compact()"
+  aria-haspopup="menu"
+  [attr.aria-expanded]="open()"
+  (click)="toggle()"
+>
+  {{ label() }} <span aria-hidden="true">▾</span>
+</button>
+@if (open()) {
+  <div class="menu" role="menu" [class.menu--izquierda]="align() === 'left'" (keydown)="onMenuKeydown($event)">
+    @for (item of items(); track item.value) {
+      <button type="button" role="menuitem" class="opcion" (click)="elegir(item.value)">
+        <span>{{ item.label }}</span>
+        @if (item.hint) {
+          <span class="hint">{{ item.hint }}</span>
+        }
+      </button>
+    }
+  </div>
+}

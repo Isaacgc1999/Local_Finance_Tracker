@@ -1,0 +1,29 @@
+@if (variante() === 'tablet') {
+  <div class="fila">
+    <div>
+      <p class="etiqueta">Potencial de ahorro detectado</p>
+      <p class="display num">{{ mensual() }}<span class="sufijo"> /mes</span></p>
+    </div>
+    <p class="explicacion explicacion--corta">{{ explicacion() }}</p>
+  </div>
+} @else {
+  <p class="etiqueta">{{ variante() === 'mobile' ? 'Potencial de ahorro' : 'Potencial de ahorro detectado' }}</p>
+  <p class="display num">{{ mensual() }}@if (variante() !== 'mobile') {<span class="sufijo"> /mes</span>}</p>
+  @if (variante() === 'mobile') {
+    <p class="explicacion">al mes · {{ anual() }} al año</p>
+  } @else {
+    <p class="explicacion">{{ explicacion() }}</p>
+    @if (filas().length > 0) {
+      <hr class="ft-divider" />
+      <ul class="fuentes">
+        @for (fila of filas(); track fila.label) {
+          <li class="fuente" [class.fuente--aplicada]="fila.applied">
+            <span class="punto" aria-hidden="true"></span>
+            <span class="fuente__label">{{ fila.label }}</span>
+            <span class="fuente__importe num">{{ fila.importe }}</span>
+          </li>
+        }
+      </ul>
+    }
+  }
+}

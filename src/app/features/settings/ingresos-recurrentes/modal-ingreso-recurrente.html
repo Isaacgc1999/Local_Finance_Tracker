@@ -1,0 +1,68 @@
+<ft-modal [(open)]="abierto" [titulo]="titulo()" (cerrar)="cerrar()">
+  <label class="ft-field">
+    <span class="ft-field__label">Concepto</span>
+    <input
+      class="ft-input"
+      maxlength="80"
+      placeholder="Nómina, clases particulares…"
+      [value]="concepto()"
+      [attr.aria-invalid]="errorConcepto() ? 'true' : null"
+      (input)="concepto.set($any($event.target).value); errorConcepto.set('')"
+    />
+    @if (errorConcepto()) {
+      <span class="ft-field__error">{{ errorConcepto() }}</span>
+    }
+  </label>
+
+  <label class="ft-field">
+    <span class="ft-field__label">Importe</span>
+    <input
+      class="ft-input num"
+      inputmode="decimal"
+      placeholder="0,00"
+      [value]="importeTexto()"
+      [attr.aria-invalid]="errorImporte() ? 'true' : null"
+      (input)="importeTexto.set($any($event.target).value); errorImporte.set('')"
+    />
+    @if (errorImporte()) {
+      <span class="ft-field__error">{{ errorImporte() }}</span>
+    }
+  </label>
+
+  <div class="ft-field">
+    <span class="ft-field__label">Frecuencia</span>
+    <ft-segmented-control
+      layout="stretch"
+      tone="subtle"
+      label="Frecuencia"
+      [options]="frecuencias"
+      [(value)]="frecuencia"
+    />
+  </div>
+
+  @if (pideDia()) {
+    <label class="ft-field">
+      <span class="ft-field__label">Día del mes <span class="ft-field__label-hint">(se recorta al último día si el mes es más corto)</span></span>
+      <input class="ft-input num" type="number" min="1" max="31" [value]="diaDelMes()" (input)="onDia($any($event.target).value)" />
+    </label>
+  }
+
+  <label class="activo">
+    <input type="checkbox" [checked]="activo()" (change)="activo.set($any($event.target).checked)" />
+    <span>Activo</span>
+  </label>
+
+  @if (edicion() && confirmandoBorrado()) {
+    <p class="confirmar">Se borrará la regla. Los movimientos ya registrados se quedan. Pulsa «Borrar» otra vez.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" [disabled]="guardando()" (click)="borrar()">
+        Borrar
+      </button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>

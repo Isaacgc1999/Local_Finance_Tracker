@@ -1,0 +1,33 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.pestanas {
+  padding: 16px 24px 0;
+  flex: none;
+}
+
+.cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+// 390: la hoja modal usa el ritmo de 16px del handoff y prescinde del
+// separador; el teclado ya separa visualmente teclado e historial.
+:host(.compacta) {
+  .pestanas {
+    padding: 0 16px;
+  }
+
+  .cuerpo {
+    gap: 16px;
+    padding: 16px;
+  }
+}

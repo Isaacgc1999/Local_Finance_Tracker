@@ -1,0 +1,84 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 0;
+  border-top: 1px solid var(--ft-border-subtle);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover .editar {
+    color: var(--ft-accent-hover);
+  }
+}
+
+.muestra {
+  width: var(--ft-swatch);
+  height: var(--ft-swatch);
+  border-radius: var(--ft-radius-control);
+  border: 1px solid;
+  flex: none;
+}
+
+.nombre {
+  flex: 1;
+  min-width: 0;
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usos {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+  flex: none;
+}
+
+.editar {
+  font: var(--ft-font-meta-strong);
+  color: var(--ft-accent);
+  flex: none;
+}
+
+.vacio {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+  padding-top: 12px;
+  border-top: 1px solid var(--ft-border-subtle);
+}
+
+// 390 y 768: sin enlace «Editar», la fila entera es el objetivo (44px mínimo).
+:host(.compacta) {
+  padding: 16px;
+  gap: 8px;
+
+  .fila {
+    padding: 11px 0;
+    min-height: var(--ft-touch-min);
+    gap: 12px;
+  }
+}

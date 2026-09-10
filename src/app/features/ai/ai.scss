@@ -1,0 +1,70 @@
+@use 'breakpoints' as bp;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--ft-grid-gap);
+  align-items: start;
+}
+
+.span-8 {
+  grid-column: span 8;
+}
+.span-4 {
+  grid-column: span 4;
+}
+
+.columna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ft-grid-gap);
+  min-width: 0;
+}
+
+.fallback {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fallback__titulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.fallback__ayuda {
+  font: var(--ft-font-meta);
+  line-height: 1.5;
+  color: var(--ft-text-3);
+  margin-bottom: 10px;
+}
+
+.fallback__metricas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.fallback__label {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.fallback__valor {
+  font: 600 15px/1 var(--ft-font-family);
+  color: var(--ft-text-1);
+}
+
+@include bp.ft-media(not-desktop) {
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ft-section-gap);
+  }
+}

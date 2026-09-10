@@ -1,0 +1,105 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.titulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.zona {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 24px;
+  border: 1px dashed var(--ft-border);
+  border-radius: var(--ft-radius-control);
+  background: var(--ft-surface-elevated);
+  color: var(--ft-text-3);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ft-border-hover);
+    color: var(--ft-text-2);
+  }
+
+  &--compacta {
+    flex-direction: row;
+    justify-content: center;
+    height: var(--ft-control-h);
+    padding: 0;
+    background: transparent;
+    color: var(--ft-text-2);
+    font: var(--ft-font-label);
+  }
+}
+
+.ayuda {
+  font: var(--ft-font-meta);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.icono {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--ft-border);
+  flex: none;
+
+  &--grande {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ft-radius-control);
+  }
+}
+
+.fichero {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--ft-radius-control);
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+}
+
+.datos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nombre {
+  font: var(--ft-font-meta-strong);
+  line-height: 1.3;
+  color: var(--ft-text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.peso {
+  font: var(--ft-font-meta);
+  line-height: 1.3;
+  color: var(--ft-text-3);
+}
+
+.quitar {
+  color: var(--ft-text-3);
+  font: var(--ft-font-meta);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ft-text-1);
+  }
+}

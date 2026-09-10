@@ -1,0 +1,59 @@
+:host {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.tecla {
+  height: var(--ft-key-h);
+  border-radius: var(--ft-radius-control);
+  font: var(--ft-font-key);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  border: 0;
+  background: var(--ft-surface-elevated);
+  color: var(--ft-text-1);
+
+  &:hover {
+    background: var(--ft-border);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &.ancha {
+    grid-column: span 2;
+  }
+}
+
+.tecla--funcion {
+  color: var(--ft-text-2);
+}
+
+// Operadores: acento sobre acento al 12 %, tal cual el handoff.
+.tecla--operador {
+  background: var(--ft-accent-12);
+  color: var(--ft-accent);
+
+  &:hover {
+    background: var(--ft-accent-8);
+    color: var(--ft-accent-hover);
+  }
+}
+
+.tecla--igual {
+  background: var(--ft-accent);
+  color: var(--ft-on-accent);
+
+  &:hover {
+    background: var(--ft-accent-hover);
+  }
+}
+
+:host(.compacta) .tecla {
+  height: var(--ft-key-h-mobile);
+}

@@ -1,0 +1,30 @@
+<div class="cabecera">
+  @if (!sinPunto()) {
+    <span class="punto" aria-hidden="true"></span>
+  }
+  <span class="label">{{ label() }}</span>
+</div>
+<div class="cuerpo" [class.cuerpo--apilado]="sparklineSize() === 'full'">
+  <div class="cifras">
+    <span class="valor num">{{ value() }}</span>
+    @if (foot() && sparklineSize() !== 'full') {
+      <span class="pie">{{ foot() }}</span>
+    }
+  </div>
+  @if (puntos()) {
+    <svg
+      class="sparkline"
+      [class.sparkline--sm]="sparklineSize() === 'sm'"
+      [class.sparkline--full]="sparklineSize() === 'full'"
+      viewBox="0 0 100 28"
+      [attr.preserveAspectRatio]="sparklineSize() === 'full' ? 'none' : 'xMidYMid meet'"
+      fill="none"
+      aria-hidden="true"
+    >
+      <polyline [attr.points]="puntos()" fill="none" stroke="currentColor" [attr.stroke-width]="sparklineSize() === 'md' ? 1.6 : 2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+    </svg>
+  }
+</div>
+@if (foot() && sparklineSize() === 'full') {
+  <span class="pie">{{ foot() }}</span>
+}

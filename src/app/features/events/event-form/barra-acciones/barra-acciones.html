@@ -1,0 +1,28 @@
+@if (mobile()) {
+  <button type="button" class="ft-btn ft-btn--primary ft-btn--block" [disabled]="saving()" (click)="guardar.emit()">
+    {{ editing() ? 'Guardar cambios' : 'Guardar' }}
+  </button>
+  @if (editing()) {
+    <button type="button" class="ft-link ft-link--label peligro" [disabled]="saving()" (click)="eliminar.emit()">Eliminar</button>
+  } @else {
+    <button type="button" class="ft-link ft-link--label otro" [disabled]="saving()" (click)="guardarYOtro.emit()">
+      Guardar y añadir otro
+    </button>
+  }
+} @else {
+  <div class="izquierda">
+    @if (editing()) {
+      <button type="button" class="ft-link ft-link--label peligro" [disabled]="saving()" (click)="eliminar.emit()">Eliminar</button>
+    } @else {
+      <button type="button" class="ft-link ft-link--label" [disabled]="saving()" (click)="guardarYOtro.emit()">
+        Guardar y añadir otro
+      </button>
+    }
+  </div>
+  <div class="derecha">
+    <button type="button" class="ft-btn ft-btn--elevated" [disabled]="saving()" (click)="cancelar.emit()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary guardar" [disabled]="saving()" (click)="guardar.emit()">
+      {{ editing() ? 'Guardar cambios' : 'Guardar' }}
+    </button>
+  </div>
+}

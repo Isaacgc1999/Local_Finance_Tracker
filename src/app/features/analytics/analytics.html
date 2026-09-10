@@ -1,0 +1,58 @@
+@let v = variante();
+@let s = facade.snapshot();
+
+<ft-barra-filtros
+  [filters]="facade.filters()"
+  [categories]="facade.categories()"
+  [variante]="v"
+  (granularityChange)="facade.setGranularity($event)"
+  (rangeChange)="facade.setRange($event)"
+  (categoriesChange)="facade.setCategories($event)"
+  (typesChange)="facade.setTypes($event)"
+  (clear)="facade.clearFilters()"
+  (exportar)="facade.openExport($event)"
+/>
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudo calcular la analítica" [texto]="errorTexto()" />
+} @else if (!s) {
+  <div class="metricas-skeleton">
+    <ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" />
+  </div>
+  <div class="grid">
+    <ft-skeleton class="span-7" variant="grafico" />
+    <ft-skeleton class="span-5" variant="grafico" />
+  </div>
+  <div class="ft-card"><ft-skeleton variant="fila" [rows]="5" /></div>
+} @else if (facade.noResults()) {
+  <ft-estado-vacio
+    variant="sin-resultados"
+    titulo="Ningún resultado con estos filtros"
+    texto="Prueba a ampliar el rango o a quitar categorías."
+    accionLabel="Limpiar filtros"
+    (accion)="facade.clearFilters()"
+  />
+} @else {
+  <ft-fila-metricas [snapshot]="s" [variante]="v" />
+  <div class="grid">
+    <ft-grafico-comparativo class="span-7" [snapshot]="s" [variante]="v" />
+    <ft-grafico-saldo class="span-5" [snapshot]="s" [variante]="v" />
+  </div>
+  <ft-progreso-presupuestos [rows]="facade.budgets()" [variante]="v" />
+  <ft-tabla-categorias
+    [rows]="facade.table()"
+    [totals]="facade.totalsRow()"
+    [sortColumn]="facade.filters().sortColumn"
+    [sortDir]="facade.filters().sortDir"
+    [variante]="v"
+    (sort)="facade.sortBy($event)"
+  />
+}
+
+<ft-modal-exportar
+  [(open)]="facade.exportModalOpen"
+  [(options)]="facade.exportOptions"
+  [rowCount]="s?.eventCount ?? 0"
+  [busy]="facade.exporting()"
+  (exportar)="exportar($event)"
+/>

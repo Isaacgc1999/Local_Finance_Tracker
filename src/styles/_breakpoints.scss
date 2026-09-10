@@ -1,0 +1,78 @@
+// Breakpoints del handoff: ≥1024 escritorio, 768 tablet, ≤640 móvil.
+// Las media queries no admiten var(), así que viven en un mapa SCSS.
+$ft-breakpoints: (
+  mobile-max: 640px,
+  tablet-min: 641px,
+  tablet-max: 1023px,
+  desktop-min: 1024px,
+);
+
+@function ft-bp($name) {
+  @if not map-has-key($ft-breakpoints, $name) {
+    @error 'Breakpoint desconocido: #{$name}';
+  }
+  @return map-get($ft-breakpoints, $name);
+}
+
+/// Aplica estilos a un rango: mobile | tablet | desktop | not-desktop | not-mobile
+@mixin ft-media($range) {
+  @if $range == mobile {
+    @media (max-width: ft-bp(mobile-max)) {
+      @content;
+    }
+  } @else if $range == tablet {
+    @media (min-width: ft-bp(tablet-min)) and (max-width: ft-bp(tablet-max)) {
+      @content;
+    }
+  } @else if $range == desktop {
+    @media (min-width: ft-bp(desktop-min)) {
+      @content;
+    }
+  } @else if $range == not-desktop {
+    @media (max-width: ft-bp(tablet-max)) {
+      @content;
+    }
+  } @else if $range == not-mobile {
+    @media (min-width: ft-bp(tablet-min)) {
+      @content;
+    }
+  } @else {
+    @error 'Rango desconocido: #{$range}';
+  }
+}
+
+// Redefinición de los tokens dependientes de breakpoint (README «Layout responsive»).
+:root {
+  @include ft-media(tablet) {
+    --ft-page-pad-top: 24px;
+    --ft-page-pad-x: 24px;
+    --ft-page-pad-bottom: 24px;
+    --ft-card-padding: 20px;
+    --ft-section-gap: 24px;
+    --ft-grid-gap: 16px;
+    --ft-filter-h: 34px;
+    --ft-week-bar-max: 56px;
+    --ft-compare-bar-w: 16px;
+    --ft-minibar-max: 150px;
+    --ft-sparkline-w: 72px;
+  }
+
+  @include ft-media(mobile) {
+    --ft-page-pad-top: 20px;
+    --ft-page-pad-x: 16px;
+    --ft-page-pad-bottom: 20px;
+    --ft-card-padding: 16px;
+    --ft-section-gap: 20px;
+    --ft-grid-gap: 12px;
+    --ft-control-h: 48px;
+    --ft-button-h: 48px;
+    --ft-filter-h: 32px;
+    --ft-chip-h: 36px;
+    --ft-amount-h: 80px;
+    --ft-icon-button: 28px;
+    --ft-key-h: 60px;
+    --ft-week-bar-max: 48px;
+    --ft-compare-bar-w: 16px;
+    --ft-line-chart-h: 120px;
+  }
+}

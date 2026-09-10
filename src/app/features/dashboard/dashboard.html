@@ -1,0 +1,75 @@
+@let v = variante();
+
+<ft-cabecera-pagina>
+  <div inicio>
+    <ft-selector-mes [(value)]="facade.month" [compacto]="v !== 'desktop'" [hoy]="facade.today()" />
+  </div>
+  @if (v === 'desktop') {
+    <div acciones class="acciones">
+    <button type="button" class="ft-btn ft-btn--secondary" title="Calculadora (Ctrl+K)" aria-keyshortcuts="Control+K Meta+K" (click)="abrirCalculadora()">Calculadora</button>
+    <a routerLink="/events/new" class="ft-btn ft-btn--primary"><span class="mas" aria-hidden="true">+</span>Nuevo evento</a>
+    </div>
+  } @else if (v === 'tablet') {
+    <div acciones class="acciones">
+    <button type="button" class="ft-btn ft-btn--icon icono-36" aria-label="Calculadora" title="Calculadora (Ctrl+K)" aria-keyshortcuts="Control+K Meta+K" (click)="abrirCalculadora()">=</button>
+    <a routerLink="/events/new" class="ft-btn ft-btn--primary ft-btn--compact">+ Nuevo evento</a>
+    </div>
+  } @else {
+    <button acciones type="button" class="ft-btn ft-btn--icon icono-36" aria-label="Calculadora" title="Calculadora (Ctrl+K)" aria-keyshortcuts="Control+K Meta+K" (click)="abrirCalculadora()">=</button>
+  }
+</ft-cabecera-pagina>
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudo cargar el dashboard" [texto]="errorTexto()" />
+} @else if (facade.loading()) {
+  <div class="grid">
+    <ft-skeleton class="span-5" variant="tarjeta" />
+    <div class="span-7 kpis"><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /></div>
+    <ft-skeleton class="span-12" variant="grafico" [height]="60" />
+    <ft-skeleton class="span-7" variant="grafico" />
+    <ft-skeleton class="span-5" variant="grafico" [height]="148" />
+  </div>
+} @else if (facade.empty()) {
+  <ft-estado-vacio
+    titulo="Todavía no hay movimientos en {{ mesLabel() }}"
+    texto="Registra el primero y el dashboard empezará a comparar el mes con los anteriores."
+    accionLabel="Nuevo evento"
+    (accion)="nuevoEvento()"
+  />
+} @else {
+  <div class="grid">
+    <ft-hero-balance
+      class="span-5 hero"
+      [variante]="v"
+      [balance]="facade.balance()"
+      [delta]="facade.delta()"
+      [prevBalance]="facade.prevBalance()"
+      [prevMonthName]="facade.prevMonthName()"
+      [income]="facade.totals().income"
+      [outflow]="facade.outflow()"
+      [count]="facade.count()"
+    />
+    <div class="span-7 kpis">
+      @for (kpi of facade.kpis(); track kpi.key) {
+        <ft-tarjeta-kpi
+          [label]="kpi.label"
+          [value]="kpi.value"
+          [foot]="kpi.foot"
+          [color]="kpi.color"
+          [sparkline]="kpi.sparkline"
+          [estado]="kpi.estado"
+          [sparklineSize]="v === 'mobile' ? 'full' : v === 'tablet' ? 'sm' : 'md'"
+        />
+      }
+    </div>
+
+    <ft-barra-presupuesto class="span-12" [pace]="facade.pace()" [variante]="v" />
+
+    <ft-gasto-por-semana class="span-7" [weeks]="facade.weeks()" />
+    @if (v === 'desktop') {
+      <ft-desglose-tipo-gasto class="span-5" [slices]="facade.donut()" [total]="facade.outflow()" />
+      <ft-proximos-cargos class="span-5" [charges]="facade.upcoming()" [total]="facade.upcomingTotal()" [days]="facade.upcomingDays" />
+    }
+    <ft-movimientos-recientes class="span-7" [events]="facade.recent()" [count]="facade.count()" [categoryById]="facade.categoryById()" />
+  </div>
+}

@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.caja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 24px;
+  border: 1px dashed var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  background: var(--ft-surface-elevated);
+  text-align: center;
+}
+
+:host(.variant-sin-resultados) .caja {
+  gap: 12px;
+  padding: 32px 24px;
+}
+
+.barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 52px;
+
+  span {
+    width: 14px;
+    border-radius: 3px;
+    background: var(--ft-border);
+  }
+
+  .acento {
+    background: var(--ft-accent);
+  }
+}
+
+.circulo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ft-radius-pill);
+  border: 2px solid var(--ft-border);
+}
+
+.titulo {
+  font: var(--ft-font-label);
+  line-height: 1.4;
+  color: var(--ft-text-1);
+}
+
+.texto {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-2);
+  max-width: 300px;
+}

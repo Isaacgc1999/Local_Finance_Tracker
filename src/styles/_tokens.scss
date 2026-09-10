@@ -1,0 +1,177 @@
+// Tokens de diseño de Fintrack. Todos los valores proceden del handoff
+// (design/design_handoff_fintrack/README.md y el markup de Fintrack.dc.html).
+// No inventar valores aquí: si falta uno, añadirlo citando su origen.
+
+:root {
+  // ── Color base ─────────────────────────────────────────────────────────
+  --ft-bg: #0a0b0d; // Fondo base de la ventana
+  --ft-surface: #131519; // Tarjetas, sidebar, barras pegajosas
+  --ft-surface-elevated: #1b1e24; // Inputs, filas internas, teclas, chips inactivos
+  --ft-border: #262a31; // Borde de 1px en todo
+  --ft-border-subtle: #1b1e24; // Separadores dentro de listas
+  --ft-border-hover: #2f343d; // Hover de tarjeta KPI / chip (hoja de componentes)
+  --ft-text-1: #f2f4f7;
+  --ft-text-2: #9ba3af;
+  --ft-text-3: #6b7280;
+  --ft-text-disabled: #4b5563; // Opción deshabilitada de segmented control
+  --ft-accent: #6e56f8;
+  --ft-accent-hover: #8b78fa; // a:hover del prototipo
+  --ft-on-accent: #ffffff;
+
+  // ── Sistema semántico (cerrado) ────────────────────────────────────────
+  --ft-income: #22c55e;
+  --ft-expense: #f45b5b;
+  --ft-investment: #38bdf8;
+  --ft-savings: #fbbf24;
+  --ft-on-investment: #0a0b0d; // Texto del chip "Fondo indexado" activo
+
+  // Fondos de badge/pill = color semántico con alpha 1F (12 %)
+  --ft-income-12: #22c55e1f;
+  --ft-expense-12: #f45b5b1f;
+  --ft-investment-12: #38bdf81f;
+  --ft-savings-12: #fbbf241f;
+  --ft-accent-12: #6e56f81f;
+  // Fondos de fila activa / error = alpha 14 (8 %)
+  --ft-accent-8: #6e56f814;
+  --ft-expense-8: #f45b5b14;
+  // Anillo de foco = alpha 33 (20 %)
+  --ft-accent-ring: #6e56f833;
+
+  // Rampa del donut de tipos de gasto (subdivisión del rojo)
+  --ft-expense-ramp-1: #f45b5b;
+  --ft-expense-ramp-2: #c24b4b;
+  --ft-expense-ramp-3: #8f3a3a;
+  --ft-expense-ramp-4: #5c2a2a;
+
+  // ── Convenciones ───────────────────────────────────────────────────────
+  --ft-focus-ring: 0 0 0 3px var(--ft-accent-ring);
+  --ft-skeleton-gradient: linear-gradient(
+    90deg,
+    var(--ft-surface-elevated) 25%,
+    var(--ft-border) 50%,
+    var(--ft-surface-elevated) 75%
+  );
+  --ft-opacity-disabled: 0.4; // filas, tarjetas KPI
+  --ft-opacity-disabled-control: 0.45; // chips, inputs
+  --ft-opacity-dimmed: 0.45; // contenido tras la calculadora
+
+  // ── Tipografía ─────────────────────────────────────────────────────────
+  --ft-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ft-font-display: 700 40px/1.1 var(--ft-font-family);
+  --ft-font-title: 600 24px/1 var(--ft-font-family);
+  --ft-lh-title-long: 1.3;
+  --ft-font-label: 500 15px/1 var(--ft-font-family);
+  --ft-font-body: 400 15px/1.5 var(--ft-font-family);
+  --ft-font-meta: 400 13px/1 var(--ft-font-family);
+  --ft-font-meta-strong: 500 13px/1 var(--ft-font-family);
+  --ft-font-eyebrow: 500 13px/1 var(--ft-font-family);
+  --ft-font-key: 500 24px/1 var(--ft-font-family);
+  --ft-font-logo: 700 16px/1 var(--ft-font-family);
+  --ft-tracking-display: -0.02em;
+  --ft-tracking-num: -0.01em;
+  --ft-tracking-eyebrow: 0.08em;
+
+  // ── Forma ──────────────────────────────────────────────────────────────
+  --ft-radius-card: 12px;
+  --ft-radius-control: 8px;
+  --ft-radius-segment: 6px;
+  --ft-radius-stack: 6px;
+  --ft-radius-bar: 4px;
+  --ft-radius-legend: 2px;
+  --ft-radius-pill: 999px;
+  --ft-border-width: 1px;
+
+  // ── Espacio (rejilla de 8) ─────────────────────────────────────────────
+  --ft-space-1: 4px;
+  --ft-space-2: 8px;
+  --ft-space-3: 12px;
+  --ft-space-4: 16px;
+  --ft-space-5: 20px;
+  --ft-space-6: 24px;
+  --ft-space-7: 28px;
+  --ft-space-8: 32px;
+  // Valores por breakpoint (se redefinen en _breakpoints.scss)
+  --ft-page-pad-top: 28px;
+  --ft-page-pad-x: 32px;
+  --ft-page-pad-bottom: 32px;
+  --ft-page-padding: var(--ft-page-pad-top) var(--ft-page-pad-x) var(--ft-page-pad-bottom);
+  --ft-card-padding: 24px;
+  --ft-section-gap: 32px;
+  --ft-grid-gap: 20px;
+
+  // ── Controles ──────────────────────────────────────────────────────────
+  --ft-control-h: 44px;
+  --ft-control-h-mobile: 48px; // botones y campos a ancho completo en 390 (Ajustes)
+  --ft-button-h: 40px;
+  --ft-button-h-compact: 36px;
+  --ft-filter-h: 38px;
+  --ft-chip-h: 32px;
+  --ft-badge-h: 26px;
+  --ft-status-pill-h: 24px;
+  --ft-amount-h: 72px;
+  --ft-amount-h-compact: 56px;
+  --ft-textarea-h: 84px;
+  --ft-icon-button: 32px;
+  --ft-icon-size: 18px;
+  --ft-icon-stroke: 1.6;
+  --ft-toggle-w: 44px;
+  --ft-toggle-h: 26px;
+  --ft-toggle-knob: 20px;
+  --ft-toggle-pad: 3px;
+  --ft-key-h: 56px;
+  --ft-key-h-mobile: 60px; // teclado de la calculadora en la hoja modal de 390
+  --ft-avatar: 32px;
+  --ft-swatch: 28px;
+  --ft-dot: 6px;
+  --ft-legend-sq: 8px;
+  --ft-touch-min: 44px;
+
+  // ── Layout ─────────────────────────────────────────────────────────────
+  --ft-sidebar-w: 240px;
+  --ft-sidebar-collapsed-w: 64px;
+  --ft-tabbar-h: 76px;
+  --ft-fab-size: 56px;
+  --ft-fab-right: 16px;
+  --ft-fab-bottom: 96px;
+  --ft-list-pad-mobile: 152px;
+  --ft-calc-panel-w: 400px;
+  --ft-menu-w: 212px;
+  --ft-modal-w: 480px;
+  --ft-tooltip-w: 196px;
+  --ft-sheet-handle-w: 40px;
+  --ft-sheet-handle-h: 4px;
+
+  // ── Gráficos ───────────────────────────────────────────────────────────
+  --ft-progress-h: 10px;
+  --ft-day-mark-w: 2px;
+  --ft-day-mark-overflow: 5px;
+  --ft-progress-thin: 6px;
+  --ft-minibar-h: 4px;
+  --ft-minibar-max: 220px;
+  --ft-timeline-line: 2px;
+  --ft-timeline-node: 12px;
+  --ft-timeline-ring: 3px;
+  --ft-donut: 148px;
+  --ft-donut-hole: 96px;
+  --ft-week-bar-max: 72px;
+  --ft-week-chart-h: 215px;
+  --ft-compare-bar-w: 22px;
+  --ft-compare-chart-h: 190px;
+  --ft-line-chart-h: 165px;
+  --ft-line-w: 2.5px;
+  --ft-ma-w: 2px;
+  --ft-sparkline-w: 100px;
+  --ft-sparkline-h: 28px;
+
+  // ── Z-index (propios) ──────────────────────────────────────────────────
+  --ft-z-sticky: 3;
+  --ft-z-menu: 5; // único valor fijado por el handoff
+  --ft-z-fab: 6;
+  --ft-z-panel: 10;
+  --ft-z-modal: 20;
+  --ft-z-toast: 30;
+
+  // ── Movimiento (solo dos animaciones en toda la app) ───────────────────
+  --ft-anim-shim: shim 1.6s linear infinite;
+  --ft-anim-pulse: pulse 1.4s ease-in-out infinite;
+}

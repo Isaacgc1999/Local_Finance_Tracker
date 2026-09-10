@@ -1,0 +1,39 @@
+@switch (variante()) {
+  @case ('tablet') {
+    <div class="fila">
+      <div>
+        <p class="etiqueta">Balance del mes</p>
+        <p class="display num">{{ balanceTexto() }}</p>
+      </div>
+      <span class="delta num" [class.ft-c-income]="deltaPositivo()" [class.ft-c-expense]="!deltaPositivo()">{{ deltaTexto() }}</span>
+    </div>
+  }
+  @case ('mobile') {
+    <p class="etiqueta">Balance del mes</p>
+    <p class="display num">{{ balanceTexto() }}</p>
+    <span class="delta num" [class.ft-c-income]="deltaPositivo()" [class.ft-c-expense]="!deltaPositivo()">{{ deltaTexto() }} {{ referenciaCorta() }}</span>
+  }
+  @default {
+    <p class="etiqueta">Balance del mes</p>
+    <p class="display num">{{ balanceTexto() }}</p>
+    <div class="delta-fila">
+      <span class="delta num" [class.ft-c-income]="deltaPositivo()" [class.ft-c-expense]="!deltaPositivo()">{{ deltaTexto() }}</span>
+      <span class="referencia">{{ referencia() }}</span>
+    </div>
+    <hr class="ft-divider separador" />
+    <div class="micro">
+      <div>
+        <p class="micro__label">Ingresos</p>
+        <p class="micro__valor num ft-c-income">{{ ingresosTexto() }}</p>
+      </div>
+      <div>
+        <p class="micro__label">Gastos</p>
+        <p class="micro__valor num ft-c-expense">{{ gastosTexto() }}</p>
+      </div>
+      <div>
+        <p class="micro__label">Movimientos</p>
+        <p class="micro__valor num">{{ movimientosTexto() }}</p>
+      </div>
+    </div>
+  }
+}

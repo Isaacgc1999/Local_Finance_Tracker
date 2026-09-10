@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#0A0B0D;-webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box}
+  a{color:#6E56F8;text-decoration:none}
+  a:hover{color:#8B78FA}
+  .num{font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+  @keyframes shim{0%{background-position:-200% 0}100%{background-position:200% 0}}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+</style>
+</helmet>
+
+<div style="background:#0A0B0D;font-family:Inter,system-ui,sans-serif;padding:56px;display:flex;flex-direction:column;gap:72px;width:max-content">
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="font:700 40px/1.1 Inter,sans-serif;color:#F2F4F7;letter-spacing:-0.02em">Fintrack — sistema de interfaz</div>
+    <div style="font:400 15px/1.5 Inter,sans-serif;color:#9BA3AF;max-width:720px">Aplicación de escritorio de finanzas personales, un solo usuario, datos locales. Seis pantallas en 1440 / 768 / 390, hoja de componentes y paleta.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Fundamentos</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Color, tipografía, forma</div>
+    </div>
+    <div style="display:flex;gap:20px;align-items:flex-start">
+
+      <div style="width:640px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:24px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Superficies y texto</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          <sc-for list="{{ swatchesBase }}" as="s" hint-placeholder-count="8">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="height:56px;border-radius:8px;background:{{ s.hex }};border:1px solid #262A31"></div>
+              <div style="font:500 13px/1.3 Inter,sans-serif;color:#F2F4F7">{{ s.name }}</div>
+              <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ s.hex }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="height:1px;background:#262A31"></div>
+        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Sistema semántico — idéntico en gráficos, badges, importes y filtros</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+          <sc-for list="{{ swatchesSem }}" as="s" hint-placeholder-count="5">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="height:56px;border-radius:8px;background:{{ s.hex }}"></div>
+              <div style="font:500 13px/1.3 Inter,sans-serif;color:#F2F4F7">{{ s.name }}</div>
+              <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ s.hex }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="width:520px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Escala tipográfica — Inter</div>
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px">
+            <div class="num" style="font:700 40px/1 Inter,sans-serif;color:#F2F4F7">2.412,68 €</div>
+            <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;white-space:nowrap">display 40/700 · tabular</div>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px">
+            <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Título de sección</div>
+            <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;white-space:nowrap">24/600</div>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px">
+            <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Etiqueta de campo</div>
+            <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;white-space:nowrap">15/500</div>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px">
+            <div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Metadato · 8 sep 2026 · Tarjeta ·5417</div>
+            <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;white-space:nowrap">13/400</div>
+          </div>
+        </div>
+        <div style="height:1px;background:#262A31"></div>
+        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Forma</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="width:88px;height:56px;border-radius:12px;background:#1B1E24;border:1px solid #262A31;display:flex;align-items:center;justify-content:center;font:400 13px/1 Inter,sans-serif;color:#9BA3AF">12 · card</div>
+          <div style="width:88px;height:40px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;display:flex;align-items:center;justify-content:center;font:400 13px/1 Inter,sans-serif;color:#9BA3AF">8 · input</div>
+          <div style="height:32px;padding:0 16px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;display:flex;align-items:center;font:400 13px/1 Inter,sans-serif;color:#9BA3AF">999 · chip</div>
+          <div style="font:400 13px/1.5 Inter,sans-serif;color:#6B7280">Rejilla 8px · card 20–24 · secciones 32</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">1 · Dashboard</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Mes en curso · septiembre 2026</div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">1440 · ESCRITORIO</div>
+        <div style="width:1440px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:240px;flex:none"><dc-import name="Sidebar" active="dashboard" hint-size="240px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;padding:28px 32px 32px 32px;display:flex;flex-direction:column;gap:32px">
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:24px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">‹</div>
+                <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7;min-width:200px;text-align:center">Septiembre 2026</div>
+                <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">›</div>
+                <div style="margin-left:8px;height:32px;padding:0 14px;border-radius:999px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;font:400 13px/1 Inter,sans-serif">Hoy · 9 sep</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Calculadora</div>
+                <div style="height:40px;padding:0 18px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;gap:8px;font:500 15px/1 Inter,sans-serif"><span style="font-size:17px;line-height:1">+</span>Nuevo evento</div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px">
+              <div style="grid-column:span 5;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:6px">
+                <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Balance del mes</div>
+                <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#F2F4F7">+868,31 €</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:2px">
+                  <div class="num" style="font:500 15px/1 Inter,sans-serif;color:#22C55E">▲ 142,19 €</div>
+                  <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">frente a agosto (726,12 €)</div>
+                </div>
+                <div style="height:1px;background:#262A31;margin:14px 0 12px"></div>
+                <div style="display:flex;gap:24px">
+                  <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Ingresos</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#22C55E">2.752,68 €</div></div>
+                  <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Gastos</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F45B5B">1.884,37 €</div></div>
+                  <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Movimientos</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">31</div></div>
+                </div>
+              </div>
+              <div style="grid-column:span 7;display:grid;grid-template-columns:repeat(2,1fr);gap:20px">
+                <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <div style="width:6px;height:6px;border-radius:999px;background:{{ k.color }}"></div>
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">{{ k.label }}</div>
+                    </div>
+                    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+                      <div style="display:flex;flex-direction:column;gap:6px">
+                        <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">{{ k.val }}</div>
+                        <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ k.pct }}</div>
+                      </div>
+                      <svg width="100" height="28" viewBox="0 0 100 28" fill="none" style="flex:none"><polyline points="{{ k.pts }}" fill="none" stroke="{{ k.color }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Presupuesto consumido</div>
+                <div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF"><span class="num" style="color:#F2F4F7;font-weight:600">68,5 %</span> de los ingresos · quedan <span class="num">868,31 €</span></div>
+              </div>
+              <div style="position:relative;height:10px;border-radius:999px;background:#1B1E24;overflow:visible">
+                <div style="position:absolute;left:0;top:0;bottom:0;width:68.5%;border-radius:999px;background:#F45B5B"></div>
+                <div style="position:absolute;left:30%;top:-5px;bottom:-5px;width:2px;background:#F2F4F7;border-radius:2px"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font:400 13px/1 Inter,sans-serif;color:#6B7280">
+                <div>Marca del día 9 de 30 — 30 % del mes transcurrido</div>
+                <div style="color:#F45B5B">Vas 38,5 puntos por delante del ritmo</div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px">
+              <div style="grid-column:span 7;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Gasto por semana</div>
+                  <div style="display:flex;gap:14px">
+                    <sc-for list="{{ donut }}" as="d" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:{{ d.c }}"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">{{ d.name }}</div></div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-end;gap:32px;height:215px;padding-left:8px">
+                  <sc-for list="{{ semanas }}" as="w" hint-placeholder-count="5">
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px">
+                      <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">{{ w.total }} €</div>
+                      <div style="width:100%;max-width:72px;display:flex;flex-direction:column-reverse;border-radius:6px;overflow:hidden">
+                        <sc-for list="{{ w.segs }}" as="s" hint-placeholder-count="4">
+                          <div style="height:{{ s.h }}px;background:{{ s.c }}"></div>
+                        </sc-for>
+                      </div>
+                      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ w.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="grid-column:span 5;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+                <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Desglose por tipo de gasto</div>
+                <div style="display:flex;align-items:center;gap:24px">
+                  <div style="width:148px;height:148px;border-radius:999px;flex:none;background:{{ donutBg }};display:flex;align-items:center;justify-content:center">
+                    <div style="width:96px;height:96px;border-radius:999px;background:#131519;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+                      <div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">1.884,37</div>
+                      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">total €</div>
+                    </div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+                    <sc-for list="{{ donut }}" as="d" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:center;gap:10px">
+                        <div style="width:8px;height:8px;border-radius:2px;background:{{ d.c }};flex:none"></div>
+                        <div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;flex:1">{{ d.name }}</div>
+                        <div class="num" style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7">{{ d.val }}</div>
+                        <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#6B7280;width:48px;text-align:right">{{ d.pct }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px">
+              <div style="grid-column:span 5;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Próximos cargos</div>
+                  <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#6B7280">1.103,30 € en 30 días</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <sc-for list="{{ proximos }}" as="p" hint-placeholder-count="5">
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #1B1E24">
+                      <div style="flex:1;min-width:0">
+                        <div style="font:500 15px/1.3 Inter,sans-serif;color:#F2F4F7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div>
+                        <div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280">{{ p.meta }}</div>
+                      </div>
+                      <div style="text-align:right">
+                        <div class="num" style="font:500 15px/1.3 Inter,sans-serif;color:{{ p.c }}">{{ p.amt }}</div>
+                        <div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280">{{ p.dias }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="grid-column:span 7;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Movimientos recientes</div>
+                  <div style="font:400 13px/1 Inter,sans-serif;color:#6E56F8">Ver los 31</div>
+                </div>
+                <div style="display:flex;flex-direction:column">
+                  <sc-for list="{{ movs }}" as="m" hint-placeholder-count="6">
+                    <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-top:1px solid #1B1E24">
+                      <div style="width:32px;height:32px;border-radius:999px;flex:none;background:{{ m.c }}1F;color:{{ m.c }};display:flex;align-items:center;justify-content:center;font:600 13px/1 Inter,sans-serif">{{ m.ini }}</div>
+                      <div style="flex:1;min-width:0">
+                        <div style="font:500 15px/1.3 Inter,sans-serif;color:#F2F4F7">{{ m.name }}</div>
+                        <div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280">{{ m.meta }}</div>
+                      </div>
+                      <div class="num" style="font:500 15px/1 Inter,sans-serif;color:{{ m.ac }};text-align:right">{{ m.amt }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">768 · TABLET</div>
+        <div style="width:768px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:64px;flex:none"><dc-import name="Sidebar" active="dashboard" collapsed="{{ true }}" hint-size="64px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;padding:24px;display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">‹</div>
+                <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Sept. 2026</div>
+                <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">›</div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <div style="height:36px;width:36px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">=</div>
+                <div style="height:36px;padding:0 14px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">+ Nuevo evento</div>
+              </div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px">
+              <div>
+                <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Balance del mes</div>
+                <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#F2F4F7">+868,31 €</div>
+              </div>
+              <div class="num" style="font:500 15px/1 Inter,sans-serif;color:#22C55E">▲ 142,19 €</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+              <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;background:{{ k.color }}"></div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">{{ k.label }}</div></div>
+                  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">{{ k.val }}</div>
+                      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ k.pct }}</div>
+                    </div>
+                    <svg width="72" height="28" viewBox="0 0 100 28" fill="none" style="flex:none"><polyline points="{{ k.pts }}" fill="none" stroke="{{ k.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Presupuesto consumido</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">68,5 %</div></div>
+              <div style="position:relative;height:10px;border-radius:999px;background:#1B1E24">
+                <div style="position:absolute;left:0;top:0;bottom:0;width:68.5%;border-radius:999px;background:#F45B5B"></div>
+                <div style="position:absolute;left:30%;top:-5px;bottom:-5px;width:2px;background:#F2F4F7;border-radius:2px"></div>
+              </div>
+              <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Marca del día 9 de 30 · vas por delante del ritmo</div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Gasto por semana</div>
+              <div style="display:flex;align-items:flex-end;gap:20px;height:215px">
+                <sc-for list="{{ semanas }}" as="w" hint-placeholder-count="5">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px">
+                    <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">{{ w.total }}</div>
+                    <div style="width:100%;max-width:56px;display:flex;flex-direction:column-reverse;border-radius:6px;overflow:hidden">
+                      <sc-for list="{{ w.segs }}" as="s" hint-placeholder-count="4"><div style="height:{{ s.h }}px;background:{{ s.c }}"></div></sc-for>
+                    </div>
+                    <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ w.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Movimientos recientes</div>
+              <div style="display:flex;flex-direction:column">
+                <sc-for list="{{ movs }}" as="m" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #1B1E24">
+                    <div style="width:32px;height:32px;border-radius:999px;flex:none;background:{{ m.c }}1F;color:{{ m.c }};display:flex;align-items:center;justify-content:center;font:600 13px/1 Inter,sans-serif">{{ m.ini }}</div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font:500 15px/1.3 Inter,sans-serif;color:#F2F4F7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }}</div>
+                      <div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.meta }}</div>
+                    </div>
+                    <div class="num" style="font:500 15px/1 Inter,sans-serif;color:{{ m.ac }}">{{ m.amt }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">390 · MÓVIL</div>
+        <div style="width:390px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;position:relative">
+          <div style="padding:20px 16px 152px 16px;display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:28px;height:28px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">‹</div>
+                <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Sept. 2026</div>
+                <div style="width:28px;height:28px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">›</div>
+              </div>
+              <div style="width:36px;height:36px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">=</div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:6px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Balance del mes</div>
+              <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#F2F4F7">+868,31 €</div>
+              <div class="num" style="font:500 15px/1 Inter,sans-serif;color:#22C55E">▲ 142,19 € vs agosto</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+              <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:999px;background:{{ k.color }}"></div><div style="font:500 13px/1 Inter,sans-serif;color:#9BA3AF">{{ k.label }}</div></div>
+                  <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">{{ k.val }}</div>
+                  <svg width="100%" height="24" viewBox="0 0 100 28" preserveAspectRatio="none" fill="none"><polyline points="{{ k.pts }}" fill="none" stroke="{{ k.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Presupuesto</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">68,5 %</div></div>
+              <div style="position:relative;height:10px;border-radius:999px;background:#1B1E24">
+                <div style="position:absolute;left:0;top:0;bottom:0;width:68.5%;border-radius:999px;background:#F45B5B"></div>
+                <div style="position:absolute;left:30%;top:-5px;bottom:-5px;width:2px;background:#F2F4F7;border-radius:2px"></div>
+              </div>
+              <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Día 9 de 30 · por delante del ritmo</div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Gasto por semana</div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">desliza →</div></div>
+              <div style="display:flex;align-items:flex-end;gap:24px;height:210px;overflow-x:auto;padding-bottom:4px">
+                <sc-for list="{{ semanas }}" as="w" hint-placeholder-count="5">
+                  <div style="width:64px;flex:none;display:flex;flex-direction:column;align-items:center;gap:8px">
+                    <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">{{ w.total }}</div>
+                    <div style="width:48px;display:flex;flex-direction:column-reverse;border-radius:6px;overflow:hidden">
+                      <sc-for list="{{ w.segs }}" as="s" hint-placeholder-count="4"><div style="height:{{ s.h }}px;background:{{ s.c }}"></div></sc-for>
+                    </div>
+                    <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ w.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Movimientos recientes</div>
+              <div style="display:flex;flex-direction:column">
+                <sc-for list="{{ movs }}" as="m" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #1B1E24">
+                    <div style="width:32px;height:32px;border-radius:999px;flex:none;background:{{ m.c }}1F;color:{{ m.c }};display:flex;align-items:center;justify-content:center;font:600 13px/1 Inter,sans-serif">{{ m.ini }}</div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font:500 15px/1.3 Inter,sans-serif;color:#F2F4F7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }}</div>
+                      <div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.meta }}</div>
+                    </div>
+                    <div class="num" style="font:500 15px/1 Inter,sans-serif;color:{{ m.ac }}">{{ m.amt }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;right:16px;bottom:96px;width:56px;height:56px;border-radius:999px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font:400 28px/1 Inter,sans-serif">+</div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:76px;background:#131519;border-top:1px solid #262A31;display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+            <sc-for list="{{ tabbar }}" as="t" hint-placeholder-count="5">
+              <div style="min-width:44px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:{{ t.fg }}">
+                <div style="width:18px;height:18px;display:flex">{{ t.icon }}</div>
+                <div style="font:500 13px/1 Inter,sans-serif">{{ t.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">2 · Nuevo evento</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Formulario adaptativo · dos estados de tipo</div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">1440 · ESCRITORIO — TIPO: GASTO</div>
+        <div style="width:1440px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:240px;flex:none"><dc-import name="Sidebar" active="movimientos" hint-size="240px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+            <div style="flex:1;padding:28px 32px 32px 32px;display:flex;flex-direction:column;gap:32px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div><div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Nuevo evento</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#6B7280;margin-top:6px">Se guarda en el fichero local. Sin sincronización.</div></div>
+                <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:400 15px/1 Inter,sans-serif">✕</div>
+              </div>
+
+              <div style="display:inline-flex;padding:4px;gap:4px;background:#131519;border:1px solid #262A31;border-radius:12px;align-self:flex-start">
+                <div style="padding:10px 22px;border-radius:8px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Gasto</div>
+                <div style="padding:10px 22px;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Ingreso</div>
+                <div style="padding:10px 22px;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Suscripción</div>
+                <div style="padding:10px 22px;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Domiciliación</div>
+                <div style="padding:10px 22px;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Ahorro</div>
+                <div style="padding:10px 22px;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Inversión</div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px;align-items:start">
+                <div style="grid-column:span 7;display:flex;flex-direction:column;gap:20px">
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+                    <div style="display:flex;gap:20px;align-items:flex-end">
+                      <div style="flex:1">
+                        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Importe</div>
+                        <div style="display:flex;align-items:center;gap:12px;height:72px;padding:0 20px;border-radius:8px;background:#1B1E24;border:1px solid #6E56F8">
+                          <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#6B7280">€</div>
+                          <div class="num" style="font:700 40px/1 Inter,sans-serif;color:#F2F4F7">72,41</div>
+                        </div>
+                      </div>
+                      <div style="width:220px">
+                        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Fecha</div>
+                        <div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">08/09/2026<span style="color:#6B7280">▾</span></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Categoría</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:8px">
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Alimentación</div>
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Hogar</div>
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Transporte</div>
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Ocio</div>
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Salud</div>
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Formación</div>
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Viajes</div>
+                        <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Otros</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:20px">
+                      <div style="flex:1">
+                        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Naturaleza</div>
+                        <div style="display:inline-flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+                          <div style="padding:8px 20px;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Fijo</div>
+                          <div style="padding:8px 20px;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">Variable</div>
+                        </div>
+                      </div>
+                      <div style="flex:1">
+                        <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Método de pago</div>
+                        <div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">Tarjeta ·5417<span style="color:#6B7280">▾</span></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Concepto</div>
+                      <div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">Mercadona · compra semanal</div>
+                    </div>
+                    <div>
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Notas</div>
+                      <div style="height:84px;padding:12px 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#6B7280;font:400 15px/1.5 Inter,sans-serif">Incluye 18,60 € de productos de limpieza del trimestre</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="grid-column:span 5;display:flex;flex-direction:column;gap:20px">
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <div><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Recurrente</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:4px">Se repetirá automáticamente</div></div>
+                      <div style="width:44px;height:26px;border-radius:999px;background:#6E56F8;padding:3px;display:flex;justify-content:flex-end"><div style="width:20px;height:20px;border-radius:999px;background:#FFFFFF"></div></div>
+                    </div>
+                    <div style="height:1px;background:#262A31"></div>
+                    <div>
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Frecuencia</div>
+                      <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+                        <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Semanal</div>
+                        <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">Mensual</div>
+                        <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Anual</div>
+                      </div>
+                    </div>
+                    <div>
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Fecha de fin <span style="color:#6B7280">· opcional</span></div>
+                      <div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#6B7280;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">Sin fecha de fin<span>▾</span></div>
+                    </div>
+                  </div>
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Adjuntar recibo</div>
+                    <div style="border:1px dashed #262A31;border-radius:8px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;background:#1B1E24">
+                      <div style="width:32px;height:32px;border-radius:8px;background:#262A31"></div>
+                      <div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;text-align:center">Arrastra un archivo o pulsa para buscar<br>PNG, JPG o PDF · máx. 8 MB</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                      <div style="width:28px;height:28px;border-radius:6px;background:#262A31;flex:none"></div>
+                      <div style="flex:1;min-width:0"><div style="font:500 13px/1.3 Inter,sans-serif;color:#F2F4F7">ticket-mercadona-0809.pdf</div><div style="font:400 13px/1.3 Inter,sans-serif;color:#6B7280">214 KB</div></div>
+                      <div style="color:#6B7280;font:400 13px/1 Inter,sans-serif">✕</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="border-top:1px solid #262A31;background:#131519;padding:16px 32px;display:flex;align-items:center;justify-content:space-between">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#6E56F8">Guardar y añadir otro</div>
+              <div style="display:flex;gap:10px">
+                <div style="height:40px;padding:0 18px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Cancelar</div>
+                <div style="height:40px;padding:0 22px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Guardar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">768 · TABLET — TIPO: INVERSIÓN</div>
+        <div style="width:768px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:64px;flex:none"><dc-import name="Sidebar" active="movimientos" collapsed="{{ true }}" hint-size="64px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+            <div style="padding:24px;display:flex;flex-direction:column;gap:24px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Nuevo evento</div>
+                <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:400 15px/1 Inter,sans-serif">✕</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;background:#131519;border:1px solid #262A31;border-radius:12px">
+                <div style="text-align:center;padding:10px 0;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Gasto</div>
+                <div style="text-align:center;padding:10px 0;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Ingreso</div>
+                <div style="text-align:center;padding:10px 0;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Suscripción</div>
+                <div style="text-align:center;padding:10px 0;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Domiciliación</div>
+                <div style="text-align:center;padding:10px 0;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Ahorro</div>
+                <div style="text-align:center;padding:10px 0;border-radius:8px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Inversión</div>
+              </div>
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;gap:16px;align-items:flex-end">
+                  <div style="flex:1">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Importe aportado</div>
+                    <div style="display:flex;align-items:center;gap:12px;height:72px;padding:0 20px;border-radius:8px;background:#1B1E24;border:1px solid #38BDF8">
+                      <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#6B7280">€</div>
+                      <div class="num" style="font:700 40px/1 Inter,sans-serif;color:#F2F4F7">250,00</div>
+                    </div>
+                  </div>
+                  <div style="width:190px">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Fecha</div>
+                    <div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">03/09/2026<span style="color:#6B7280">▾</span></div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:16px">
+                  <div style="flex:1"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Activo / ticker</div><div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">IE00B4L5Y983 · MSCI World</div></div>
+                  <div style="flex:1"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Plataforma</div><div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">Indexa Capital<span style="color:#6B7280">▾</span></div></div>
+                </div>
+                <div>
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Tipo de activo</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px">
+                    <div style="height:32px;padding:0 14px;border-radius:999px;background:#38BDF8;color:#0A0B0D;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Fondo indexado</div>
+                    <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">ETF</div>
+                    <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Acciones</div>
+                    <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Cripto</div>
+                    <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Plan de pensiones</div>
+                  </div>
+                </div>
+                <div style="height:1px;background:#262A31"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Aportación periódica</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:4px">Mensual · el día 1 · sin fecha de fin</div></div>
+                  <div style="width:44px;height:26px;border-radius:999px;background:#6E56F8;padding:3px;display:flex;justify-content:flex-end"><div style="width:20px;height:20px;border-radius:999px;background:#FFFFFF"></div></div>
+                </div>
+              </div>
+            </div>
+            <div style="border-top:1px solid #262A31;background:#131519;padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#6E56F8">Guardar y añadir otro</div>
+              <div style="display:flex;gap:10px">
+                <div style="height:40px;padding:0 18px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Cancelar</div>
+                <div style="height:40px;padding:0 22px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Guardar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">390 · MÓVIL — HOJA COMPLETA</div>
+        <div style="width:390px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #262A31">
+            <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;min-width:44px">Cancelar</div>
+            <div style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">Nuevo gasto</div>
+            <div style="font:500 15px/1 Inter,sans-serif;color:#6E56F8;min-width:44px;text-align:right">Guardar</div>
+          </div>
+          <div style="padding:20px 16px;display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px">
+              <div style="flex:none;height:36px;padding:0 16px;border-radius:999px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Gasto</div>
+              <div style="flex:none;height:36px;padding:0 16px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Ingreso</div>
+              <div style="flex:none;height:36px;padding:0 16px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Suscripción</div>
+              <div style="flex:none;height:36px;padding:0 16px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Domicil.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;height:80px;padding:0 18px;border-radius:8px;background:#131519;border:1px solid #6E56F8">
+              <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#6B7280">€</div>
+              <div class="num" style="font:700 40px/1 Inter,sans-serif;color:#F2F4F7">72,41</div>
+            </div>
+            <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Fecha</div><div class="num" style="height:48px;padding:0 14px;border-radius:8px;background:#131519;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">08/09/2026<span style="color:#6B7280">▾</span></div></div>
+            <div>
+              <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Categoría</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <div style="height:36px;padding:0 14px;border-radius:999px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Alimentación</div>
+                <div style="height:36px;padding:0 14px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Hogar</div>
+                <div style="height:36px;padding:0 14px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Transporte</div>
+                <div style="height:36px;padding:0 14px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Ocio</div>
+                <div style="height:36px;padding:0 14px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Salud</div>
+                <div style="height:36px;padding:0 14px;border-radius:999px;background:#131519;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Otros</div>
+              </div>
+            </div>
+            <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Naturaleza</div>
+              <div style="display:flex;padding:3px;gap:3px;background:#131519;border:1px solid #262A31;border-radius:8px">
+                <div style="flex:1;text-align:center;padding:11px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Fijo</div>
+                <div style="flex:1;text-align:center;padding:11px 0;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">Variable</div>
+              </div>
+            </div>
+            <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Concepto</div><div style="height:48px;padding:0 14px;border-radius:8px;background:#131519;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">Mercadona · compra semanal</div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:12px;background:#131519;border:1px solid #262A31">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Recurrente</div>
+              <div style="width:44px;height:26px;border-radius:999px;background:#262A31;padding:3px;display:flex"><div style="width:20px;height:20px;border-radius:999px;background:#6B7280"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:8px;border:1px dashed #262A31;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Adjuntar recibo</div>
+          </div>
+          <div style="border-top:1px solid #262A31;background:#131519;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+            <div style="height:48px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">Guardar</div>
+            <div style="height:44px;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif;color:#6E56F8">Guardar y añadir otro</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">3 · Analítica</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Filtros pegajosos, comparativa y desglose</div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">1440 · ESCRITORIO — MENÚ EXPORTAR ABIERTO</div>
+        <div style="width:1440px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:240px;flex:none"><dc-import name="Sidebar" active="analitica" hint-size="240px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+            <div style="position:relative;background:#131519;border-bottom:1px solid #262A31;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+                  <div style="padding:8px 16px;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Día</div>
+                  <div style="padding:8px 16px;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Semana</div>
+                  <div style="padding:8px 16px;border-radius:6px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Mes</div>
+                  <div style="padding:8px 16px;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Año</div>
+                </div>
+                <div class="num" style="height:38px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;gap:10px;font:400 15px/1 Inter,sans-serif">01/04/2026 — 30/09/2026<span style="color:#6B7280">▾</span></div>
+                <div style="height:38px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;gap:8px;font:500 13px/1 Inter,sans-serif">Categorías<span style="padding:2px 7px;border-radius:999px;background:#6E56F8;color:#FFFFFF">3</span></div>
+                <div style="height:38px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;gap:8px;font:500 13px/1 Inter,sans-serif">Tipos<span style="padding:2px 7px;border-radius:999px;background:#6E56F8;color:#FFFFFF">2</span></div>
+                <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">Limpiar</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="height:38px;padding:0 16px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;gap:8px;font:500 15px/1 Inter,sans-serif">Exportar ▾</div>
+              </div>
+              <div style="position:absolute;right:32px;top:62px;width:212px;background:#1B1E24;border:1px solid #262A31;border-radius:12px;padding:6px;z-index:5">
+                <div style="padding:10px 12px;border-radius:8px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif;display:flex;justify-content:space-between">Excel<span style="color:#6B7280;font-weight:400">.xlsx</span></div>
+                <div style="padding:10px 12px;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif;display:flex;justify-content:space-between">PDF<span style="color:#6B7280;font-weight:400">.pdf</span></div>
+                <div style="padding:10px 12px;border-radius:8px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif;display:flex;justify-content:space-between">Word<span style="color:#6B7280;font-weight:400">.docx</span></div>
+              </div>
+            </div>
+
+            <div style="padding:28px 32px 32px 32px;display:flex;flex-direction:column;gap:32px">
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:20px">
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Total ingresos</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#22C55E">15.342,80 €</div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-top:8px">6 periodos</div></div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Total gastos</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F45B5B">11.209,19 €</div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-top:8px">73,1 % de ingresos</div></div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Tasa de ahorro</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#FBBF24">26,9 %</div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-top:8px">objetivo 30 %</div></div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Gasto medio diario</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">61,37 €</div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-top:8px">183 días</div></div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Varianza vs. media 3 m</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#22C55E">▼ 4,8 %</div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-top:8px">gastas menos que tu media</div></div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px">
+                <div style="grid-column:span 7;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Ingresos · Gastos · Inversión por mes</div>
+                    <div style="display:flex;gap:16px">
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:#22C55E"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Ingresos</div></div>
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:#F45B5B"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Gastos</div></div>
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:#38BDF8"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Inversión</div></div>
+                    </div>
+                  </div>
+                  <div style="position:relative;display:flex;align-items:flex-end;gap:28px;height:190px">
+                    <sc-for list="{{ meses }}" as="m" hint-placeholder-count="6">
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px">
+                        <div style="width:100%;display:flex;align-items:flex-end;justify-content:center;gap:4px;height:165px">
+                          <div style="width:22px;height:{{ m.i }}px;border-radius:4px 4px 0 0;background:#22C55E"></div>
+                          <div style="width:22px;height:{{ m.g }}px;border-radius:4px 4px 0 0;background:#F45B5B"></div>
+                          <div style="width:22px;height:{{ m.v }}px;border-radius:4px 4px 0 0;background:#38BDF8"></div>
+                        </div>
+                        <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ m.m }}</div>
+                      </div>
+                    </sc-for>
+                    <div style="position:absolute;right:2px;top:-6px;width:196px;background:#1B1E24;border:1px solid #262A31;border-radius:8px;padding:12px 14px">
+                      <div style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7;margin-bottom:10px">Septiembre 2026</div>
+                      <div style="display:flex;flex-direction:column;gap:7px">
+                        <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;background:#22C55E"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;flex:1">Ingresos</div><div class="num" style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7">2.752,68 €</div></div>
+                        <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;background:#F45B5B"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;flex:1">Gastos</div><div class="num" style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7">1.884,37 €</div></div>
+                        <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;background:#38BDF8"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;flex:1">Inversión</div><div class="num" style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7">250,00 €</div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="grid-column:span 5;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Saldo acumulado</div>
+                    <div style="display:flex;gap:16px">
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:2px;background:#6E56F8"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Saldo</div></div>
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:2px;background:#6B7280"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Media móvil 3 m</div></div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <svg width="100%" height="165" viewBox="0 0 600 165" preserveAspectRatio="none" fill="none">
+                      <line x1="0" y1="20" x2="600" y2="20" stroke="#1B1E24" stroke-width="1"></line>
+                      <line x1="0" y1="60" x2="600" y2="60" stroke="#1B1E24" stroke-width="1"></line>
+                      <line x1="0" y1="100" x2="600" y2="100" stroke="#1B1E24" stroke-width="1"></line>
+                      <line x1="0" y1="140" x2="600" y2="140" stroke="#1B1E24" stroke-width="1"></line>
+                      <polyline points="0,126 120,108 240,84 360,78 480,52 600,26" fill="none" stroke="#6E56F8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></polyline>
+                      <polyline points="0,134 120,120 240,100 360,88 480,68 600,44" fill="none" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+                    </svg>
+                    <div style="display:flex;justify-content:space-between;font:400 13px/1 Inter,sans-serif;color:#6B7280"><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span></div>
+                  </div>
+                  <div style="display:flex;gap:24px;padding-top:4px;border-top:1px solid #262A31">
+                    <div style="padding-top:14px"><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Saldo actual</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">9.418,44 €</div></div>
+                    <div style="padding-top:14px"><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Variación 6 m</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#22C55E">+4.133,61 €</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Desglose por categoría</div>
+                  <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Ordenado por total ▾</div>
+                </div>
+                <div style="display:grid;grid-template-columns:2.2fr 0.7fr 1fr 1fr 1fr 1fr 1fr;gap:16px;padding-bottom:10px;border-bottom:1px solid #262A31;font:500 13px/1 Inter,sans-serif;color:#6B7280">
+                  <div>Categoría</div><div style="text-align:right">Nº</div><div style="text-align:right;color:#F2F4F7">Total ▾</div><div style="text-align:right">% gasto</div><div style="text-align:right">% ingresos</div><div style="text-align:right">Media</div><div style="text-align:right">Var. periodo</div>
+                </div>
+                <sc-for list="{{ catRows }}" as="r" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:2.2fr 0.7fr 1fr 1fr 1fr 1fr 1fr;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #1B1E24">
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">{{ r.cat }}</div>
+                      <div style="height:4px;border-radius:999px;background:#1B1E24;max-width:220px"><div style="height:4px;border-radius:999px;background:#F45B5B;width:{{ r.bar }}"></div></div>
+                    </div>
+                    <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#9BA3AF">{{ r.n }}</div>
+                    <div class="num" style="text-align:right;font:600 15px/1 Inter,sans-serif;color:#F2F4F7">{{ r.total }}</div>
+                    <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#9BA3AF">{{ r.pg }}</div>
+                    <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#9BA3AF">{{ r.pi }}</div>
+                    <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#9BA3AF">{{ r.med }}</div>
+                    <div class="num" style="text-align:right;font:500 15px/1 Inter,sans-serif;color:{{ r.vc }}">{{ r.var }}</div>
+                  </div>
+                </sc-for>
+                <div style="display:grid;grid-template-columns:2.2fr 0.7fr 1fr 1fr 1fr 1fr 1fr;gap:16px;padding-top:6px">
+                  <div style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">Total</div>
+                  <div class="num" style="text-align:right;font:500 15px/1 Inter,sans-serif;color:#F2F4F7">25</div>
+                  <div class="num" style="text-align:right;font:600 15px/1 Inter,sans-serif;color:#F2F4F7">1.884,37 €</div>
+                  <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#6B7280">100 %</div>
+                  <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#6B7280">68,5 %</div>
+                  <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#6B7280">75,37 €</div>
+                  <div class="num" style="text-align:right;font:500 15px/1 Inter,sans-serif;color:#F45B5B">+8,2 %</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">MODAL · OPCIONES DE EXPORTACIÓN</div>
+          <div style="width:480px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div><div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Exportar a Excel</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#6B7280;margin-top:6px">Se guardará en tu carpeta local de descargas.</div></div>
+              <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:400 15px/1 Inter,sans-serif">✕</div>
+            </div>
+            <div>
+              <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:10px">Rango</div>
+              <div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">01/04/2026 — 30/09/2026<span style="color:#6B7280">▾</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                <div><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Incluir gráficas</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:4px">Comparativa y saldo acumulado</div></div>
+                <div style="width:44px;height:26px;border-radius:999px;background:#6E56F8;padding:3px;display:flex;justify-content:flex-end"><div style="width:20px;height:20px;border-radius:999px;background:#FFFFFF"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                <div><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Incluir desglose por categoría</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:4px">Una hoja por categoría</div></div>
+                <div style="width:44px;height:26px;border-radius:999px;background:#6E56F8;padding:3px;display:flex;justify-content:flex-end"><div style="width:20px;height:20px;border-radius:999px;background:#FFFFFF"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                <div><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Incluir movimientos en bruto</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:4px">183 filas</div></div>
+                <div style="width:44px;height:26px;border-radius:999px;background:#262A31;padding:3px;display:flex"><div style="width:20px;height:20px;border-radius:999px;background:#6B7280"></div></div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:4px">
+              <div style="height:40px;padding:0 18px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Cancelar</div>
+              <div style="height:40px;padding:0 22px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Exportar</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">768 · TABLET</div>
+          <div style="width:768px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+            <div style="width:64px;flex:none"><dc-import name="Sidebar" active="analitica" collapsed="{{ true }}" hint-size="64px,100%"></dc-import></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+              <div style="background:#131519;border-bottom:1px solid #262A31;padding:14px 20px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <div style="display:flex;flex:1;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+                    <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Día</div>
+                    <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Semana</div>
+                    <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Mes</div>
+                    <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Año</div>
+                  </div>
+                  <div style="height:38px;padding:0 16px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Exportar ▾</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="num" style="height:34px;padding:0 12px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 13px/1 Inter,sans-serif">01/04 — 30/09/2026</div>
+                  <div style="height:34px;padding:0 12px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;gap:8px;font:500 13px/1 Inter,sans-serif">Categorías<span style="padding:2px 7px;border-radius:999px;background:#6E56F8;color:#FFFFFF">3</span></div>
+                  <div style="height:34px;padding:0 12px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;gap:8px;font:500 13px/1 Inter,sans-serif">Tipos<span style="padding:2px 7px;border-radius:999px;background:#6E56F8;color:#FFFFFF">2</span></div>
+                </div>
+              </div>
+              <div style="padding:20px;display:flex;flex-direction:column;gap:20px">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Ingresos</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#22C55E">15.342,80 €</div></div>
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Gastos</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F45B5B">11.209,19 €</div></div>
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Tasa de ahorro</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#FBBF24">26,9 %</div></div>
+                  <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Medio diario</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">61,37 €</div></div>
+                  <div style="grid-column:span 2;background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Varianza vs. media 3 meses</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#22C55E">▼ 4,8 %</div></div>
+                </div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Comparativa por mes</div>
+                    <div style="display:flex;gap:12px">
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:#22C55E"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Ing.</div></div>
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:#F45B5B"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Gas.</div></div>
+                      <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:#38BDF8"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Inv.</div></div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:flex-end;gap:18px;height:180px">
+                    <sc-for list="{{ meses }}" as="m" hint-placeholder-count="6">
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px">
+                        <div style="width:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px;height:160px">
+                          <div style="width:16px;height:{{ m.i }}px;border-radius:4px 4px 0 0;background:#22C55E"></div>
+                          <div style="width:16px;height:{{ m.g }}px;border-radius:4px 4px 0 0;background:#F45B5B"></div>
+                          <div style="width:16px;height:{{ m.v }}px;border-radius:4px 4px 0 0;background:#38BDF8"></div>
+                        </div>
+                        <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ m.m }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Desglose por categoría</div>
+                  <div style="display:grid;grid-template-columns:2fr 0.6fr 1.1fr 0.9fr 1.1fr;gap:12px;padding-bottom:10px;border-bottom:1px solid #262A31;font:500 13px/1 Inter,sans-serif;color:#6B7280">
+                    <div>Categoría</div><div style="text-align:right">Nº</div><div style="text-align:right;color:#F2F4F7">Total ▾</div><div style="text-align:right">% gasto</div><div style="text-align:right">Var.</div>
+                  </div>
+                  <sc-for list="{{ catRows }}" as="r" hint-placeholder-count="5">
+                    <div style="display:grid;grid-template-columns:2fr 0.6fr 1.1fr 0.9fr 1.1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #1B1E24">
+                      <div style="display:flex;flex-direction:column;gap:7px">
+                        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">{{ r.cat }}</div>
+                        <div style="height:4px;border-radius:999px;background:#1B1E24;max-width:150px"><div style="height:4px;border-radius:999px;background:#F45B5B;width:{{ r.bar }}"></div></div>
+                      </div>
+                      <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#9BA3AF">{{ r.n }}</div>
+                      <div class="num" style="text-align:right;font:600 15px/1 Inter,sans-serif;color:#F2F4F7">{{ r.total }}</div>
+                      <div class="num" style="text-align:right;font:400 15px/1 Inter,sans-serif;color:#9BA3AF">{{ r.pg }}</div>
+                      <div class="num" style="text-align:right;font:500 15px/1 Inter,sans-serif;color:{{ r.vc }}">{{ r.var }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">390 · MÓVIL</div>
+        <div style="width:390px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;position:relative">
+          <div style="background:#131519;border-bottom:1px solid #262A31;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Analítica</div>
+              <div style="height:36px;padding:0 14px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Exportar ▾</div>
+            </div>
+            <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 13px/1 Inter,sans-serif">Día</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 13px/1 Inter,sans-serif">Semana</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#6E56F8;color:#FFFFFF;font:500 13px/1 Inter,sans-serif">Mes</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 13px/1 Inter,sans-serif">Año</div>
+            </div>
+            <div style="display:flex;gap:8px;overflow-x:auto">
+              <div class="num" style="flex:none;height:32px;padding:0 12px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 13px/1 Inter,sans-serif">01/04 — 30/09</div>
+              <div style="flex:none;height:32px;padding:0 12px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif">Categorías<span style="padding:1px 6px;border-radius:999px;background:#6E56F8;color:#FFFFFF">3</span></div>
+              <div style="flex:none;height:32px;padding:0 12px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif">Tipos<span style="padding:1px 6px;border-radius:999px;background:#6E56F8;color:#FFFFFF">2</span></div>
+            </div>
+          </div>
+          <div style="padding:16px 16px 100px 16px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Ingresos</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#22C55E">15.342,80 €</div></div>
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Gastos</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F45B5B">11.209,19 €</div></div>
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Tasa de ahorro</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#FBBF24">26,9 %</div></div>
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px"><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Varianza 3 m</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#22C55E">▼ 4,8 %</div></div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Comparativa</div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">desliza →</div></div>
+              <div style="display:flex;align-items:flex-end;gap:20px;height:180px;overflow-x:auto;padding-bottom:4px">
+                <sc-for list="{{ meses }}" as="m" hint-placeholder-count="6">
+                  <div style="width:72px;flex:none;display:flex;flex-direction:column;align-items:center;gap:10px">
+                    <div style="display:flex;align-items:flex-end;justify-content:center;gap:3px;height:160px">
+                      <div style="width:16px;height:{{ m.i }}px;border-radius:4px 4px 0 0;background:#22C55E"></div>
+                      <div style="width:16px;height:{{ m.g }}px;border-radius:4px 4px 0 0;background:#F45B5B"></div>
+                      <div style="width:16px;height:{{ m.v }}px;border-radius:4px 4px 0 0;background:#38BDF8"></div>
+                    </div>
+                    <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ m.m }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Saldo acumulado</div>
+              <svg width="100%" height="120" viewBox="0 0 600 165" preserveAspectRatio="none" fill="none">
+                <polyline points="0,126 120,108 240,84 360,78 480,52 600,26" fill="none" stroke="#6E56F8" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"></polyline>
+                <polyline points="0,134 120,120 240,100 360,88 480,68 600,44" fill="none" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 5" vector-effect="non-scaling-stroke"></polyline>
+              </svg>
+              <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">9.418,44 €</div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Por categoría</div>
+              <sc-for list="{{ catRows }}" as="r" hint-placeholder-count="5">
+                <div style="padding:10px 0;border-top:1px solid #1B1E24;display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">{{ r.cat }}</div>
+                    <div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">{{ r.total }}</div>
+                  </div>
+                  <div style="height:4px;border-radius:999px;background:#1B1E24"><div style="height:4px;border-radius:999px;background:#F45B5B;width:{{ r.bar }}"></div></div>
+                  <div style="display:flex;justify-content:space-between;font:400 13px/1 Inter,sans-serif;color:#6B7280">
+                    <div>{{ r.n }} mov. · {{ r.pg }} del gasto</div>
+                    <div class="num" style="color:{{ r.vc }}">{{ r.var }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:76px;background:#131519;border-top:1px solid #262A31;display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+            <sc-for list="{{ tabbarAnalitica }}" as="t" hint-placeholder-count="5">
+              <div style="min-width:44px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:{{ t.fg }}">
+                <div style="width:18px;height:18px;display:flex">{{ t.icon }}</div>
+                <div style="font:500 13px/1 Inter,sans-serif">{{ t.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">4 · Análisis IA</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Informes semanales generados en local</div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">1440 · ESCRITORIO</div>
+        <div style="width:1440px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:240px;flex:none"><dc-import name="Sidebar" active="ia" hint-size="240px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;padding:28px 32px 32px 32px;display:flex;flex-direction:column;gap:32px">
+
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:32px">
+              <div style="max-width:640px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                  <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Análisis IA</div>
+                  <div style="height:24px;padding:0 10px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Llama 3.1 · local</div>
+                  <div style="height:24px;padding:0 10px;border-radius:999px;background:#22C55E1F;color:#22C55E;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif"><span style="width:6px;height:6px;border-radius:999px;background:#22C55E"></span>Conectado</div>
+                </div>
+                <div style="font:400 15px/1.6 Inter,sans-serif;color:#9BA3AF">El informe se genera en tu ordenador con el modelo que tengas instalado en Ollama. Ningún movimiento sale del fichero local.</div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Ajustes del modelo</div>
+                <div style="height:40px;padding:0 18px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Regenerar análisis</div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px;align-items:start">
+              <div style="grid-column:span 8;display:flex;gap:20px">
+                <div style="width:2px;background:#262A31;margin:12px 0 0 6px;flex:none"></div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+
+                  <div style="position:relative;background:#131519;border:1px solid #6E56F8;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+                    <div style="position:absolute;left:-35px;top:24px;width:12px;height:12px;border-radius:999px;background:#6E56F8;border:3px solid #0A0B0D"></div>
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280">Semana 36 · 1–7 sep 2026 · generado hace 2 h</div>
+                      <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280">Contraer ▴</div>
+                    </div>
+                    <div style="font:600 24px/1.3 Inter,sans-serif;color:#F2F4F7;max-width:640px">Semana cara por un solo motivo: el viaje. Sin él, habrías cerrado un 12 % por debajo de tu media.</div>
+                    <div style="display:flex;flex-direction:column;gap:14px">
+                      <sc-for list="{{ hallazgos }}" as="h" hint-placeholder-count="4">
+                        <div style="display:flex;gap:12px;padding:14px 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                          <div style="width:6px;border-radius:999px;background:#6E56F8;flex:none"></div>
+                          <div>
+                            <div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7;margin-bottom:6px">{{ h.t }}</div>
+                            <div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF">{{ h.d }}</div>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="height:1px;background:#262A31"></div>
+                    <div>
+                      <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7;margin-bottom:14px">Recomendaciones</div>
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <sc-for list="{{ recos }}" as="r" hint-placeholder-count="4">
+                          <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                            <div style="flex:1;font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">{{ r.t }}</div>
+                            <div class="num" style="font:600 15px/1 Inter,sans-serif;color:#22C55E">{{ r.imp }}</div>
+                            <div style="height:32px;padding:0 14px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Aplicar</div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="position:relative;background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+                    <div style="position:absolute;left:-35px;top:24px;width:12px;height:12px;border-radius:999px;background:#262A31;border:3px solid #0A0B0D"></div>
+                    <div>
+                      <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:8px">Semana 35 · 25–31 ago 2026</div>
+                      <div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">Mes cerrado con 726,12 € de balance. La compra semanal bajó por tercera vez consecutiva.</div>
+                    </div>
+                    <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8;white-space:nowrap">Expandir ▾</div>
+                  </div>
+
+                  <div style="position:relative;background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+                    <div style="position:absolute;left:-35px;top:24px;width:12px;height:12px;border-radius:999px;background:#262A31;border:3px solid #0A0B0D"></div>
+                    <div>
+                      <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:8px">Semana 34 · 18–24 ago 2026</div>
+                      <div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">Dos cargos duplicados de 34,90 € detectados en la cuota del gimnasio.</div>
+                    </div>
+                    <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8;white-space:nowrap">Expandir ▾</div>
+                  </div>
+
+                  <div style="position:relative;background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:14px">
+                    <div style="position:absolute;left:-35px;top:24px;width:12px;height:12px;border-radius:999px;background:#262A31;border:3px solid #0A0B0D"></div>
+                    <div style="width:16px;height:16px;border-radius:999px;border:2px solid #262A31;border-top-color:#6E56F8;animation:pulse 1.4s ease-in-out infinite"></div>
+                    <div style="flex:1">
+                      <div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">Generando informe de la semana 33…</div>
+                      <div style="font:400 13px/1.5 Inter,sans-serif;color:#6B7280;margin-top:4px">El modelo está leyendo 42 movimientos · 11 s</div>
+                    </div>
+                    <div style="width:220px;height:6px;border-radius:999px;background:#1B1E24;overflow:hidden"><div style="width:62%;height:6px;border-radius:999px;background:#6E56F8"></div></div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div style="grid-column:span 4;display:flex;flex-direction:column;gap:20px">
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Potencial de ahorro detectado</div>
+                  <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#22C55E">110,10 €<span style="font:400 15px/1 Inter,sans-serif;color:#6B7280"> /mes</span></div>
+                  <div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF">Suma de las recomendaciones aplicables sin tocar tu nivel de vida. Equivale a 1.321,20 € al año.</div>
+                  <div style="height:1px;background:#262A31"></div>
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;align-items:center;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F45B5B"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;flex:1">Gimnasio sin uso</div><div class="num" style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7">34,90 €</div></div>
+                    <div style="display:flex;align-items:center;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F45B5B"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;flex:1">Netflix a plan con anuncios</div><div class="num" style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7">7,00 €</div></div>
+                    <div style="display:flex;align-items:center;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F45B5B"></div><div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF;flex:1">Tope de ocio en octubre</div><div class="num" style="font:500 13px/1 Inter,sans-serif;color:#F2F4F7">68,20 €</div></div>
+                  </div>
+                </div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Estado del modelo</div>
+                  <div style="display:flex;align-items:center;justify-content:space-between"><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Modelo</div><div style="font:400 13px/1 Inter,sans-serif;color:#F2F4F7">llama3.1:8b-instruct</div></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between"><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Endpoint</div><div class="num" style="font:400 13px/1 Inter,sans-serif;color:#F2F4F7">127.0.0.1:11434</div></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between"><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Último informe</div><div style="font:400 13px/1 Inter,sans-serif;color:#F2F4F7">hace 2 h · 34 s</div></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">768 · TABLET — MODELO NO DETECTADO</div>
+          <div style="width:768px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+            <div style="width:64px;flex:none"><dc-import name="Sidebar" active="ia" collapsed="{{ true }}" hint-size="64px,100%"></dc-import></div>
+            <div style="flex:1;min-width:0;padding:24px;display:flex;flex-direction:column;gap:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Análisis IA</div>
+                  <div style="height:24px;padding:0 10px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Llama 3.1 · local</div>
+                </div>
+                <div style="height:24px;padding:0 10px;border-radius:999px;background:#F45B5B1F;color:#F45B5B;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif"><span style="width:6px;height:6px;border-radius:999px;background:#F45B5B"></span>No detectado</div>
+              </div>
+              <div style="background:#131519;border:1px solid #F45B5B;border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px">
+                <div style="flex:1"><div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">No se encuentra Ollama en 127.0.0.1:11434</div><div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF;margin-top:6px">Arranca el servicio o cambia el endpoint en Ajustes. Los informes anteriores siguen disponibles.</div></div>
+                <div style="height:40px;padding:0 16px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Reintentar</div>
+              </div>
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+                <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Potencial de ahorro detectado</div><div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#22C55E">110,10 €<span style="font:400 15px/1 Inter,sans-serif;color:#6B7280"> /mes</span></div></div>
+                <div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF;max-width:260px">Del último informe disponible, semana 36. Equivale a 1.321,20 € al año.</div>
+              </div>
+              <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+                <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280">Semana 36 · 1–7 sep 2026</div>
+                <div style="font:600 24px/1.3 Inter,sans-serif;color:#F2F4F7">Semana cara por un solo motivo: el viaje. Sin él, habrías cerrado un 12 % por debajo de tu media.</div>
+                <sc-for list="{{ hallazgos }}" as="h" hint-placeholder-count="4">
+                  <div style="display:flex;gap:12px;padding:14px 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                    <div style="width:6px;border-radius:999px;background:#6E56F8;flex:none"></div>
+                    <div><div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7;margin-bottom:6px">{{ h.t }}</div><div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF">{{ h.d }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">390 · MÓVIL</div>
+        <div style="width:390px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;position:relative">
+          <div style="padding:20px 16px 100px 16px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Análisis IA</div>
+              <div style="height:24px;padding:0 10px;border-radius:999px;background:#22C55E1F;color:#22C55E;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif"><span style="width:6px;height:6px;border-radius:999px;background:#22C55E"></span>Conectado</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="height:24px;padding:0 10px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Llama 3.1 · local</div>
+              <div style="font:400 13px/1.5 Inter,sans-serif;color:#6B7280">Generado hace 2 h</div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Potencial de ahorro</div>
+              <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#22C55E">110,10 €</div>
+              <div style="font:400 13px/1.5 Inter,sans-serif;color:#6B7280">al mes · 1.321,20 € al año</div>
+            </div>
+            <div style="background:#131519;border:1px solid #6E56F8;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px">
+              <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280">Semana 36 · 1–7 sep</div>
+              <div style="font:600 24px/1.3 Inter,sans-serif;color:#F2F4F7">Semana cara por un solo motivo: el viaje.</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ hallazgos }}" as="h" hint-placeholder-count="4">
+                  <div style="padding:12px 14px;border-radius:8px;background:#1B1E24;border-left:3px solid #6E56F8">
+                    <div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7;margin-bottom:6px">{{ h.t }}</div>
+                    <div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF">{{ h.d }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="height:1px;background:#262A31"></div>
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Recomendaciones</div>
+              <sc-for list="{{ recos }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                  <div style="flex:1;font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">{{ r.t }}</div>
+                  <div class="num" style="font:600 15px/1 Inter,sans-serif;color:#22C55E;white-space:nowrap">{{ r.imp }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="height:48px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">Regenerar análisis</div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:76px;background:#131519;border-top:1px solid #262A31;display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+            <sc-for list="{{ tabbarIA }}" as="t" hint-placeholder-count="5">
+              <div style="min-width:44px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:{{ t.fg }}">
+                <div style="width:18px;height:18px;display:flex">{{ t.icon }}</div>
+                <div style="font:500 13px/1 Inter,sans-serif">{{ t.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">5 · Calculadora</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Panel lateral en escritorio, hoja modal en móvil · nunca pierde el contexto</div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">1440 · ESCRITORIO — PANEL DE 400px SOBRE EL DASHBOARD</div>
+        <div style="width:1440px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:240px;flex:none;opacity:0.45"><dc-import name="Sidebar" active="dashboard" hint-size="240px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:24px;opacity:0.45">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Septiembre 2026</div>
+              <div style="display:flex;gap:10px"><div style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #262A31;background:#131519;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Calculadora</div><div style="height:40px;padding:0 18px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">+ Nuevo evento</div></div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Balance del mes</div><div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#F2F4F7">+868,31 €</div></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+              <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:6px;height:6px;border-radius:999px;background:{{ k.color }}"></div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">{{ k.label }}</div></div>
+                  <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">{{ k.val }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;height:220px"></div>
+          </div>
+          <div style="width:400px;flex:none;background:#131519;border-left:1px solid #262A31;display:flex;flex-direction:column">
+            <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #262A31">
+              <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Calculadora</div>
+              <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:400 15px/1 Inter,sans-serif">✕</div>
+            </div>
+            <div style="padding:16px 24px 0 24px">
+              <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+                <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">Estándar</div>
+                <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Financiera</div>
+              </div>
+            </div>
+            <div style="padding:24px;display:flex;flex-direction:column;gap:20px;flex:1">
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding:20px;border-radius:12px;background:#1B1E24;border:1px solid #262A31">
+                <div class="num" style="font:400 15px/1 Inter,sans-serif;color:#6B7280">1.884,37 ÷ 30 =</div>
+                <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#F2F4F7">62,81</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                <sc-for list="{{ calcKeys }}" as="c" hint-placeholder-count="20">
+                  <div style="grid-column:{{ c.span }};height:56px;border-radius:8px;background:{{ c.bg }};color:{{ c.fg }};display:flex;align-items:center;justify-content:center;font:500 24px/1 Inter,sans-serif">{{ c.k }}</div>
+                </sc-for>
+              </div>
+              <div style="height:1px;background:#262A31"></div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Historial</div><div style="font:400 13px/1 Inter,sans-serif;color:#6E56F8">Borrar</div></div>
+                <sc-for list="{{ calcHist }}" as="h" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                    <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">{{ h.op }}</div>
+                    <div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">{{ h.res }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border-top:1px solid #262A31;padding:16px 24px">
+              <div style="height:44px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">Usar 62,81 en nuevo evento</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">768 · TABLET — PESTAÑA FINANCIERA</div>
+        <div style="width:400px;background:#131519;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #262A31">
+            <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Calculadora</div>
+            <div style="width:32px;height:32px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#9BA3AF;display:flex;align-items:center;justify-content:center;font:400 15px/1 Inter,sans-serif">✕</div>
+          </div>
+          <div style="padding:16px 24px 0 24px">
+            <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Estándar</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">Financiera</div>
+            </div>
+          </div>
+          <div style="padding:24px;display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;gap:8px">
+              <div style="height:32px;padding:0 14px;border-radius:999px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Interés compuesto</div>
+              <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">% de importe</div>
+              <div style="height:32px;padding:0 14px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Dividir</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+              <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Capital inicial</div><div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">4.200,00 €</div></div>
+              <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Aportación mensual</div><div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #6E56F8;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">250,00 €</div></div>
+              <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Años</div><div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">18</div></div>
+              <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Rentabilidad anual</div><div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">6,8 %</div></div>
+            </div>
+            <div style="padding:20px;border-radius:12px;background:#1B1E24;border:1px solid #262A31;display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF">Valor final estimado</div>
+              <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#38BDF8">122.847,36 €</div>
+              <div style="display:flex;gap:20px;margin-top:6px">
+                <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Aportado</div><div class="num" style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">58.200,00 €</div></div>
+                <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Intereses</div><div class="num" style="font:500 15px/1 Inter,sans-serif;color:#22C55E">64.647,36 €</div></div>
+              </div>
+            </div>
+            <div style="height:1px;background:#262A31"></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Historial</div>
+              <sc-for list="{{ calcHist }}" as="h" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                  <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">{{ h.op }}</div>
+                  <div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">{{ h.res }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">390 · MÓVIL — HOJA MODAL</div>
+        <div style="width:390px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="height:96px;background:#0A0B0D;opacity:0.5;padding:20px 16px"><div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Septiembre 2026</div></div>
+          <div style="background:#131519;border-top:1px solid #262A31;border-radius:12px 12px 0 0;padding:12px 16px 20px 16px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:40px;height:4px;border-radius:999px;background:#262A31;align-self:center"></div>
+            <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+              <div style="flex:1;text-align:center;padding:10px 0;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">Estándar</div>
+              <div style="flex:1;text-align:center;padding:10px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Financiera</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding:18px;border-radius:12px;background:#1B1E24;border:1px solid #262A31">
+              <div class="num" style="font:400 15px/1 Inter,sans-serif;color:#6B7280">1.884,37 ÷ 30 =</div>
+              <div class="num" style="font:700 40px/1.1 Inter,sans-serif;color:#F2F4F7">62,81</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+              <sc-for list="{{ calcKeys }}" as="c" hint-placeholder-count="20">
+                <div style="grid-column:{{ c.span }};height:60px;border-radius:8px;background:{{ c.bg }};color:{{ c.fg }};display:flex;align-items:center;justify-content:center;font:500 24px/1 Inter,sans-serif">{{ c.k }}</div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Historial</div>
+              <sc-for list="{{ calcHist }}" as="h" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                  <div class="num" style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">{{ h.op }}</div>
+                  <div class="num" style="font:600 15px/1 Inter,sans-serif;color:#F2F4F7">{{ h.res }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="height:48px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">Usar 62,81 en nuevo evento</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">6 · Ajustes</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Fichero, modelo local, categorías y formato</div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">1440 · ESCRITORIO</div>
+        <div style="width:1440px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:240px;flex:none"><dc-import name="Sidebar" active="ajustes" hint-size="240px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;padding:28px 32px 32px 32px;display:flex;flex-direction:column;gap:32px">
+            <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Ajustes</div>
+            <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px;align-items:start">
+
+              <div style="grid-column:span 7;display:flex;flex-direction:column;gap:20px">
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Fichero de datos</div>
+                  <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31">
+                    <div class="num" style="flex:1;font:400 13px/1.4 Inter,sans-serif;color:#9BA3AF">/Users/marta/Documentos/Fintrack/fintrack.db</div>
+                    <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">Cambiar</div>
+                  </div>
+                  <div style="display:flex;gap:24px">
+                    <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Tamaño</div><div class="num" style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">2,41 MB</div></div>
+                    <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Movimientos</div><div class="num" style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">1.847</div></div>
+                    <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:6px">Última copia</div><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">8 sep, 23:14</div></div>
+                  </div>
+                  <div style="display:flex;gap:10px">
+                    <div style="height:40px;padding:0 16px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Crear copia de seguridad</div>
+                    <div style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Restaurar desde archivo</div>
+                  </div>
+                </div>
+
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Ollama</div>
+                    <div style="height:24px;padding:0 10px;border-radius:999px;background:#22C55E1F;color:#22C55E;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif"><span style="width:6px;height:6px;border-radius:999px;background:#22C55E"></span>Conectado · 240 ms</div>
+                  </div>
+                  <div style="display:flex;gap:16px">
+                    <div style="flex:1"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Modelo</div><div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">llama3.1:8b-instruct<span style="color:#6B7280">▾</span></div></div>
+                    <div style="flex:1"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Endpoint</div><div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">http://127.0.0.1:11434</div></div>
+                  </div>
+                  <div style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:inline-flex;align-items:center;align-self:flex-start;font:500 15px/1 Inter,sans-serif">Probar conexión</div>
+                </div>
+
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Categorías</div>
+                    <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">+ Añadir categoría</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column">
+                    <sc-for list="{{ ajustesCats }}" as="c" hint-placeholder-count="6">
+                      <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid #1B1E24">
+                        <div style="width:28px;height:28px;border-radius:8px;background:{{ c.c }}1F;border:1px solid {{ c.c }};flex:none"></div>
+                        <div style="flex:1;font:500 15px/1 Inter,sans-serif;color:#F2F4F7">{{ c.name }}</div>
+                        <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ c.n }}</div>
+                        <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">Editar</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+
+              <div style="grid-column:span 5;display:flex;flex-direction:column;gap:20px">
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Ingresos recurrentes</div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid #1B1E24"><div><div style="font:500 15px/1.3 Inter,sans-serif;color:#F2F4F7">Nómina Grupo Aldara</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:4px">Mensual · día 5</div></div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#22C55E">2.412,68 €</div></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid #1B1E24"><div><div style="font:500 15px/1.3 Inter,sans-serif;color:#F2F4F7">Clases particulares</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:4px">Mensual · variable</div></div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#22C55E">340,00 €</div></div>
+                  <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">+ Añadir ingreso recurrente</div>
+                </div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Presupuesto mensual objetivo</div>
+                  <div class="num" style="height:56px;padding:0 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:600 24px/1 Inter,sans-serif">1.750,00 €</div>
+                  <div style="font:400 13px/1.6 Inter,sans-serif;color:#6B7280">Sobre unos ingresos medios de 2.557,13 €, deja una tasa de ahorro objetivo del 31,6 %.</div>
+                </div>
+                <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Moneda y formato</div>
+                  <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Moneda</div><div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">Euro · 1.234,56 €<span style="color:#6B7280">▾</span></div></div>
+                  <div><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Formato de fecha</div><div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px"><div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">DD/MM/AAAA</div><div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">AAAA-MM-DD</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">768 · TABLET</div>
+        <div style="width:768px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;align-items:stretch">
+          <div style="width:64px;flex:none"><dc-import name="Sidebar" active="ajustes" collapsed="{{ true }}" hint-size="64px,100%"></dc-import></div>
+          <div style="flex:1;min-width:0;padding:24px;display:flex;flex-direction:column;gap:20px">
+            <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Ajustes</div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Fichero de datos</div>
+              <div class="num" style="padding:12px 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;font:400 13px/1.4 Inter,sans-serif;color:#9BA3AF">/Users/marta/Documentos/Fintrack/fintrack.db</div>
+              <div style="display:flex;gap:10px"><div style="height:40px;padding:0 16px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Copia de seguridad</div><div style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Restaurar</div></div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Ollama</div><div style="height:24px;padding:0 10px;border-radius:999px;background:#22C55E1F;color:#22C55E;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif"><span style="width:6px;height:6px;border-radius:999px;background:#22C55E"></span>Conectado</div></div>
+              <div style="display:flex;gap:12px">
+                <div style="flex:1"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Modelo</div><div style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">llama3.1:8b<span style="color:#6B7280">▾</span></div></div>
+                <div style="flex:1"><div style="font:500 15px/1 Inter,sans-serif;color:#9BA3AF;margin-bottom:8px">Endpoint</div><div class="num" style="height:44px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">127.0.0.1:11434</div></div>
+              </div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Categorías</div><div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">+ Añadir</div></div>
+              <sc-for list="{{ ajustesCats }}" as="c" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #1B1E24">
+                  <div style="width:28px;height:28px;border-radius:8px;background:{{ c.c }}1F;border:1px solid {{ c.c }};flex:none"></div>
+                  <div style="flex:1;font:500 15px/1 Inter,sans-serif;color:#F2F4F7">{{ c.name }}</div>
+                  <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ c.n }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:16px">
+              <div style="flex:1;background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7;margin-bottom:12px">Presupuesto objetivo</div><div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">1.750,00 €</div></div>
+              <div style="flex:1;background:#131519;border:1px solid #262A31;border-radius:12px;padding:20px"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7;margin-bottom:12px">Moneda</div><div style="font:400 15px/1 Inter,sans-serif;color:#9BA3AF">Euro · 1.234,56 € · DD/MM/AAAA</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280;letter-spacing:0.08em">390 · MÓVIL</div>
+        <div style="width:390px;background:#0A0B0D;border:1px solid #262A31;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;position:relative">
+          <div style="padding:20px 16px 100px 16px;display:flex;flex-direction:column;gap:16px">
+            <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">Ajustes</div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Fichero de datos</div>
+              <div class="num" style="padding:12px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;font:400 13px/1.5 Inter,sans-serif;color:#9BA3AF;word-break:break-all">/Users/marta/Documentos/Fintrack/fintrack.db</div>
+              <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">2,41 MB · última copia 8 sep, 23:14</div>
+              <div style="height:48px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">Crear copia de seguridad</div>
+              <div style="height:48px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">Restaurar desde archivo</div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Ollama</div><div style="height:24px;padding:0 10px;border-radius:999px;background:#22C55E1F;color:#22C55E;display:flex;align-items:center;gap:6px;font:500 13px/1 Inter,sans-serif"><span style="width:6px;height:6px;border-radius:999px;background:#22C55E"></span>Conectado</div></div>
+              <div style="height:48px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;justify-content:space-between;font:400 15px/1 Inter,sans-serif">llama3.1:8b-instruct<span style="color:#6B7280">▾</span></div>
+              <div class="num" style="height:48px;padding:0 14px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:400 15px/1 Inter,sans-serif">http://127.0.0.1:11434</div>
+              <div style="height:48px;border-radius:8px;border:1px solid #262A31;background:#1B1E24;color:#F2F4F7;display:flex;align-items:center;justify-content:center;font:500 15px/1 Inter,sans-serif">Probar conexión</div>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Categorías</div><div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">+ Añadir</div></div>
+              <sc-for list="{{ ajustesCats }}" as="c" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #1B1E24">
+                  <div style="width:28px;height:28px;border-radius:8px;background:{{ c.c }}1F;border:1px solid {{ c.c }};flex:none"></div>
+                  <div style="flex:1;font:500 15px/1 Inter,sans-serif;color:#F2F4F7">{{ c.name }}</div>
+                  <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ c.n }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#131519;border:1px solid #262A31;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Presupuesto mensual objetivo</div>
+              <div class="num" style="height:56px;padding:0 16px;border-radius:8px;background:#1B1E24;border:1px solid #262A31;color:#F2F4F7;display:flex;align-items:center;font:600 24px/1 Inter,sans-serif">1.750,00 €</div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:76px;background:#131519;border-top:1px solid #262A31;display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+            <sc-for list="{{ tabbarAjustes }}" as="t" hint-placeholder-count="5">
+              <div style="min-width:44px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:{{ t.fg }}">
+                <div style="width:18px;height:18px;display:flex">{{ t.icon }}</div>
+                <div style="font:500 13px/1 Inter,sans-serif">{{ t.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">7 · Componentes</div>
+      <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">Normal · hover · activo · foco · deshabilitado · error</div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;max-width:2320px">
+
+      <div style="width:660px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Fila de movimiento</div>
+        <sc-for list="{{ rowStates }}" as="s" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:96px;flex:none;font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ s.label }}</div>
+            <div style="flex:1;display:flex;align-items:center;gap:14px;padding:10px 12px;border-radius:8px;background:{{ s.bg }};border:1px solid {{ s.bd }};opacity:{{ s.op }}">
+              <div style="width:32px;height:32px;border-radius:999px;flex:none;background:#F45B5B1F;color:#F45B5B;display:flex;align-items:center;justify-content:center;font:600 13px/1 Inter,sans-serif">ME</div>
+              <div style="flex:1;min-width:0">
+                <div style="font:500 15px/1.3 Inter,sans-serif;color:#F2F4F7">Mercadona</div>
+                <div style="font:400 13px/1.4 Inter,sans-serif;color:{{ s.meta }}">{{ s.metaText }}</div>
+              </div>
+              <div class="num" style="font:500 15px/1 Inter,sans-serif;color:#F45B5B">−72,41 €</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="width:660px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Tarjeta KPI con sparkline</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <sc-for list="{{ kpiStates }}" as="s" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ s.label }}</div>
+              <div style="background:{{ s.bg }};border:1px solid {{ s.bd }};border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;opacity:{{ s.op }}">
+                <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;background:#F45B5B"></div><div style="font:500 13px/1 Inter,sans-serif;color:#9BA3AF">Gastos</div></div>
+                <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#F2F4F7">1.884,37 €</div>
+                <svg width="100%" height="24" viewBox="0 0 100 28" preserveAspectRatio="none" fill="none"><polyline points="0,9 20,14 40,11 60,19 80,12 100,15" fill="none" stroke="#F45B5B" stroke-width="2" stroke-linecap="round"></polyline></svg>
+                <div style="font:400 13px/1 Inter,sans-serif;color:{{ s.foot }}">{{ s.footText }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="width:520px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Chip de categoría</div>
+        <sc-for list="{{ chipStates }}" as="s" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:110px;flex:none;font:400 13px/1 Inter,sans-serif;color:#6B7280">{{ s.label }}</div>
+            <div style="height:32px;padding:0 14px;border-radius:999px;background:{{ s.bg }};border:1px solid {{ s.bd }};color:{{ s.fg }};display:inline-flex;align-items:center;font:500 13px/1 Inter,sans-serif;opacity:{{ s.op }};box-shadow:{{ s.ring }}">Alimentación</div>
+            <div style="font:400 13px/1 Inter,sans-serif;color:{{ s.noteC }}">{{ s.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="width:520px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Segmented control</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:8px">Normal · opción 3 activa</div>
+            <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Día</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Semana</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Mes</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Año</div>
+            </div>
+          </div>
+          <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:8px">Hover sobre «Semana»</div>
+            <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Día</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#262A31;color:#F2F4F7;font:500 15px/1 Inter,sans-serif">Semana</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Mes</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Año</div>
+            </div>
+          </div>
+          <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:8px">Foco por teclado</div>
+            <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #6E56F8;border-radius:8px;box-shadow:0 0 0 3px #6E56F833">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Día</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Semana</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Mes</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Año</div>
+            </div>
+          </div>
+          <div><div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:8px">Deshabilitado · «Año» sin datos suficientes</div>
+            <div style="display:flex;padding:3px;gap:3px;background:#1B1E24;border:1px solid #262A31;border-radius:8px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Día</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#9BA3AF;font:500 15px/1 Inter,sans-serif">Semana</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;background:#6E56F8;color:#FFFFFF;font:500 15px/1 Inter,sans-serif">Mes</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:6px;color:#4B5563;font:500 15px/1 Inter,sans-serif">Año</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:520px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Input de importe</div>
+        <sc-for list="{{ inputStates }}" as="s" hint-placeholder-count="6">
+          <div>
+            <div style="font:400 13px/1 Inter,sans-serif;color:#6B7280;margin-bottom:8px">{{ s.label }}</div>
+            <div style="display:flex;align-items:center;gap:12px;height:64px;padding:0 18px;border-radius:8px;background:{{ s.bg }};border:1px solid {{ s.bd }};box-shadow:{{ s.ring }};opacity:{{ s.op }}">
+              <div class="num" style="font:600 24px/1 Inter,sans-serif;color:#6B7280">€</div>
+              <div class="num" style="font:700 40px/1 Inter,sans-serif;color:{{ s.fg }}">{{ s.val }}</div>
+            </div>
+            <sc-if value="{{ s.err }}" hint-placeholder-val="{{ false }}"><div style="font:400 13px/1.4 Inter,sans-serif;color:#F45B5B;margin-top:8px">{{ s.err }}</div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="width:520px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Badge de tipo</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <div style="height:26px;padding:0 10px;border-radius:999px;background:#22C55E1F;color:#22C55E;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Ingreso</div>
+          <div style="height:26px;padding:0 10px;border-radius:999px;background:#F45B5B1F;color:#F45B5B;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Gasto</div>
+          <div style="height:26px;padding:0 10px;border-radius:999px;background:#38BDF81F;color:#38BDF8;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Inversión</div>
+          <div style="height:26px;padding:0 10px;border-radius:999px;background:#FBBF241F;color:#FBBF24;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Ahorro</div>
+          <div style="height:26px;padding:0 10px;border-radius:999px;background:#6E56F81F;color:#6E56F8;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Suscripción</div>
+          <div style="height:26px;padding:0 10px;border-radius:999px;background:#1B1E24;border:1px solid #262A31;color:#9BA3AF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Domiciliación</div>
+        </div>
+        <div style="height:1px;background:#262A31"></div>
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Skeleton de carga</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ skeletonRows }}" as="k" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:14px;padding:10px 0">
+              <div style="width:32px;height:32px;border-radius:999px;flex:none;background:linear-gradient(90deg,#1B1E24 25%,#262A31 50%,#1B1E24 75%);background-size:200% 100%;animation:shim 1.6s linear infinite"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                <div style="height:12px;width:{{ k.w1 }};border-radius:999px;background:linear-gradient(90deg,#1B1E24 25%,#262A31 50%,#1B1E24 75%);background-size:200% 100%;animation:shim 1.6s linear infinite"></div>
+                <div style="height:10px;width:{{ k.w2 }};border-radius:999px;background:linear-gradient(90deg,#1B1E24 25%,#262A31 50%,#1B1E24 75%);background-size:200% 100%;animation:shim 1.6s linear infinite"></div>
+              </div>
+              <div style="height:14px;width:84px;border-radius:999px;background:linear-gradient(90deg,#1B1E24 25%,#262A31 50%,#1B1E24 75%);background-size:200% 100%;animation:shim 1.6s linear infinite"></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="width:660px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Tarjeta de informe IA</div>
+        <div style="background:#1B1E24;border:1px solid #6E56F8;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="font:500 13px/1 Inter,sans-serif;color:#6B7280">Semana 36 · 1–7 sep 2026</div>
+          <div style="font:600 24px/1.3 Inter,sans-serif;color:#F2F4F7">Semana cara por un solo motivo: el viaje.</div>
+          <div style="padding:12px 14px;border-radius:8px;background:#131519;border-left:3px solid #6E56F8"><div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7;margin-bottom:6px">Ocio se ha triplicado</div><div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF">406,60 € frente a una media de 163,80 €.</div></div>
+          <div style="display:flex;align-items:center;gap:16px;padding:12px 14px;border-radius:8px;background:#131519;border:1px solid #262A31"><div style="flex:1;font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">Cancelar la cuota de gimnasio sin uso</div><div class="num" style="font:600 15px/1 Inter,sans-serif;color:#22C55E">+34,90 €/mes</div></div>
+        </div>
+        <div style="background:#1B1E24;border:1px solid #262A31;border-radius:12px;padding:20px;display:flex;align-items:center;gap:14px">
+          <div style="width:16px;height:16px;border-radius:999px;border:2px solid #262A31;border-top-color:#6E56F8;animation:pulse 1.4s ease-in-out infinite"></div>
+          <div style="flex:1"><div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">El modelo está pensando…</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#6B7280;margin-top:4px">42 movimientos leídos · 11 s</div></div>
+        </div>
+        <div style="background:#1B1E24;border:1px solid #F45B5B;border-radius:12px;padding:20px;display:flex;align-items:center;gap:14px">
+          <div style="flex:1"><div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7">No se pudo generar el informe</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#9BA3AF;margin-top:4px">Ollama dejó de responder a los 30 s. El informe anterior sigue disponible.</div></div>
+          <div style="height:36px;padding:0 14px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 13px/1 Inter,sans-serif">Reintentar</div>
+        </div>
+      </div>
+
+      <div style="width:520px;background:#131519;border:1px solid #262A31;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="font:500 15px/1 Inter,sans-serif;color:#F2F4F7">Estado vacío</div>
+        <div style="border:1px dashed #262A31;border-radius:12px;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;background:#1B1E24">
+          <div style="display:flex;align-items:flex-end;gap:6px;height:52px">
+            <div style="width:14px;height:20px;border-radius:3px;background:#262A31"></div>
+            <div style="width:14px;height:34px;border-radius:3px;background:#262A31"></div>
+            <div style="width:14px;height:52px;border-radius:3px;background:#6E56F8"></div>
+            <div style="width:14px;height:28px;border-radius:3px;background:#262A31"></div>
+          </div>
+          <div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7;text-align:center">Todavía no hay movimientos en septiembre</div>
+          <div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF;text-align:center;max-width:300px">Registra el primero y el dashboard empezará a comparar el mes con los anteriores.</div>
+          <div style="height:40px;padding:0 18px;border-radius:8px;background:#6E56F8;color:#FFFFFF;display:flex;align-items:center;font:500 15px/1 Inter,sans-serif">Nuevo evento</div>
+        </div>
+        <div style="border:1px dashed #262A31;border-radius:12px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;background:#1B1E24">
+          <div style="width:40px;height:40px;border-radius:999px;border:2px solid #262A31"></div>
+          <div style="font:500 15px/1.4 Inter,sans-serif;color:#F2F4F7;text-align:center">Ningún resultado con estos filtros</div>
+          <div style="font:400 13px/1.6 Inter,sans-serif;color:#9BA3AF;text-align:center">Prueba a ampliar el rango o a quitar categorías.</div>
+          <div style="font:500 13px/1 Inter,sans-serif;color:#6E56F8">Limpiar filtros</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const C = {bg:'#0A0B0D',s:'#131519',se:'#1B1E24',b:'#262A31',t1:'#F2F4F7',t2:'#9BA3AF',t3:'#6B7280',ac:'#6E56F8',in:'#22C55E',out:'#F45B5B',inv:'#38BDF8',sav:'#FBBF24'};
+class Component extends DCLogic {
+  renderVals() {
+    const sv = (ch) => React.createElement('svg',{width:18,height:18,viewBox:'0 0 18 18',fill:'none',stroke:'currentColor',strokeWidth:1.6,strokeLinecap:'round'},ch);
+    const tabIcons = {
+      dashboard: sv([React.createElement('rect',{key:1,x:2,y:2,width:6,height:6,rx:1.5}),React.createElement('rect',{key:2,x:10,y:2,width:6,height:6,rx:1.5}),React.createElement('rect',{key:3,x:2,y:10,width:6,height:6,rx:1.5}),React.createElement('rect',{key:4,x:10,y:10,width:6,height:6,rx:1.5})]),
+      movimientos: sv([React.createElement('line',{key:1,x1:3,y1:4.5,x2:15,y2:4.5}),React.createElement('line',{key:2,x1:3,y1:9,x2:15,y2:9}),React.createElement('line',{key:3,x1:3,y1:13.5,x2:11,y2:13.5})]),
+      analitica: sv([React.createElement('rect',{key:1,x:2.5,y:9,width:3.5,height:6.5,rx:1}),React.createElement('rect',{key:2,x:7.5,y:5,width:3.5,height:10.5,rx:1}),React.createElement('rect',{key:3,x:12.5,y:2.5,width:3.5,height:13,rx:1})]),
+      ia: sv([React.createElement('circle',{key:1,cx:9,cy:9,r:6.5}),React.createElement('circle',{key:2,cx:9,cy:9,r:2.2})]),
+      ajustes: sv([React.createElement('circle',{key:1,cx:9,cy:9,r:3}),React.createElement('line',{key:2,x1:9,y1:1.5,x2:9,y2:4}),React.createElement('line',{key:3,x1:9,y1:14,x2:9,y2:16.5}),React.createElement('line',{key:4,x1:1.5,y1:9,x2:4,y2:9}),React.createElement('line',{key:5,x1:14,y1:9,x2:16.5,y2:9})])
+    };
+    const mkTabs = (act) => [['dashboard','Inicio'],['movimientos','Movim.'],['analitica','Analítica'],['ia','IA'],['ajustes','Ajustes']]
+      .map(([id,label]) => ({id,label,icon:tabIcons[id],fg:id===act?'#F2F4F7':'#6B7280'}));
+    return {
+      C,
+      tabbar: mkTabs('dashboard'),
+      tabbarAnalitica: mkTabs('analitica'),
+      tabbarIA: mkTabs('ia'),
+      tabbarAjustes: mkTabs('ajustes'),
+      swatchesBase: [
+        {name:'Fondo base', hex:'#0A0B0D'},{name:'Superficie', hex:'#131519'},
+        {name:'Elevada', hex:'#1B1E24'},{name:'Borde', hex:'#262A31'},
+        {name:'Texto 1', hex:'#F2F4F7'},{name:'Texto 2', hex:'#9BA3AF'},
+        {name:'Texto 3', hex:'#6B7280'},{name:'Acento', hex:'#6E56F8'}
+      ],
+      swatchesSem: [
+        {name:'Ingreso', hex:'#22C55E'},{name:'Gasto', hex:'#F45B5B'},
+        {name:'Inversión', hex:'#38BDF8'},{name:'Ahorro', hex:'#FBBF24'},
+        {name:'Acento / acción', hex:'#6E56F8'}
+      ],
+      kpis: [
+        {label:'Ingresos', val:'2.752,68 €', pct:'100 % de ingresos', color:C.in, pts:'0,20 20,15 40,17 60,10 80,13 100,7'},
+        {label:'Gastos', val:'1.884,37 €', pct:'68,5 % de ingresos', color:C.out, pts:'0,9 20,14 40,11 60,19 80,12 100,15'},
+        {label:'Ahorro', val:'400,00 €', pct:'14,5 % de ingresos', color:C.sav, pts:'0,21 20,19 40,16 60,17 80,13 100,10'},
+        {label:'Inversión', val:'250,00 €', pct:'9,1 % de ingresos', color:C.inv, pts:'0,22 20,21 40,18 60,16 80,14 100,11'}
+      ],
+      semanas: [
+        {label:'S1', total:'959,28', segs:[{h:130,c:'#F45B5B'},{h:20,c:'#C24B4B'},{h:6,c:'#8F3A3A'},{h:4,c:'#5C2A2A'}]},
+        {label:'S2', total:'203,86', segs:[{h:0,c:'#F45B5B'},{h:24,c:'#C24B4B'},{h:10,c:'#8F3A3A'},{h:0,c:'#5C2A2A'}]},
+        {label:'S3', total:'212,55', segs:[{h:12,c:'#F45B5B'},{h:16,c:'#C24B4B'},{h:7,c:'#8F3A3A'},{h:0,c:'#5C2A2A'}]},
+        {label:'S4', total:'436,18', segs:[{h:7,c:'#F45B5B'},{h:15,c:'#C24B4B'},{h:45,c:'#8F3A3A'},{h:7,c:'#5C2A2A'}]},
+        {label:'S5', total:'72,50', segs:[{h:0,c:'#F45B5B'},{h:12,c:'#C24B4B'},{h:0,c:'#8F3A3A'},{h:0,c:'#5C2A2A'}]}
+      ],
+      donut: [
+        {name:'Fijo', val:'893,80 €', pct:'47,4 %', c:'#F45B5B'},
+        {name:'Variable', val:'517,99 €', pct:'27,5 %', c:'#C24B4B'},
+        {name:'Ocio', val:'406,60 €', pct:'21,6 %', c:'#8F3A3A'},
+        {name:'Suscripciones', val:'65,98 €', pct:'3,5 %', c:'#5C2A2A'}
+      ],
+      donutBg: 'conic-gradient(#F45B5B 0% 47.4%, #C24B4B 47.4% 74.9%, #8F3A3A 74.9% 96.5%, #5C2A2A 96.5% 100%)',
+      proximos: [
+        {name:'Netflix Estándar', meta:'14 sep · Suscripción', amt:'13,99 €', dias:'en 5 días', c:C.out},
+        {name:'Spotify Premium', meta:'18 sep · Suscripción', amt:'11,99 €', dias:'en 9 días', c:C.out},
+        {name:'Seguro del coche', meta:'25 sep · Domiciliación', amt:'47,32 €', dias:'en 16 días', c:C.out},
+        {name:'Alquiler Carrer de Sants', meta:'1 oct · Domiciliación', amt:'780,00 €', dias:'en 22 días', c:C.out},
+        {name:'Aportación MSCI World', meta:'1 oct · Inversión', amt:'250,00 €', dias:'en 22 días', c:C.inv}
+      ],
+      movs: [
+        {ini:'ME', c:'#F45B5B', name:'Mercadona', meta:'Alimentación · Variable · 8 sep', amt:'−72,41 €', ac:C.out},
+        {ini:'NÓ', c:'#22C55E', name:'Nómina Grupo Aldara', meta:'Ingreso · Transferencia · 5 sep', amt:'+2.412,68 €', ac:C.in},
+        {ini:'RE', c:'#F45B5B', name:'Repsol El Prat', meta:'Transporte · Variable · 4 sep', amt:'−61,40 €', ac:C.out},
+        {ini:'MS', c:'#38BDF8', name:'Aportación MSCI World', meta:'Inversión · Indexa · 3 sep', amt:'250,00 €', ac:C.inv},
+        {ini:'SP', c:'#F45B5B', name:'Spotify Premium', meta:'Suscripción · Tarjeta ·5417 · 2 sep', amt:'−11,99 €', ac:C.out},
+        {ini:'AL', c:'#F45B5B', name:'Alquiler Carrer de Sants', meta:'Hogar · Fijo · 1 sep', amt:'−780,00 €', ac:C.out}
+      ],
+      catRows: [
+        {cat:'Vivienda', n:'3', total:'893,80 €', pg:'47,4 %', pi:'32,5 %', med:'297,93 €', var:'+0,4 %', vc:C.t2, bar:'47.4%'},
+        {cat:'Ocio y viajes', n:'6', total:'406,60 €', pg:'21,6 %', pi:'14,8 %', med:'67,77 €', var:'+148,3 %', vc:C.out, bar:'21.6%'},
+        {cat:'Alimentación', n:'9', total:'371,26 €', pg:'19,7 %', pi:'13,5 %', med:'41,25 €', var:'−6,2 %', vc:C.in, bar:'19.7%'},
+        {cat:'Transporte', n:'4', total:'146,73 €', pg:'7,8 %', pi:'5,3 %', med:'36,68 €', var:'−11,4 %', vc:C.in, bar:'7.8%'},
+        {cat:'Suscripciones', n:'3', total:'65,98 €', pg:'3,5 %', pi:'2,4 %', med:'21,99 €', var:'0,0 %', vc:C.t3, bar:'3.5%'}
+      ],
+      meses: [
+        {m:'Abr', i:139, g:95, v:14, ti:'2.412,68', tg:'1.640,22'},
+        {m:'May', i:139, g:99, v:14, ti:'2.412,68', tg:'1.712,90'},
+        {m:'Jun', i:159, g:115, v:14, ti:'2.752,68', tg:'1.988,45'},
+        {m:'Jul', i:139, g:129, v:14, ti:'2.412,68', tg:'2.241,07'},
+        {m:'Ago', i:150, g:101, v:14, ti:'2.598,40', tg:'1.742,18'},
+        {m:'Sep', i:159, g:109, v:14, ti:'2.752,68', tg:'1.884,37'}
+      ],
+      hallazgos: [
+        {t:'Ocio se ha triplicado', d:'406,60 € frente a una media de 163,80 € en los tres meses anteriores. El 66 % procede de un único cargo: 268,50 € del viaje a Oporto (4–7 sep).'},
+        {t:'La compra semanal se ha estabilizado', d:'371,26 € en 9 movimientos, media de 41,25 €. Es un 6,2 % menos que en agosto y la tercera semana consecutiva por debajo de 95 € en Mercadona.'},
+        {t:'Dos suscripciones sin uso registrado', d:'Netflix (13,99 €) y una cuota de gimnasio (34,90 €) suman 48,89 € al mes, 586,68 € al año.'},
+        {t:'La aportación al indexado no ha subido desde marzo', d:'250,00 € mensuales constantes mientras los ingresos han crecido un 14,1 % en el mismo periodo.'}
+      ],
+      recos: [
+        {t:'Cancelar la cuota de gimnasio sin uso', imp:'+34,90 €/mes'},
+        {t:'Bajar Netflix a plan con anuncios', imp:'+7,00 €/mes'},
+        {t:'Subir la aportación al indexado a 320 €', imp:'−70,00 €/mes'},
+        {t:'Fijar tope de 180 € en ocio para octubre', imp:'+68,20 €/mes'}
+      ],
+      rowStates: [
+        {label:'Normal', bg:'transparent', bd:'transparent', op:1, meta:'#6B7280', metaText:'Alimentación · Variable · 8 sep'},
+        {label:'Hover', bg:'#1B1E24', bd:'#262A31', op:1, meta:'#9BA3AF', metaText:'Alimentación · Variable · 8 sep'},
+        {label:'Activo', bg:'#6E56F814', bd:'#6E56F8', op:1, meta:'#9BA3AF', metaText:'Alimentación · Variable · 8 sep'},
+        {label:'Foco', bg:'#1B1E24', bd:'#6E56F8', op:1, meta:'#9BA3AF', metaText:'Seleccionada con teclado'},
+        {label:'Deshabilitada', bg:'transparent', bd:'transparent', op:0.4, meta:'#6B7280', metaText:'Pendiente de conciliar'},
+        {label:'Error', bg:'#F45B5B14', bd:'#F45B5B', op:1, meta:'#F45B5B', metaText:'Importe duplicado con el 7 sep'}
+      ],
+      kpiStates: [
+        {label:'Normal', bg:'#131519', bd:'#262A31', op:1, foot:'#6B7280', footText:'68,5 % de ingresos'},
+        {label:'Hover', bg:'#1B1E24', bd:'#2F343D', op:1, foot:'#9BA3AF', footText:'68,5 % de ingresos'},
+        {label:'Activo', bg:'#1B1E24', bd:'#6E56F8', op:1, foot:'#9BA3AF', footText:'Filtrando por gastos'},
+        {label:'Foco', bg:'#131519', bd:'#6E56F8', op:1, foot:'#9BA3AF', footText:'68,5 % de ingresos'},
+        {label:'Deshabilitada', bg:'#131519', bd:'#262A31', op:0.4, foot:'#6B7280', footText:'Sin datos del periodo'},
+        {label:'Error', bg:'#131519', bd:'#F45B5B', op:1, foot:'#F45B5B', footText:'Faltan 3 movimientos por clasificar'}
+      ],
+      chipStates: [
+        {label:'Normal', bg:'#1B1E24', bd:'#262A31', fg:'#9BA3AF', op:1, ring:'none', note:'', noteC:'#6B7280'},
+        {label:'Hover', bg:'#262A31', bd:'#2F343D', fg:'#F2F4F7', op:1, ring:'none', note:'', noteC:'#6B7280'},
+        {label:'Activo', bg:'#6E56F8', bd:'#6E56F8', fg:'#FFFFFF', op:1, ring:'none', note:'', noteC:'#6B7280'},
+        {label:'Foco', bg:'#1B1E24', bd:'#6E56F8', fg:'#F2F4F7', op:1, ring:'0 0 0 3px #6E56F833', note:'', noteC:'#6B7280'},
+        {label:'Deshabilitado', bg:'#1B1E24', bd:'#262A31', fg:'#6B7280', op:0.45, ring:'none', note:'sin movimientos', noteC:'#6B7280'},
+        {label:'Error', bg:'#F45B5B14', bd:'#F45B5B', fg:'#F45B5B', op:1, ring:'none', note:'categoría eliminada', noteC:'#F45B5B'}
+      ],
+      inputStates: [
+        {label:'Normal', bg:'#1B1E24', bd:'#262A31', fg:'#6B7280', val:'0,00', ring:'none', op:1, err:''},
+        {label:'Foco · escribiendo', bg:'#1B1E24', bd:'#6E56F8', fg:'#F2F4F7', val:'72,41', ring:'0 0 0 3px #6E56F833', op:1, err:''},
+        {label:'Relleno · 5 dígitos', bg:'#1B1E24', bd:'#262A31', fg:'#F2F4F7', val:'12.480,55', ring:'none', op:1, err:''},
+        {label:'Deshabilitado', bg:'#131519', bd:'#262A31', fg:'#6B7280', val:'250,00', ring:'none', op:0.45, err:''},
+        {label:'Error', bg:'#1B1E24', bd:'#F45B5B', fg:'#F2F4F7', val:'0,00', ring:'none', op:1, err:'El importe tiene que ser mayor que cero.'}
+      ],
+      skeletonRows: [{w1:'62%',w2:'38%'},{w1:'48%',w2:'30%'},{w1:'70%',w2:'42%'}],
+      calcKeys: [
+        {k:'C',bg:'#1B1E24',fg:'#9BA3AF',span:'span 1'},{k:'±',bg:'#1B1E24',fg:'#9BA3AF',span:'span 1'},{k:'%',bg:'#1B1E24',fg:'#9BA3AF',span:'span 1'},{k:'÷',bg:'#6E56F81F',fg:'#6E56F8',span:'span 1'},
+        {k:'7',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'8',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'9',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'×',bg:'#6E56F81F',fg:'#6E56F8',span:'span 1'},
+        {k:'4',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'5',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'6',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'−',bg:'#6E56F81F',fg:'#6E56F8',span:'span 1'},
+        {k:'1',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'2',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'3',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'+',bg:'#6E56F81F',fg:'#6E56F8',span:'span 1'},
+        {k:'0',bg:'#1B1E24',fg:'#F2F4F7',span:'span 2'},{k:',',bg:'#1B1E24',fg:'#F2F4F7',span:'span 1'},{k:'=',bg:'#6E56F8',fg:'#FFFFFF',span:'span 1'}
+      ],
+      calcHist: [
+        {op:'1.884,37 ÷ 30', res:'62,81'},
+        {op:'780,00 × 12', res:'9.360,00'},
+        {op:'2.752,68 − 1.884,37', res:'868,31'},
+        {op:'21 % de 2.412,68', res:'506,66'}
+      ],
+      ajustesCats: [
+        {name:'Alimentación', c:'#F45B5B', n:'9 movimientos'},
+        {name:'Hogar', c:'#FBBF24', n:'3 movimientos'},
+        {name:'Transporte', c:'#38BDF8', n:'4 movimientos'},
+        {name:'Ocio', c:'#6E56F8', n:'6 movimientos'},
+        {name:'Salud', c:'#22C55E', n:'1 movimiento'},
+        {name:'Formación', c:'#9BA3AF', n:'0 movimientos'}
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

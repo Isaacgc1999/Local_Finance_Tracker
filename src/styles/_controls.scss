@@ -1,0 +1,232 @@
+// Controles nativos con las medidas y estados del handoff.
+// Botones, inputs, selects y textareas no son componentes: son elementos
+// nativos con estas clases (accesibilidad y foco gratis).
+@use 'typography' as t;
+
+// ── Foco visible universal ───────────────────────────────────────────────
+:focus-visible {
+  outline: none;
+  border-color: var(--ft-accent);
+  box-shadow: var(--ft-focus-ring);
+}
+
+// ── Tarjeta ──────────────────────────────────────────────────────────────
+.ft-card {
+  background: var(--ft-surface);
+  border: var(--ft-border-width) solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  padding: var(--ft-card-padding);
+}
+
+.ft-card__title {
+  @include t.ft-label;
+  color: var(--ft-text-1);
+}
+
+// ── Botones ──────────────────────────────────────────────────────────────
+.ft-btn {
+  @include t.ft-label;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ft-space-2);
+  height: var(--ft-button-h);
+  padding: 0 18px;
+  border-radius: var(--ft-radius-control);
+  border: var(--ft-border-width) solid transparent;
+  background: transparent;
+  color: var(--ft-text-1);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+
+  &:disabled {
+    opacity: var(--ft-opacity-disabled);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &--primary {
+    background: var(--ft-accent);
+    color: var(--ft-on-accent);
+    &:hover {
+      background: var(--ft-accent-hover);
+    }
+  }
+
+  &--secondary {
+    background: var(--ft-surface);
+    border-color: var(--ft-border);
+    padding: 0 16px;
+    &:hover {
+      background: var(--ft-surface-elevated);
+    }
+  }
+
+  // Secundario sobre superficie (barra inferior del formulario, modal)
+  &--elevated {
+    background: var(--ft-surface-elevated);
+    border-color: var(--ft-border);
+    &:hover {
+      background: var(--ft-border);
+    }
+  }
+
+  &--compact {
+    height: var(--ft-button-h-compact);
+    padding: 0 14px;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  // Botón de solo icono (32×32, r8, superficie + borde): «‹ ›», «✕», «=»
+  &--icon {
+    width: var(--ft-icon-button);
+    height: var(--ft-icon-button);
+    padding: 0;
+    background: var(--ft-surface);
+    border-color: var(--ft-border);
+    color: var(--ft-text-2);
+    &:hover {
+      background: var(--ft-surface-elevated);
+      color: var(--ft-text-1);
+    }
+  }
+}
+
+// Enlace de acción en acento («Ver los 31», «Limpiar», «Editar», «+ Añadir…»)
+.ft-link {
+  font: var(--ft-font-meta-strong);
+  color: var(--ft-accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  border-radius: var(--ft-radius-legend);
+  &:hover {
+    color: var(--ft-accent-hover);
+  }
+  &--label {
+    font: var(--ft-font-label);
+  }
+}
+
+// ── Campos ───────────────────────────────────────────────────────────────
+.ft-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ft-field__label {
+  @include t.ft-label;
+  color: var(--ft-text-2);
+
+  &-hint {
+    color: var(--ft-text-3);
+  }
+}
+
+.ft-field__error {
+  @include t.ft-meta(1.4);
+  color: var(--ft-expense);
+}
+
+.ft-input,
+.ft-select,
+.ft-textarea {
+  @include t.ft-body;
+  line-height: 1;
+  width: 100%;
+  height: var(--ft-control-h);
+  padding: 0 14px;
+  border-radius: var(--ft-radius-control);
+  background: var(--ft-surface-elevated);
+  border: var(--ft-border-width) solid var(--ft-border);
+  color: var(--ft-text-1);
+  color-scheme: dark;
+
+  &::placeholder {
+    color: var(--ft-text-3);
+  }
+
+  &:disabled {
+    opacity: var(--ft-opacity-disabled-control);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--ft-expense);
+  }
+}
+
+.ft-select {
+  appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z' fill='%236B7280'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+
+.ft-textarea {
+  height: var(--ft-textarea-h);
+  padding: 12px 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+// ── Separador ────────────────────────────────────────────────────────────
+.ft-divider {
+  height: 1px;
+  background: var(--ft-border);
+  border: 0;
+  margin: 0;
+}
+
+// ── Cifras ───────────────────────────────────────────────────────────────
+.num {
+  @include t.ft-num;
+}
+
+// ── Utilidades de color semántico ────────────────────────────────────────
+.ft-c-income {
+  color: var(--ft-income);
+}
+.ft-c-expense {
+  color: var(--ft-expense);
+}
+.ft-c-investment {
+  color: var(--ft-investment);
+}
+.ft-c-savings {
+  color: var(--ft-savings);
+}
+.ft-c-accent {
+  color: var(--ft-accent);
+}
+
+// ── Solo lectores de pantalla ────────────────────────────────────────────
+.ft-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ── Página (host de cada componente de ruta) ─────────────────────────────
+// Los custom elements son inline por defecto; esto los convierte en la
+// columna de secciones separadas 32px (24 / 20 en tablet y móvil).
+.ft-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ft-section-gap);
+  min-width: 0;
+}

@@ -1,0 +1,25 @@
+<div class="caja">
+  @if (variant() === 'sin-datos') {
+    <div class="barras" aria-hidden="true">
+      <span style="height: 20px"></span>
+      <span style="height: 34px"></span>
+      <span class="acento" style="height: 52px"></span>
+      <span style="height: 28px"></span>
+    </div>
+  } @else {
+    <div class="circulo" aria-hidden="true"></div>
+  }
+  <p class="titulo">{{ titulo() }}</p>
+  @if (texto()) {
+    <p class="texto">{{ texto() }}</p>
+  }
+  @if (accionLabel()) {
+    @if (variant() === 'sin-datos') {
+      <button type="button" class="ft-btn ft-btn--primary" (click)="accion.emit()">
+        {{ accionLabel() }}
+      </button>
+    } @else {
+      <button type="button" class="ft-link" (click)="accion.emit()">{{ accionLabel() }}</button>
+    }
+  }
+</div>

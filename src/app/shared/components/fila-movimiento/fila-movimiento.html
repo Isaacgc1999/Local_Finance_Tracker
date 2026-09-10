@@ -1,0 +1,15 @@
+<button
+  type="button"
+  class="fila"
+  [attr.aria-label]="event().concept + ', ' + importe() + ', ' + meta()"
+  [attr.aria-current]="estado() === 'activo' ? 'true' : null"
+  [disabled]="estado() === 'deshabilitada'"
+  (click)="onClick()"
+>
+  <span class="avatar num" aria-hidden="true">{{ iniciales() }}</span>
+  <span class="texto">
+    <span class="concepto">{{ event().concept }}</span>
+    <span class="meta">{{ meta() }}</span>
+  </span>
+  <span class="importe num">{{ importe() }}</span>
+</button>

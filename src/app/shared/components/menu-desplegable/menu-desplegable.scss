@@ -1,0 +1,55 @@
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.disparador {
+  height: var(--ft-filter-h);
+  padding: 0 16px;
+  gap: 8px;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: var(--ft-z-menu);
+  width: var(--ft-menu-w);
+  padding: 6px;
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  display: flex;
+  flex-direction: column;
+
+  &--izquierda {
+    right: auto;
+    left: 0;
+  }
+}
+
+.opcion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--ft-radius-control);
+  font: var(--ft-font-label);
+  color: var(--ft-text-2);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--ft-border);
+    color: var(--ft-text-1);
+    box-shadow: none;
+  }
+}
+
+.hint {
+  font-weight: 400;
+  color: var(--ft-text-3);
+}

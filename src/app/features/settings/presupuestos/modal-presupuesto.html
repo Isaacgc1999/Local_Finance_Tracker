@@ -1,0 +1,59 @@
+<ft-modal [(open)]="abierto" [titulo]="titulo()" (cerrar)="cerrar()">
+  @if (edicion()) {
+    <div class="ft-field">
+      <span class="ft-field__label">Tipo</span>
+      <p class="fijo">{{ fila()?.label }}</p>
+    </div>
+  } @else {
+    <label class="ft-field">
+      <span class="ft-field__label">Tipo</span>
+      <select class="ft-select" (change)="scope.set($any($event.target).value)">
+        <optgroup label="Por tipo">
+          @for (o of opcionesBase(); track o.scope) {
+            <option [value]="o.scope" [selected]="o.scope === scope()">{{ o.label }}</option>
+          }
+        </optgroup>
+        @if (opcionesCategoria().length > 0) {
+          <optgroup label="Por categoría">
+            @for (o of opcionesCategoria(); track o.scope) {
+              <option [value]="o.scope" [selected]="o.scope === scope()">{{ o.label }}</option>
+            }
+          </optgroup>
+        }
+      </select>
+    </label>
+  }
+
+  @if (pista()) {
+    <p class="pista">{{ pista() }}</p>
+  }
+
+  <label class="ft-field">
+    <span class="ft-field__label">{{ esObjetivo() ? 'Objetivo al mes' : 'Límite al mes' }}</span>
+    <input
+      class="ft-input num"
+      inputmode="decimal"
+      placeholder="0,00"
+      [value]="importeTexto()"
+      [attr.aria-invalid]="error() ? 'true' : null"
+      (input)="importeTexto.set($any($event.target).value); error.set('')"
+    />
+    @if (error()) {
+      <span class="ft-field__error">{{ error() }}</span>
+    }
+  </label>
+
+  @if (edicion() && confirmandoBorrado()) {
+    <p class="confirmar">Se borrará el presupuesto. Tus movimientos no cambian. Pulsa «Borrar» otra vez.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" [disabled]="guardando()" (click)="borrar()">
+        Borrar
+      </button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>

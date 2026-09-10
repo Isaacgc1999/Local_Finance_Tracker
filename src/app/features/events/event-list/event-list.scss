@@ -1,0 +1,82 @@
+@use 'breakpoints' as bp;
+
+.inicio {
+  display: flex;
+  align-items: center;
+}
+
+.mas {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.buscar {
+  flex: 1;
+  min-width: 200px;
+  max-width: 360px;
+
+  .ft-input {
+    height: var(--ft-filter-h);
+  }
+}
+
+.resumen {
+  margin-left: auto;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.grupos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ft-grid-gap);
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grupo__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.grupo__dia {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.grupo__balance {
+  font: var(--ft-font-meta-strong);
+  color: var(--ft-text-3);
+}
+
+.grupo__filas {
+  display: flex;
+  flex-direction: column;
+
+  ft-fila-movimiento + ft-fila-movimiento {
+    border-top: 1px solid var(--ft-border-subtle);
+  }
+}
+
+@include bp.ft-media(mobile) {
+  .buscar {
+    max-width: none;
+    flex-basis: 100%;
+  }
+  .resumen {
+    margin-left: 0;
+  }
+}

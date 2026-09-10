@@ -1,0 +1,24 @@
+<h2 class="ft-card__title">Ingresos recurrentes</h2>
+
+<ul class="lista">
+  @for (fila of filas(); track fila.recurrence.id) {
+    <li>
+      <button type="button" class="fila" [class.pausado]="!fila.recurrence.active" (click)="editar(fila.recurrence)">
+        <span class="texto">
+          <span class="concepto">{{ fila.recurrence.concept }}</span>
+          <span class="meta">{{ fila.meta }}</span>
+        </span>
+        <span class="importe num ft-c-income">{{ fila.importe }}</span>
+      </button>
+    </li>
+  } @empty {
+    <li class="vacio">
+      Todavía no hay ingresos recurrentes. Al añadirlos, el dashboard proyecta los próximos cargos y la analítica
+      calcula la tasa de ahorro objetivo.
+    </li>
+  }
+</ul>
+
+<button type="button" class="ft-link anadir" (click)="nuevo()">+ Añadir ingreso recurrente</button>
+
+<ft-modal-ingreso-recurrente [(abierto)]="modalAbierto" [ingreso]="enEdicion()" />

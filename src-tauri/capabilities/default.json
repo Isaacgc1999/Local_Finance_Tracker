@@ -1,0 +1,43 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permisos mínimos de Fintrack: SQLite en appData, diálogos nativos, ficheros de la app y HTTP solo hacia Ollama en localhost:11434.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-title",
+
+    "sql:default",
+    "sql:allow-load",
+    "sql:allow-execute",
+    "sql:allow-select",
+    "sql:allow-close",
+
+    "dialog:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-message",
+    "dialog:allow-ask",
+    "dialog:allow-confirm",
+
+    "fs:default",
+    "fs:allow-appdata-read-recursive",
+    "fs:allow-appdata-write-recursive",
+    "fs:allow-appdata-meta-recursive",
+    "fs:allow-mkdir",
+    "fs:allow-exists",
+    "fs:allow-stat",
+    "fs:allow-read-file",
+    "fs:allow-write-file",
+    "fs:allow-copy-file",
+    "fs:allow-remove",
+
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "http://127.0.0.1:11434/*" },
+        { "url": "http://localhost:11434/*" }
+      ]
+    }
+  ]
+}

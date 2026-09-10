@@ -1,0 +1,81 @@
+@let v = variante();
+<div class="cabecera">
+  <span class="titulo">{{ v === 'mobile' ? 'Por categoría' : 'Desglose por categoría' }}</span>
+  @if (v === 'desktop') {
+    <span class="orden">Ordenado por {{ ordenLabel() }} {{ sortDir() === 'desc' ? '▾' : '▴' }}</span>
+  }
+</div>
+
+@if (v === 'mobile') {
+  <div class="tarjetas">
+    @for (fila of filas(); track fila.id) {
+      <div class="tarjeta">
+        <div class="tarjeta__fila">
+          <span class="nombre">{{ fila.label }}</span>
+          <span class="total num">{{ fila.total }}</span>
+        </div>
+        <div class="minibar minibar--ancha"><div class="minibar__relleno" [style.width.%]="fila.barPct"></div></div>
+        <div class="tarjeta__fila tarjeta__meta">
+          <span>{{ fila.count }} mov. · {{ fila.shareOfExpenses }} del gasto</span>
+          <span class="num" [class]="'num delta-' + fila.deltaTone">{{ fila.delta }}</span>
+        </div>
+      </div>
+    }
+    @empty {
+      <p class="vacio">Sin gastos en el periodo.</p>
+    }
+  </div>
+} @else {
+  <div class="tabla" role="table" aria-label="Desglose por categoría">
+    <div class="fila fila--cabecera" role="row">
+      @for (col of columnas(); track col.key) {
+        <button
+          type="button"
+          role="columnheader"
+          class="celda celda--cabecera"
+          [class.celda--num]="col.numerica"
+          [class.celda--activa]="sortColumn() === col.key"
+          [attr.aria-sort]="sortColumn() === col.key ? (sortDir() === 'desc' ? 'descending' : 'ascending') : 'none'"
+          (click)="sort.emit(col.key)"
+        >
+          {{ v === 'tablet' ? col.labelCorta : col.label }}
+          @if (sortColumn() === col.key) {
+            <span aria-hidden="true">{{ sortDir() === 'desc' ? '▾' : '▴' }}</span>
+          }
+        </button>
+      }
+    </div>
+    @for (fila of filas(); track fila.id) {
+      <div class="fila" role="row">
+        @for (col of columnas(); track col.key) {
+          @if (col.key === 'label') {
+            <div class="celda celda--nombre" role="cell">
+              <span class="nombre">{{ fila.label }}</span>
+              <div class="minibar"><div class="minibar__relleno" [style.width.%]="fila.barPct"></div></div>
+            </div>
+          } @else {
+            <div class="celda celda--num num" role="cell" [class.celda--fuerte]="col.key === 'total'" [class]="'celda celda--num num' + (col.key === 'total' ? ' celda--fuerte' : '') + (col.key === 'delta' ? ' delta-' + fila.deltaTone : '')">
+              {{ valor(fila, col.key) }}
+            </div>
+          }
+        }
+      </div>
+    }
+    @empty {
+      <p class="vacio">Sin gastos en el periodo.</p>
+    }
+    @if (totalFila(); as t) {
+      <div class="fila fila--total" role="row">
+        @for (col of columnas(); track col.key) {
+          @if (col.key === 'label') {
+            <div class="celda celda--fuerte" role="cell">Total</div>
+          } @else {
+            <div class="celda celda--num num" role="cell" [class]="'celda celda--num num' + (col.key === 'total' || col.key === 'count' ? ' celda--fuerte' : ' celda--tenue') + (col.key === 'delta' ? ' delta-' + t.deltaTone : '')">
+              {{ valor(t, col.key) }}
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+}

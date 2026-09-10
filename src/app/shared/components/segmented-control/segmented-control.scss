@@ -1,0 +1,111 @@
+:host {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-control);
+  max-width: 100%;
+}
+
+:host(.appearance-primary) {
+  gap: 4px;
+  padding: 4px;
+  background: var(--ft-surface);
+  border-radius: var(--ft-radius-card);
+}
+
+:host(.layout-stretch) {
+  display: flex;
+  width: 100%;
+}
+
+:host(.layout-grid-3x2) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+}
+
+// Móvil: fila de chips con scroll horizontal, sin pista.
+:host(.layout-chips) {
+  display: flex;
+  gap: 6px;
+  padding: 0 0 2px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.segmento {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: var(--ft-radius-segment);
+  font: var(--ft-font-label);
+  color: var(--ft-text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+
+  :host(.layout-row) & {
+    flex: none;
+  }
+
+  &:hover:not(.activo):not(:disabled) {
+    background: var(--ft-border);
+    color: var(--ft-text-1);
+  }
+
+  &:disabled {
+    color: var(--ft-text-disabled);
+    cursor: default;
+  }
+
+  &.activo {
+    background: var(--ft-accent);
+    color: var(--ft-on-accent);
+  }
+
+  :host(.tone-subtle) &.activo {
+    background: var(--ft-border);
+    color: var(--ft-text-1);
+  }
+
+  :host(.appearance-primary) & {
+    padding: 10px 22px;
+    border-radius: var(--ft-radius-control);
+  }
+
+  :host(.layout-grid-3x2) & {
+    padding: 10px 0;
+  }
+
+  :host(.layout-chips) & {
+    flex: none;
+    height: var(--ft-chip-h);
+    padding: 0 16px;
+    border-radius: var(--ft-radius-pill);
+    background: var(--ft-surface);
+    border: 1px solid var(--ft-border);
+    font: var(--ft-font-meta-strong);
+    display: inline-flex;
+    align-items: center;
+
+    &.activo {
+      background: var(--ft-accent);
+      border-color: var(--ft-accent);
+      color: var(--ft-on-accent);
+    }
+  }
+}
+
+// Foco por teclado: borde acento + anillo sobre la pista, como en la hoja de componentes.
+:host(:focus-within:has(.segmento:focus-visible)) {
+  border-color: var(--ft-accent);
+  box-shadow: var(--ft-focus-ring);
+}
+
+.segmento:focus-visible {
+  box-shadow: none;
+}

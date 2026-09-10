@@ -1,0 +1,56 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.campos {
+  display: flex;
+  gap: 16px;
+}
+
+.ft-field {
+  flex: 1;
+  gap: 8px;
+}
+
+.probar {
+  align-self: flex-start;
+}
+
+.mensaje {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-2);
+  overflow-wrap: anywhere;
+}
+
+// 390: los campos se apilan y todo lo pulsable sube a 48px.
+:host(.compacta) {
+  padding: 16px;
+  gap: 12px;
+
+  .campos {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ft-input,
+  .ft-select {
+    height: var(--ft-control-h-mobile);
+  }
+
+  .probar {
+    align-self: stretch;
+    height: var(--ft-control-h-mobile);
+    justify-content: center;
+  }
+}

@@ -1,0 +1,90 @@
+:host {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background: var(--ft-bg);
+}
+
+.saltar:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: var(--ft-z-toast);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 10px 14px;
+  clip: auto;
+  background: var(--ft-accent);
+  color: var(--ft-on-accent);
+  border-radius: var(--ft-radius-control);
+  font: var(--ft-font-label);
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--ft-page-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ft-section-gap);
+  outline: none;
+}
+
+.arranque {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ft-grid-gap);
+  max-width: 720px;
+}
+
+// Avisos discretos (misma anatomía que la pill de estado), abajo a la izquierda.
+.toasts {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: var(--ft-z-toast);
+}
+
+:host(.mobile) .toasts {
+  bottom: calc(var(--ft-tabbar-h) + 12px);
+}
+
+// En móvil el contenido deja sitio a la tab bar (76px) y, si hay FAB, a los
+// 152px de padding inferior que pide el handoff para no tapar ningún importe.
+:host(.mobile) .contenido {
+  padding-bottom: calc(var(--ft-tabbar-h) + 24px);
+}
+
+:host(.mobile.con-fab) .contenido {
+  padding-bottom: var(--ft-list-pad-mobile);
+}
+
+// Fila principal: sidebar + contenido. La calculadora se añade como tercera
+// columna a su derecha en escritorio y tablet.
+.marco {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+// Handoff: en escritorio el panel es una tercera columna y el contenido de
+// detrás sigue ahí, al 45 %. Por debajo de 1024 no quedan 800px utilizables,
+// así que el panel flota sobre el contenido con un velo en vez de estrujarlo.
+:host(.con-panel.desktop) .marco {
+  opacity: var(--ft-opacity-dimmed);
+}
+
+.velo {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 11, 13, 0.55);
+  z-index: calc(var(--ft-z-panel) - 1);
+}

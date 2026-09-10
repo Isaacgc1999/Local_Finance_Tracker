@@ -1,0 +1,39 @@
+@let v = variante();
+
+<div class="texto">
+  <div class="titulos">
+    <h1 class="titulo">Análisis IA</h1>
+    @if (v !== 'mobile') {
+      <ft-pill-estado>{{ modeloCorto() }}</ft-pill-estado>
+    }
+    @if (v !== 'tablet') {
+      <ft-pill-estado [tono]="pill().tono" [punto]="pill().punto">{{ pill().texto }}</ft-pill-estado>
+    }
+  </div>
+  @if (v === 'desktop') {
+    <p class="parrafo">
+      El informe se genera en tu ordenador con el modelo que tengas instalado en Ollama. Ningún movimiento sale del fichero local.
+    </p>
+  }
+  @if (v === 'mobile') {
+    <div class="titulos">
+      <ft-pill-estado>{{ modeloCorto() }}</ft-pill-estado>
+    </div>
+  }
+</div>
+
+<div class="acciones">
+  @if (v === 'tablet') {
+    <ft-pill-estado [tono]="pill().tono" [punto]="pill().punto">{{ pill().texto }}</ft-pill-estado>
+  }
+  @if (busy()) {
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cancelar.emit()">Cancelar</button>
+  } @else {
+    @if (v === 'desktop') {
+      <button type="button" class="ft-btn ft-btn--secondary" (click)="ajustes.emit()">Ajustes del modelo</button>
+    }
+    <button type="button" class="ft-btn ft-btn--primary" [class.ft-btn--block]="v === 'mobile'" (click)="regenerar.emit()">
+      Regenerar análisis
+    </button>
+  }
+</div>

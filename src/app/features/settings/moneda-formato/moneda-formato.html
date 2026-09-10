@@ -1,0 +1,23 @@
+<h2 class="ft-card__title">Moneda y formato</h2>
+
+<div class="ft-field">
+  <label class="ft-field__label" for="moneda">Moneda</label>
+  <select id="moneda" class="ft-select" (change)="onMoneda($any($event.target).value)">
+    @for (m of monedas; track m.code) {
+      <option [value]="m.code" [selected]="m.code === moneda()">{{ m.label }}</option>
+    }
+  </select>
+  <span class="ft-field__label-hint nota">Solo cambia el símbolo: los importes no se convierten.</span>
+</div>
+
+<div class="ft-field">
+  <span class="ft-field__label">Formato de fecha</span>
+  <ft-segmented-control
+    layout="stretch"
+    tone="subtle"
+    label="Formato de fecha"
+    [options]="formatos"
+    [value]="formato()"
+    (valueChange)="onFormato($event)"
+  />
+</div>

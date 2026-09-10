@@ -1,0 +1,19 @@
+<dialog #dialog class="dialogo" (cancel)="onCancel($event)" (click)="onBackdropClick($event)">
+  <div class="panel">
+    <div class="cabecera">
+      <div>
+        <h2 class="titulo">{{ titulo() }}</h2>
+        @if (subtitulo()) {
+          <p class="subtitulo">{{ subtitulo() }}</p>
+        }
+      </div>
+      <button type="button" class="ft-btn ft-btn--icon cerrar" aria-label="Cerrar" (click)="close()">✕</button>
+    </div>
+    <div class="cuerpo">
+      <ng-content />
+    </div>
+    <div class="acciones">
+      <ng-content select="[acciones]" />
+    </div>
+  </div>
+</dialog>

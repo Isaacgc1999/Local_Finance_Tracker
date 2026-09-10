@@ -1,0 +1,17 @@
+<ft-pill-filtro [label]="label()" [count]="count()" [expanded]="open()" (pulsar)="toggleOpen()" />
+@if (open()) {
+  <div class="panel" role="dialog" [attr.aria-label]="label()">
+    <div class="chips">
+      @for (option of options(); track option.value) {
+        <ft-chip-categoria [label]="option.label" [selected]="isSelected(option.value)" (toggle)="toggle(option.value)" />
+      }
+      @empty {
+        <span class="vacio">Sin opciones</span>
+      }
+    </div>
+    <div class="pie">
+      <button type="button" class="ft-link" (click)="limpiar()" [disabled]="count() === 0">Limpiar</button>
+      <button type="button" class="ft-btn ft-btn--elevated ft-btn--compact" (click)="cerrar()">Listo</button>
+    </div>
+  </div>
+}

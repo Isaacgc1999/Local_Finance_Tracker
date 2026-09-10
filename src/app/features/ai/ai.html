@@ -1,0 +1,76 @@
+@let v = variante();
+@let s = facade.savings();
+
+<ft-cabecera-ia
+  [status]="facade.modelStatus()"
+  [model]="facade.settings().ollamaModel"
+  [latencyMs]="facade.latencyMs()"
+  [busy]="!!facade.generating()"
+  [variante]="v"
+  (regenerar)="regenerar()"
+  (ajustes)="irAAjustes()"
+  (cancelar)="facade.cancel()"
+/>
+
+@if (problema(); as p) {
+  <ft-tarjeta-error [titulo]="p.titulo" [texto]="p.texto" accionLabel="Reintentar" (accion)="reintentar()" />
+}
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudieron cargar los informes" [texto]="errorTexto()" />
+} @else if (facade.loading() && facade.reports().length === 0) {
+  <div class="grid">
+    <div class="span-8"><ft-skeleton variant="tarjeta" /></div>
+    <div class="span-4"><ft-skeleton variant="tarjeta" /></div>
+  </div>
+} @else {
+  <div class="grid">
+    <div class="span-8 columna">
+      @if (mostrarFallback()) {
+        <div class="ft-card fallback">
+          <p class="fallback__titulo">Tus métricas de la semana</p>
+          <p class="fallback__ayuda">Calculadas en tu ordenador, sin el modelo.</p>
+          <div class="fallback__metricas">
+            @for (m of fallbackMetricas(); track m.label) {
+              <div>
+                <span class="fallback__label">{{ m.label }}</span>
+                <span class="fallback__valor num">{{ m.valor }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (facade.empty() && !facade.generating()) {
+        <ft-estado-vacio
+          titulo="Todavía no hay ningún informe"
+          texto="Genera el análisis de la última semana completa. Se calcula en tu ordenador con el modelo local."
+          accionLabel="Generar análisis"
+          (accion)="regenerar()"
+        />
+      } @else {
+        <ft-timeline-informes
+          [reports]="facade.reports()"
+          [generating]="facade.generating()"
+          [expandedId]="facade.expandedId()"
+          [variante]="v"
+          (alternar)="facade.toggle($event)"
+          (reintentar)="reintentar()"
+          (aplicar)="facade.applyRecommendation($event.reportId, $event.index, $event.applied)"
+        />
+      }
+    </div>
+
+    <div class="span-4 columna">
+      <ft-potencial-ahorro [monthly]="s.monthly" [yearly]="s.yearly" [applied]="s.applied" [sources]="s.sources" [variante]="v" />
+      @if (v === 'desktop') {
+        <ft-estado-modelo
+          [model]="facade.settings().ollamaModel"
+          [endpoint]="facade.endpointLabel()"
+          [lastReport]="facade.lastCompleted()"
+          [latencyMs]="facade.latencyMs()"
+        />
+      }
+    </div>
+  </div>
+}

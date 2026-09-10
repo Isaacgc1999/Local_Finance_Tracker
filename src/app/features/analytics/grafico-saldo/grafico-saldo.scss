@@ -1,0 +1,94 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: var(--ft-card-padding);
+  background: var(--ft-surface);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.leyenda {
+  display: flex;
+  gap: 16px;
+}
+
+.leyenda__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-2);
+}
+
+.leyenda__linea {
+  width: 14px;
+  height: 2px;
+
+  &--discontinua {
+    background: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 11px) !important;
+    color: var(--ft-text-3);
+  }
+}
+
+// Contenedor con scroll horizontal: solo aparece la barra cuando el gráfico
+// es más ancho que la tarjeta (más puntos de los que caben a la vista).
+// La altura va en el gráfico para que la barra no lo encoja (ver el
+// comparativo).
+.area {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ft-border) transparent;
+}
+
+.grafico {
+  width: 100%;
+  height: calc(var(--ft-line-chart-h) + 28px);
+
+  .area--movil & {
+    height: 120px;
+  }
+}
+
+.pie {
+  display: flex;
+  gap: 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ft-border);
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.pie__label {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.pie__valor {
+  font: 600 15px/1 var(--ft-font-family);
+  color: var(--ft-text-1);
+}
+
+.saldo-movil {
+  font: var(--ft-font-title);
+  color: var(--ft-text-1);
+}

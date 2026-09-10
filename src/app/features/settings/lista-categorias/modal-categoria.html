@@ -1,0 +1,53 @@
+<ft-modal [(open)]="abierto" [titulo]="titulo()" (cerrar)="cerrar()">
+  <label class="ft-field">
+    <span class="ft-field__label">Nombre</span>
+    <input
+      class="ft-input"
+      maxlength="40"
+      [value]="nombre()"
+      [attr.aria-invalid]="errorNombre() ? 'true' : null"
+      (input)="nombre.set($any($event.target).value); errorNombre.set('')"
+    />
+    @if (errorNombre()) {
+      <span class="ft-field__error">{{ errorNombre() }}</span>
+    }
+  </label>
+
+  <div class="ft-field">
+    <span class="ft-field__label">Color</span>
+    <div class="colores" role="radiogroup" aria-label="Color de la categoría">
+      @for (c of colores; track c) {
+        <button
+          type="button"
+          role="radio"
+          class="muestra"
+          [class.activa]="c === color()"
+          [attr.aria-checked]="c === color()"
+          [attr.aria-label]="'Color ' + c"
+          [style.background]="c + '1F'"
+          [style.border-color]="c"
+          (click)="color.set(c)"
+        ></button>
+      }
+    </div>
+  </div>
+
+  <div class="ft-field">
+    <span class="ft-field__label">Se aplica a</span>
+    <ft-segmented-control layout="stretch" tone="subtle" label="Se aplica a" [options]="kinds" [(value)]="kind" />
+  </div>
+
+  @if (edicion() && confirmandoBorrado()) {
+    <p class="confirmar">{{ avisoBorrado() }} Pulsa «Borrar» otra vez para confirmarlo.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion() && !esSistema()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" [disabled]="guardando()" (click)="borrar()">
+        Borrar
+      </button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>

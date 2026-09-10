@@ -1,0 +1,77 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.modos {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.ft-field {
+  gap: 8px;
+}
+
+.resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border-radius: var(--ft-radius-card);
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+  min-width: 0;
+}
+
+.resultado__label {
+  font: var(--ft-font-label);
+  color: var(--ft-text-2);
+}
+
+.resultado__cifra {
+  font: var(--ft-font-display);
+  letter-spacing: var(--ft-tracking-display);
+  color: var(--ft-text-1);
+  overflow-wrap: anywhere;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+  margin-top: 6px;
+}
+
+.stats__label {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+  margin-bottom: 6px;
+}
+
+.stats__valor {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.pie {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+.guardar {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+// 390: una columna, no caben dos campos de 44px con etiqueta.
+:host(.compacta) .campos {
+  grid-template-columns: 1fr;
+}

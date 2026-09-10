@@ -1,0 +1,65 @@
+<h2 class="ft-card__title">Fichero de datos</h2>
+
+<div class="ruta">
+  <p class="ruta__texto num">{{ ruta() }}</p>
+  @if (!bp.isMobile()) {
+    <button
+      type="button"
+      class="ft-link"
+      [disabled]="!facade.fileActionsEnabled()"
+      [title]="facade.fileActionsEnabled() ? 'Mover el fichero de datos a otra carpeta' : motivoDeshabilitado()"
+      (click)="cambiar()"
+    >
+      Cambiar
+    </button>
+  }
+</div>
+
+@if (bp.isMobile()) {
+  <p class="resumen">{{ resumenMovil() }}</p>
+} @else {
+  <dl class="datos">
+    <div>
+      <dt>Tamaño</dt>
+      <dd class="num">{{ tamano() }}</dd>
+    </div>
+    <div>
+      <dt>Movimientos</dt>
+      <dd class="num">{{ movimientos() }}</dd>
+    </div>
+    <div>
+      <dt>Última copia</dt>
+      <dd>{{ ultimaCopia() }}</dd>
+    </div>
+  </dl>
+}
+
+<div class="acciones">
+  <button
+    type="button"
+    class="ft-btn ft-btn--primary"
+    [disabled]="!facade.fileActionsEnabled() || !!facade.busy()"
+    [title]="facade.fileActionsEnabled() ? 'Escribe una copia consistente del fichero' : motivoDeshabilitado()"
+    (click)="copia()"
+  >
+    Crear copia de seguridad
+  </button>
+  <button
+    type="button"
+    class="ft-btn ft-btn--secondary"
+    [disabled]="!facade.fileActionsEnabled() || !!facade.busy()"
+    [title]="facade.fileActionsEnabled() ? 'Sustituye tus datos por los de una copia' : motivoDeshabilitado()"
+    (click)="restaurar()"
+  >
+    Restaurar desde archivo
+  </button>
+</div>
+
+@if (facade.busy()) {
+  <p class="ocupado" role="status">
+    <ft-spinner />
+    {{ facade.busy() }}
+  </p>
+} @else if (!facade.fileActionsEnabled()) {
+  <p class="aviso">{{ motivoDeshabilitado() }}</p>
+}

@@ -1,0 +1,70 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px var(--ft-card-padding);
+  background: var(--ft-surface);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+}
+
+:host(.variante-mobile) {
+  gap: 10px;
+  padding: var(--ft-card-padding);
+}
+
+.cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.detalle {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-2);
+}
+
+.fuerte {
+  font-weight: 600;
+  color: var(--ft-text-1);
+  font-size: 15px;
+}
+
+.pista {
+  position: relative;
+  height: var(--ft-progress-h);
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-surface-elevated);
+  overflow: visible;
+}
+
+.relleno {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-expense);
+}
+
+.marca {
+  position: absolute;
+  top: calc(-1 * var(--ft-day-mark-overflow));
+  bottom: calc(-1 * var(--ft-day-mark-overflow));
+  width: var(--ft-day-mark-w);
+  margin-left: calc(-1 * var(--ft-day-mark-w) / 2);
+  background: var(--ft-text-1);
+  border-radius: 2px;
+}
+
+.pie {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}

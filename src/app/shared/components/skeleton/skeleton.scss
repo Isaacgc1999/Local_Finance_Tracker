@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.bloque {
+  display: block;
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-skeleton-gradient);
+  background-size: 200% 100%;
+  animation: var(--ft-anim-shim);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+}
+
+.avatar {
+  width: var(--ft-avatar);
+  height: var(--ft-avatar);
+  flex: none;
+}
+
+.lineas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.importe {
+  width: 84px;
+  height: 14px;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.area {
+  border-radius: var(--ft-radius-control);
+}

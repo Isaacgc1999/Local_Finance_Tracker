@@ -1,0 +1,59 @@
+<ft-cabecera-pagina>
+  <div inicio class="inicio">
+    <ft-selector-mes [(value)]="facade.month" [compacto]="!bp.isDesktop()" />
+  </div>
+  @if (!bp.isMobile()) {
+    <a acciones routerLink="/events/new" class="ft-btn ft-btn--primary"><span class="mas" aria-hidden="true">+</span>Nuevo evento</a>
+  }
+</ft-cabecera-pagina>
+
+<div class="filtros">
+  <label class="buscar">
+    <span class="ft-sr-only">Buscar por concepto</span>
+    <input class="ft-input" type="search" placeholder="Buscar por concepto…" [value]="facade.search()" (input)="onSearch($event)" />
+  </label>
+  <ft-popover-multiseleccion label="Tipos" [options]="tipos" [selected]="facade.types()" (selectedChange)="setTipos($event)" />
+  @if (facade.hasFilters()) {
+    <button type="button" class="ft-link" (click)="facade.clearFilters()">Limpiar</button>
+  }
+  <span class="resumen num">{{ resumen() }}</span>
+</div>
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudieron cargar los movimientos" [texto]="errorTexto()" />
+} @else if (facade.loading() && facade.events().length === 0) {
+  <div class="ft-card"><ft-skeleton variant="fila" [rows]="6" /></div>
+} @else if (facade.groupedByDay().length === 0) {
+  @if (facade.hasFilters()) {
+    <ft-estado-vacio
+      variant="sin-resultados"
+      titulo="Ningún resultado con estos filtros"
+      texto="Prueba a ampliar el rango o a quitar tipos."
+      accionLabel="Limpiar filtros"
+      (accion)="facade.clearFilters()"
+    />
+  } @else {
+    <ft-estado-vacio
+      titulo="Todavía no hay movimientos en {{ mesLabel() }}"
+      texto="Registra el primero y el dashboard empezará a comparar el mes con los anteriores."
+      accionLabel="Nuevo evento"
+      (accion)="nuevo()"
+    />
+  }
+} @else {
+  <div class="grupos">
+    @for (grupo of facade.groupedByDay(); track grupo.date) {
+      <section class="grupo ft-card">
+        <header class="grupo__cabecera">
+          <span class="grupo__dia">{{ diaLabel(grupo.date) }}</span>
+          <span class="grupo__balance num" [class.ft-c-income]="grupo.balance > 0" [class.ft-c-expense]="grupo.balance < 0">{{ balanceLabel(grupo.balance) }}</span>
+        </header>
+        <div class="grupo__filas">
+          @for (e of grupo.items; track e.id) {
+            <ft-fila-movimiento [event]="e" [categoria]="facade.categoryById().get(e.categoryId ?? '') ?? null" (seleccionar)="abrir($event)" />
+          }
+        </div>
+      </section>
+    }
+  </div>
+}

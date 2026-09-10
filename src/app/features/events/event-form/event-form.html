@@ -1,0 +1,203 @@
+@let s = facade.strategy();
+@let v = facade.value();
+@let movil = bp.isMobile();
+
+@if (movil) {
+  <header class="cabecera-movil">
+    <button type="button" class="ft-link ft-link--label cancelar" (click)="facade.cancel()">Cancelar</button>
+    <span class="titulo-movil">{{ tituloMovil() }}</span>
+    <button type="button" class="ft-link ft-link--label guardar" [disabled]="facade.saving()" (click)="guardar()">Guardar</button>
+  </header>
+} @else {
+  <ft-cabecera-pagina [titulo]="titulo()" subtitulo="Se guarda en el fichero local. Sin sincronización.">
+    <button acciones type="button" class="ft-btn ft-btn--icon" aria-label="Cerrar" (click)="facade.cancel()">✕</button>
+  </ft-cabecera-pagina>
+}
+
+<ft-selector-tipo [value]="facade.type()" (valueChange)="$event && facade.setType($event)" [disabled]="facade.mode() === 'edit'" />
+
+<form class="cuerpo" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+  <div class="columna principal ft-card">
+    <div class="fila-importe">
+      <div class="ft-field importe">
+        <label class="ft-field__label" for="importe">{{ s.amountLabel }}</label>
+        <ft-input-importe formControlName="amount" inputId="importe" [tone]="s.amountTone" [error]="error('amount')" [ariaLabel]="s.amountLabel" />
+      </div>
+      <div class="ft-field fecha">
+        <label class="ft-field__label" for="fecha">{{ s.dateLabel }}</label>
+        <input id="fecha" class="ft-input num" type="date" formControlName="date" [attr.aria-invalid]="error('date') ? 'true' : null" />
+        @if (error('date')) {
+          <p class="ft-field__error">{{ error('date') }}</p>
+        }
+      </div>
+    </div>
+
+    @if (facade.visible('ticker')) {
+      <div class="fila-2">
+        <div class="ft-field">
+          <label class="ft-field__label" for="ticker">Activo / ticker</label>
+          <input id="ticker" class="ft-input" type="text" formControlName="ticker" placeholder="IE00B4L5Y983 · MSCI World" [attr.aria-invalid]="error('ticker') ? 'true' : null" />
+          @if (error('ticker')) {
+            <p class="ft-field__error">{{ error('ticker') }}</p>
+          }
+        </div>
+        <div class="ft-field">
+          <label class="ft-field__label" for="plataforma">Plataforma</label>
+          <select id="plataforma" class="ft-select" formControlName="platform">
+            <option value="">Sin plataforma</option>
+            @for (p of opciones(plataformas, 'platform'); track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    }
+
+    @if (facade.visible('assetClass')) {
+      <div class="ft-field">
+        <span class="ft-field__label">Tipo de activo</span>
+        <div class="chips" role="group" aria-label="Tipo de activo">
+          @for (c of clasesActivo; track c.value) {
+            <ft-chip-categoria [label]="c.label" tone="investment" [selected]="v.assetClass === c.value" (toggle)="setAssetClass(c.value)" />
+          }
+        </div>
+      </div>
+    }
+
+    @if (facade.visible('category')) {
+      <div class="ft-field">
+        <span class="ft-field__label">Categoría @if (!s.categoryRequired) {<span class="ft-field__label-hint">· opcional</span>}</span>
+        <div class="chips" role="group" aria-label="Categoría" [attr.aria-invalid]="error('category') ? 'true' : null" tabindex="-1">
+          @for (c of facade.categories(); track c.id) {
+            <ft-chip-categoria [label]="c.name" [selected]="v.categoryId === c.id" (toggle)="setCategory(c.id)" />
+          }
+          @empty {
+            <span class="vacio">No hay categorías. Crea una en Ajustes.</span>
+          }
+        </div>
+        @if (error('category')) {
+          <p class="ft-field__error">{{ error('category') }}</p>
+        }
+      </div>
+    }
+
+    @if (facade.visible('nature') || facade.visible('paymentMethod') || facade.visible('source') || facade.visible('issuer')) {
+      <div class="fila-2">
+        @if (facade.visible('nature')) {
+          <div class="ft-field">
+            <span class="ft-field__label" id="naturaleza-label">Naturaleza</span>
+            <ft-segmented-control label="Naturaleza" tone="subtle" [layout]="movil ? 'stretch' : 'row'" [options]="naturalezas" [value]="v.nature" (valueChange)="setNature($event)" />
+          </div>
+        }
+        @if (facade.visible('paymentMethod')) {
+          <div class="ft-field">
+            <label class="ft-field__label" for="metodo">Método de pago</label>
+            <select id="metodo" class="ft-select" formControlName="paymentMethod">
+              <option value="">Sin especificar</option>
+              @for (m of opciones(metodosPago, 'paymentMethod'); track m) {
+                <option [value]="m">{{ m }}</option>
+              }
+            </select>
+          </div>
+        }
+        @if (facade.visible('source')) {
+          <div class="ft-field">
+            <label class="ft-field__label" for="origen">Origen</label>
+            <select id="origen" class="ft-select" formControlName="source">
+              <option value="">Sin especificar</option>
+              @for (o of opciones(origenes, 'source'); track o) {
+                <option [value]="o">{{ o }}</option>
+              }
+            </select>
+          </div>
+        }
+        @if (facade.visible('issuer')) {
+          <div class="ft-field">
+            <label class="ft-field__label" for="emisor">Entidad emisora</label>
+            <input id="emisor" class="ft-input" type="text" formControlName="issuer" placeholder="Mutua, Endesa, Ayuntamiento…" />
+          </div>
+        }
+      </div>
+    }
+
+    @if (facade.visible('account') || facade.visible('goal')) {
+      <div class="fila-2">
+        @if (facade.visible('account')) {
+          <div class="ft-field">
+            <label class="ft-field__label" for="cuenta">Cuenta o destino</label>
+            <input id="cuenta" class="ft-input" type="text" formControlName="account" placeholder="Cuenta ahorro" />
+          </div>
+        }
+        @if (facade.visible('goal')) {
+          <div class="ft-field">
+            <label class="ft-field__label" for="objetivo">Objetivo <span class="ft-field__label-hint">· opcional</span></label>
+            <input id="objetivo" class="ft-input" type="text" formControlName="goal" placeholder="Fondo de emergencia" />
+          </div>
+        }
+      </div>
+    }
+
+    <div class="ft-field">
+      <label class="ft-field__label" for="concepto">{{ s.conceptLabel }}</label>
+      <input id="concepto" class="ft-input" type="text" formControlName="concept" [placeholder]="s.conceptPlaceholder" [attr.aria-invalid]="error('concept') ? 'true' : null" />
+      @if (error('concept')) {
+        <p class="ft-field__error">{{ error('concept') }}</p>
+      }
+    </div>
+
+    @if (facade.visible('notes')) {
+      <div class="ft-field">
+        <label class="ft-field__label" for="notas">Notas</label>
+        <textarea id="notas" class="ft-textarea" formControlName="notes" [placeholder]="s.type === 'expense' ? notasEjemplo() : 'Notas opcionales'"></textarea>
+      </div>
+    }
+
+    @if (movil && facade.visible('attachment')) {
+      <ft-adjuntar-recibo [attachment]="facade.attachment()" [compact]="true" (attach)="facade.attach()" (detach)="facade.detach()" />
+    }
+  </div>
+
+  @if (s.recurrence !== 'none' || (!movil && facade.visible('attachment'))) {
+    <div class="columna lateral">
+      @if (s.recurrence !== 'none') {
+        <div class="ft-card recurrencia">
+          <ft-bloque-recurrencia
+            [form]="form"
+            [mode]="s.recurrence"
+            [label]="s.recurrenceLabel"
+            [hint]="s.recurrenceHint"
+            [expanded]="facade.recurrenceEnabled()"
+            [resumen]="facade.recurrenceSummary()"
+            [locked]="facade.mode() === 'edit' && !!facade.editing()?.recurrenceId"
+          />
+        </div>
+      }
+      @if (!movil && facade.visible('attachment')) {
+        <div class="ft-card">
+          <ft-adjuntar-recibo [attachment]="facade.attachment()" (attach)="facade.attach()" (detach)="facade.detach()" />
+        </div>
+      }
+    </div>
+  }
+
+  @if (facade.saveError()) {
+    <p class="ft-field__error error-global" role="alert">{{ facade.saveError() }}</p>
+  }
+  <button type="submit" class="ft-sr-only" tabindex="-1">Guardar</button>
+</form>
+
+<ft-barra-acciones
+  [mobile]="movil"
+  [editing]="facade.mode() === 'edit'"
+  [saving]="facade.saving()"
+  (guardar)="guardar()"
+  (guardarYOtro)="guardarYOtro()"
+  (cancelar)="facade.cancel()"
+  (eliminar)="confirmarBorrado.set(true)"
+/>
+
+<ft-modal [(open)]="confirmarBorrado" titulo="Eliminar movimiento" subtitulo="Esta acción no se puede deshacer.">
+  <p class="texto-modal">Se eliminará «{{ v.concept || 'este movimiento' }}» del fichero local.</p>
+  <button acciones type="button" class="ft-btn ft-btn--elevated" (click)="confirmarBorrado.set(false)">Cancelar</button>
+  <button acciones type="button" class="ft-btn ft-btn--primary peligro" (click)="confirmarBorrado.set(false); facade.remove()">Eliminar</button>
+</ft-modal>

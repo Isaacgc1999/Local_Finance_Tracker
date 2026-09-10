@@ -1,0 +1,132 @@
+<ft-segmented-control
+  class="modos"
+  layout="chips"
+  label="Modo de cálculo"
+  [options]="modos"
+  [(value)]="facade.mode"
+/>
+
+@switch (facade.mode()) {
+  @case ('compound') {
+    <div class="campos">
+      <label class="ft-field">
+        <span class="ft-field__label">Capital inicial</span>
+        <input
+          class="ft-input num"
+          inputmode="decimal"
+          [value]="textoPrincipal()"
+          (input)="onImporte($any($event.target).value, 'principal')"
+          (blur)="onBlurImporte(textoPrincipal, 'principal')"
+        />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">Aportación mensual</span>
+        <input
+          class="ft-input num"
+          inputmode="decimal"
+          [value]="textoAportacion()"
+          (input)="onImporte($any($event.target).value, 'monthlyContribution')"
+          (blur)="onBlurImporte(textoAportacion, 'monthlyContribution')"
+        />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">Años</span>
+        <input
+          class="ft-input num"
+          inputmode="numeric"
+          [value]="facade.years()"
+          (input)="onEntero($any($event.target).value, 'years')"
+        />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">Rentabilidad anual</span>
+        <input
+          class="ft-input num"
+          inputmode="decimal"
+          [value]="textoRate()"
+          (input)="onPorcentaje($any($event.target).value, 'annualRateBp')"
+          (blur)="textoRate.set(facade.annualRateBp() / 100 + ' %')"
+        />
+      </label>
+    </div>
+
+    <div class="resultado">
+      <p class="resultado__label">Valor final estimado</p>
+      <p class="resultado__cifra num ft-c-investment">{{ importe(compuesto().finalValue) }}</p>
+      <div class="stats">
+        <div>
+          <p class="stats__label">Aportado</p>
+          <p class="stats__valor num">{{ importe(compuesto().contributed) }}</p>
+        </div>
+        <div>
+          <p class="stats__label">Intereses</p>
+          <p class="stats__valor num ft-c-income">{{ importe(compuesto().interest) }}</p>
+        </div>
+      </div>
+      <button type="button" class="ft-link guardar" (click)="facade.recordFinancial()">Guardar en el historial</button>
+    </div>
+  }
+
+  @case ('percent') {
+    <div class="campos">
+      <label class="ft-field">
+        <span class="ft-field__label">Porcentaje</span>
+        <input
+          class="ft-input num"
+          inputmode="decimal"
+          [value]="textoPercentRate()"
+          (input)="onPorcentaje($any($event.target).value, 'percentRateBp')"
+          (blur)="textoPercentRate.set(facade.percentRateBp() / 100 + ' %')"
+        />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">Importe</span>
+        <input
+          class="ft-input num"
+          inputmode="decimal"
+          [value]="textoPercentBase()"
+          (input)="onImporte($any($event.target).value, 'percentBase')"
+          (blur)="onBlurImporte(textoPercentBase, 'percentBase')"
+        />
+      </label>
+    </div>
+
+    <div class="resultado">
+      <p class="resultado__label">Resultado</p>
+      <p class="resultado__cifra num">{{ importe(facade.financial().value) }}</p>
+      <p class="pie">{{ facade.financial().expression }}</p>
+      <button type="button" class="ft-link guardar" (click)="facade.recordFinancial()">Guardar en el historial</button>
+    </div>
+  }
+
+  @case ('split') {
+    <div class="campos">
+      <label class="ft-field">
+        <span class="ft-field__label">Importe total</span>
+        <input
+          class="ft-input num"
+          inputmode="decimal"
+          [value]="textoSplitAmount()"
+          (input)="onImporte($any($event.target).value, 'splitAmount')"
+          (blur)="onBlurImporte(textoSplitAmount, 'splitAmount')"
+        />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">Personas</span>
+        <input
+          class="ft-input num"
+          inputmode="numeric"
+          [value]="facade.splitPeople()"
+          (input)="onEntero($any($event.target).value, 'splitPeople')"
+        />
+      </label>
+    </div>
+
+    <div class="resultado">
+      <p class="resultado__label">Cada persona paga</p>
+      <p class="resultado__cifra num">{{ importe(facade.financial().value) }}</p>
+      <p class="pie">{{ reparto() }}</p>
+      <button type="button" class="ft-link guardar" (click)="facade.recordFinancial()">Guardar en el historial</button>
+    </div>
+  }
+}

@@ -1,0 +1,44 @@
+@let f = filters();
+@let v = variante();
+
+@if (v === 'mobile') {
+  <div class="fila fila--cabecera">
+    <h1 class="titulo">Analítica</h1>
+    <ft-menu-desplegable label="Exportar" [items]="formatos" [compact]="true" (seleccionar)="exportar.emit($event)" />
+  </div>
+  <ft-segmented-control label="Granularidad" layout="stretch" [options]="granularidades" [value]="f.granularity" (valueChange)="onGranularity($event)" />
+  <div class="fila fila--scroll">
+    <ft-selector-rango [value]="f.range" (valueChange)="rangeChange.emit($event)" [compact]="true" />
+    <ft-popover-multiseleccion label="Categorías" [options]="categoriaOpciones()" [selected]="f.categoryIds" (selectedChange)="categoriesChange.emit($event)" />
+    <ft-popover-multiseleccion label="Tipos" [options]="tipos" [selected]="f.types" (selectedChange)="onTypes($event)" />
+    @if (hayFiltros()) {
+      <button type="button" class="ft-link" (click)="clear.emit()">Limpiar</button>
+    }
+  </div>
+} @else if (v === 'tablet') {
+  <div class="fila">
+    <ft-segmented-control class="crece" label="Granularidad" layout="stretch" [options]="granularidades" [value]="f.granularity" (valueChange)="onGranularity($event)" />
+    <ft-menu-desplegable label="Exportar" [items]="formatos" (seleccionar)="exportar.emit($event)" />
+  </div>
+  <div class="fila fila--scroll">
+    <ft-selector-rango [value]="f.range" (valueChange)="rangeChange.emit($event)" [compact]="true" />
+    <ft-popover-multiseleccion label="Categorías" [options]="categoriaOpciones()" [selected]="f.categoryIds" (selectedChange)="categoriesChange.emit($event)" />
+    <ft-popover-multiseleccion label="Tipos" [options]="tipos" [selected]="f.types" (selectedChange)="onTypes($event)" />
+    @if (hayFiltros()) {
+      <button type="button" class="ft-link" (click)="clear.emit()">Limpiar</button>
+    }
+  </div>
+} @else {
+  <div class="fila">
+    <div class="filtros">
+      <ft-segmented-control label="Granularidad" [options]="granularidades" [value]="f.granularity" (valueChange)="onGranularity($event)" />
+      <ft-selector-rango [value]="f.range" (valueChange)="rangeChange.emit($event)" />
+      <ft-popover-multiseleccion label="Categorías" [options]="categoriaOpciones()" [selected]="f.categoryIds" (selectedChange)="categoriesChange.emit($event)" />
+      <ft-popover-multiseleccion label="Tipos" [options]="tipos" [selected]="f.types" (selectedChange)="onTypes($event)" />
+      @if (hayFiltros()) {
+        <button type="button" class="ft-link" (click)="clear.emit()">Limpiar</button>
+      }
+    </div>
+    <ft-menu-desplegable label="Exportar" [items]="formatos" (seleccionar)="exportar.emit($event)" />
+  </div>
+}

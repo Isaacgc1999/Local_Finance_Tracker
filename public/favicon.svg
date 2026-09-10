@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Fintrack">
+  <title>Fintrack</title>
+  <rect width="512" height="512" rx="114" fill="#6E56F8"/>
+  <g transform="translate(32,32) scale(7)">
+    <rect x="10" y="8" width="10" height="48" rx="3" fill="#FFFFFF"/>
+    <rect x="24" y="10" width="30" height="10" rx="3" fill="#FFFFFF"/>
+    <rect x="24" y="25" width="20" height="10" rx="3" fill="#FFFFFF"/>
+  </g>
+</svg>

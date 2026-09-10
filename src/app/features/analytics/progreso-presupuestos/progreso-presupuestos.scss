@@ -1,0 +1,138 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.periodo {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.presupuesto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.linea {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.nombre {
+  flex: 1;
+  min-width: 0;
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cifras {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+  white-space: nowrap;
+
+  strong {
+    font-weight: 600;
+    color: var(--ft-text-1);
+  }
+}
+
+.pct {
+  font: 600 15px/1 var(--ft-font-family);
+  min-width: 48px;
+  text-align: right;
+}
+
+// Pista y relleno como la barra «Presupuesto consumido» del dashboard.
+.barra {
+  height: var(--ft-progress-h);
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-surface-elevated);
+  overflow: hidden;
+}
+
+.relleno {
+  display: block;
+  height: 100%;
+  border-radius: var(--ft-radius-pill);
+}
+
+.nota {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.vacio {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+.tono-accent {
+  color: var(--ft-accent-hover);
+  &.relleno {
+    background: var(--ft-accent);
+  }
+}
+
+.tono-savings {
+  color: var(--ft-savings);
+  &.relleno {
+    background: var(--ft-savings);
+  }
+}
+
+.tono-expense {
+  color: var(--ft-expense);
+  &.relleno {
+    background: var(--ft-expense);
+  }
+}
+
+.tono-investment {
+  color: var(--ft-investment);
+  &.relleno {
+    background: var(--ft-investment);
+  }
+}
+
+.tono-income {
+  color: var(--ft-income);
+  &.relleno {
+    background: var(--ft-income);
+  }
+}
+
+// La nota solo se tiñe cuando hay algo que avisar o celebrar.
+.nota.tono-accent,
+.nota.tono-investment {
+  color: var(--ft-text-3);
+}
+
+:host(.compacta) {
+  padding: 16px;
+  gap: 14px;
+
+  .linea {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .nombre {
+    flex-basis: 100%;
+  }
+}

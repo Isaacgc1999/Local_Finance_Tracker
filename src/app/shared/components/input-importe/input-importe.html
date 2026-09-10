@@ -1,0 +1,21 @@
+<div class="caja">
+  <span class="simbolo num" aria-hidden="true">{{ simbolo() }}</span>
+  <input
+    class="cifra num"
+    type="text"
+    inputmode="decimal"
+    autocomplete="off"
+    placeholder="0,00"
+    [id]="inputId()"
+    [attr.aria-label]="ariaLabel()"
+    [attr.aria-invalid]="mensajeError() ? 'true' : null"
+    [attr.aria-describedby]="mensajeError() ? inputId() + '-error' : null"
+    [value]="text()"
+    [disabled]="disabled()"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+  />
+</div>
+@if (mensajeError()) {
+  <p class="error" [id]="inputId() + '-error'">{{ mensajeError() }}</p>
+}

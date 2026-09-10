@@ -1,0 +1,34 @@
+<div class="pestanas">
+  <ft-segmented-control
+    layout="stretch"
+    tone="subtle"
+    label="Modo de la calculadora"
+    [options]="pestanas"
+    [(value)]="facade.tab"
+  />
+</div>
+
+<div class="cuerpo">
+  @if (facade.tab() === 'standard') {
+    <ft-display-calc
+      [class.compacta]="compacta()"
+      [expression]="facade.expression()"
+      [display]="facade.display()"
+      [error]="facade.error()"
+    />
+    <ft-teclado-calc [class.compacta]="compacta()" (tecla)="facade.press($event)" />
+  } @else {
+    <ft-pestana-financiera [class.compacta]="compacta()" />
+  }
+
+  @if (!compacta()) {
+    <div class="ft-divider"></div>
+  }
+
+  <ft-historial-calc
+    [class.compacta]="compacta()"
+    [entradas]="facade.history()"
+    (reutilizar)="facade.reuse($event)"
+    (borrar)="facade.clearHistory()"
+  />
+</div>

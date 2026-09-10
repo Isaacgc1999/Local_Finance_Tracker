@@ -1,0 +1,21 @@
+<div class="cabecera">
+  <span class="titulo">Próximos cargos</span>
+  <span class="total num">{{ totalTexto() }}</span>
+</div>
+<ul class="lista">
+  @for (fila of filas(); track fila.concept + fila.date) {
+    <li class="fila">
+      <div class="texto">
+        <span class="nombre">{{ fila.concept }}</span>
+        <span class="meta">{{ fila.meta }}</span>
+      </div>
+      <div class="derecha">
+        <span class="importe num" [class]="'importe num ft-c-' + fila.color">{{ fila.importe }}</span>
+        <span class="meta">{{ fila.cuando }}</span>
+      </div>
+    </li>
+  }
+  @empty {
+    <li class="vacio">Sin cargos previstos en los próximos {{ days() }} días.</li>
+  }
+</ul>

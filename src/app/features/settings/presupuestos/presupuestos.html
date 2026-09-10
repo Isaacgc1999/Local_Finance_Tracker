@@ -1,0 +1,33 @@
+<div class="cabecera">
+  <h2 class="ft-card__title">Presupuestos</h2>
+  <button type="button" class="ft-link" [disabled]="facade.availableScopes().length === 0" (click)="nuevo()">
+    {{ bp.isDesktop() ? '+ Añadir presupuesto' : '+ Añadir' }}
+  </button>
+</div>
+
+<p class="intro">Elige qué quieres vigilar cada mes. En Analítica verás hasta dónde has llegado en cada uno.</p>
+
+<ul class="lista">
+  @for (fila of facade.budgets(); track fila.budget.id) {
+    <li>
+      <button type="button" class="fila" (click)="editar(fila)">
+        <span class="texto">
+          <span class="nombre">{{ fila.label }}</span>
+          <span class="meta">{{ fila.kind === 'goal' ? 'Objetivo mensual' : 'Límite mensual' }}</span>
+        </span>
+        <span class="importe num" [class]="tono(fila)">{{ importe(fila.budget.amountCents) }}<span class="sufijo"> /mes</span></span>
+      </button>
+    </li>
+  } @empty {
+    <li class="vacio">
+      Todavía no tienes presupuestos. Puedes poner un límite al gasto total, al ocio o a una categoría, o marcarte un
+      objetivo de ahorro o de inversión.
+    </li>
+  }
+</ul>
+
+@if (lectura()) {
+  <p class="lectura">{{ lectura() }}</p>
+}
+
+<ft-modal-presupuesto [(abierto)]="modalAbierto" [fila]="enEdicion()" />

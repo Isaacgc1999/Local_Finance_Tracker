@@ -1,0 +1,55 @@
+@use 'breakpoints' as bp;
+
+.mas {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.icono-36 {
+  width: 36px;
+  height: 36px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--ft-grid-gap);
+  row-gap: var(--ft-section-gap);
+  align-items: stretch;
+}
+
+.span-5 {
+  grid-column: span 5;
+}
+.span-7 {
+  grid-column: span 7;
+}
+.span-12 {
+  grid-column: 1 / -1;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ft-grid-gap);
+}
+
+@include bp.ft-media(not-desktop) {
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ft-section-gap);
+  }
+}
+
+@include bp.ft-media(mobile) {
+  .kpis {
+    gap: 12px;
+  }
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

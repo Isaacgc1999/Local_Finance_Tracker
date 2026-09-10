@@ -1,0 +1,34 @@
+@let p = pace();
+<div class="cabecera">
+  <span class="titulo">{{ variante() === 'mobile' ? 'Presupuesto' : 'Presupuesto consumido' }}</span>
+  @if (variante() === 'desktop') {
+    <span class="detalle"><span class="num fuerte">{{ consumido() }}</span> {{ baseTexto() }} · quedan <span class="num">{{ restante() }}</span></span>
+  } @else {
+    <span class="num fuerte">{{ consumido() }}</span>
+  }
+</div>
+<div
+  class="pista"
+  role="progressbar"
+  aria-label="Presupuesto consumido"
+  [attr.aria-valuenow]="p.consumedBp === null ? null : anchoRelleno()"
+  aria-valuemin="0"
+  aria-valuemax="100"
+>
+  <div class="relleno" [style.width.%]="anchoRelleno()"></div>
+  <div class="marca" [style.left.%]="posicionMarca()" [attr.title]="marcaTexto()"></div>
+</div>
+<div class="pie">
+  @switch (variante()) {
+    @case ('desktop') {
+      <span>{{ marcaTexto() }}</span>
+      <span [class.ft-c-expense]="ritmo().tono === 'expense'" [class.ft-c-income]="ritmo().tono === 'income'">{{ ritmo().texto }}</span>
+    }
+    @case ('tablet') {
+      <span>Marca del día {{ p.dayOfMonth }} de {{ p.daysInMonth }} · vas {{ ritmoCorto() }}</span>
+    }
+    @default {
+      <span>Día {{ p.dayOfMonth }} de {{ p.daysInMonth }} · {{ ritmoCorto() }}</span>
+    }
+  }
+</div>

@@ -1,0 +1,33 @@
+<div class="linea" aria-hidden="true"></div>
+<div class="tarjetas">
+  @if (generating(); as g) {
+    <div class="item">
+      <span class="nodo nodo--activo" aria-hidden="true"></span>
+      <div class="generando ft-card">
+        <ft-spinner />
+        <div class="generando__texto">
+          <p class="generando__titulo">Generando informe de la {{ tituloGenerando() }}…</p>
+          <p class="generando__meta">El modelo está leyendo {{ g.eventCount }} movimientos · {{ transcurrido() }}</p>
+        </div>
+        <div class="barra" [class.barra--indeterminada]="g.indeterminate">
+          @if (!g.indeterminate) {
+            <div class="barra__relleno" [style.width.%]="progreso()"></div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+  @for (report of reports(); track report.id; let i = $index) {
+    <div class="item">
+      <span class="nodo" [class.nodo--activo]="esActiva(report, i)" aria-hidden="true"></span>
+      <ft-tarjeta-informe-ia
+        [report]="report"
+        [expanded]="estaExpandida(report, i)"
+        [compacta]="variante() === 'mobile'"
+        (alternar)="alternar.emit($event)"
+        (reintentar)="reintentar.emit()"
+        (aplicar)="aplicar.emit($event)"
+      />
+    </div>
+  }
+</div>

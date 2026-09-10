@@ -1,0 +1,20 @@
+<span class="titulo">Desglose por tipo de gasto</span>
+<div class="contenido">
+  <div class="donut">
+    <div class="grafico" [chart]="option()" role="img" aria-label="Distribución del gasto por tipo"></div>
+    <div class="centro">
+      <span class="centro__total num">{{ totalTexto() }}</span>
+      <span class="centro__label">total {{ simbolo() }}</span>
+    </div>
+  </div>
+  <ul class="lista">
+    @for (fila of filas(); track fila.kind) {
+      <li class="fila">
+        <span class="cuadro" [style.background]="fila.color"></span>
+        <span class="nombre">{{ fila.label }}</span>
+        <span class="importe num">{{ fila.importe }}</span>
+        <span class="pct num">{{ fila.porcentaje }}</span>
+      </li>
+    }
+  </ul>
+</div>

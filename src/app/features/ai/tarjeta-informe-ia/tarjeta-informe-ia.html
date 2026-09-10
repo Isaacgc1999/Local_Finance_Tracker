@@ -1,0 +1,62 @@
+@let r = report();
+
+@if (fallida()) {
+  <div class="cabecera">
+    <span class="meta">{{ metaCorta() }}</span>
+  </div>
+  <p class="titulo-error">No se pudo generar el informe</p>
+  <p class="ayuda">{{ r.error }}</p>
+  <div class="acciones-error">
+    <button type="button" class="ft-btn ft-btn--primary ft-btn--compact" (click)="reintentar.emit()">Reintentar</button>
+  </div>
+} @else if (expanded()) {
+  <div class="cabecera">
+    <span class="meta">{{ meta() }}</span>
+    <button type="button" class="ft-link" (click)="alternar.emit(r.id)">Contraer ▴</button>
+  </div>
+  <h2 class="veredicto">{{ r.verdict }}</h2>
+
+  <div class="hallazgos">
+    @for (h of hallazgos(); track h.title) {
+      <div class="hallazgo">
+        <span class="hallazgo__barra" aria-hidden="true"></span>
+        <div>
+          <p class="hallazgo__titulo">{{ h.title }}</p>
+          <p class="hallazgo__detalle">{{ h.detail }}</p>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (recomendaciones().length > 0) {
+    <hr class="ft-divider" />
+    <div>
+      <p class="subtitulo">Recomendaciones</p>
+      <div class="recomendaciones">
+        @for (rec of recomendaciones(); track rec.index) {
+          <div class="recomendacion" [class.recomendacion--aplicada]="rec.applied">
+            <span class="recomendacion__texto" [title]="rec.rationale">{{ rec.action }}</span>
+            <span class="recomendacion__impacto num" [class.ft-c-income]="rec.positivo">{{ rec.impacto }}</span>
+            <label class="recomendacion__check">
+              <input
+                type="checkbox"
+                [checked]="rec.applied"
+                [attr.aria-label]="'La tengo en cuenta: ' + rec.action"
+                (change)="aplicar.emit({ reportId: r.id, index: rec.index, applied: $any($event.target).checked })"
+              />
+              <span aria-hidden="true">La tengo en cuenta</span>
+            </label>
+          </div>
+        }
+      </div>
+    </div>
+  }
+} @else {
+  <div class="colapsada">
+    <div class="colapsada__texto">
+      <span class="meta">{{ metaCorta() }}</span>
+      <p class="resumen">{{ resumen() }}</p>
+    </div>
+    <button type="button" class="ft-link expandir" (click)="alternar.emit(r.id)">Expandir ▾</button>
+  </div>
+}

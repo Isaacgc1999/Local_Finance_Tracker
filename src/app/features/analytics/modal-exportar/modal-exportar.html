@@ -1,0 +1,32 @@
+@let o = options();
+<ft-modal [(open)]="open" [titulo]="titulo()" subtitulo="Elige dónde guardarlo con el diálogo de tu sistema.">
+  <div class="ft-field">
+    <span class="ft-field__label">Rango</span>
+    <div class="rango num">{{ rango() }}<span class="flecha" aria-hidden="true">▾</span></div>
+  </div>
+  <div class="opciones">
+    <label class="opcion">
+      <span class="opcion__texto">
+        <span class="opcion__titulo">Incluir gráficas</span>
+        <span class="opcion__hint">Comparativa y saldo acumulado</span>
+      </span>
+      <ft-toggle [ngModel]="o.includeCharts" (ngModelChange)="set('includeCharts', $event)" label="Incluir gráficas" />
+    </label>
+    <label class="opcion">
+      <span class="opcion__texto">
+        <span class="opcion__titulo">Incluir desglose por categoría</span>
+        <span class="opcion__hint">Una hoja por categoría</span>
+      </span>
+      <ft-toggle [ngModel]="o.includeBreakdown" (ngModelChange)="set('includeBreakdown', $event)" label="Incluir desglose por categoría" />
+    </label>
+    <label class="opcion">
+      <span class="opcion__texto">
+        <span class="opcion__titulo">Incluir movimientos en bruto</span>
+        <span class="opcion__hint num">{{ filas() }}</span>
+      </span>
+      <ft-toggle [ngModel]="o.includeRawMovements" (ngModelChange)="set('includeRawMovements', $event)" label="Incluir movimientos en bruto" />
+    </label>
+  </div>
+  <button acciones type="button" class="ft-btn ft-btn--elevated" [disabled]="busy()" (click)="cerrar()">Cancelar</button>
+  <button acciones type="button" class="ft-btn ft-btn--primary exportar" [disabled]="busy()" (click)="confirmar()">{{ busy() ? 'Exportando…' : 'Exportar' }}</button>
+</ft-modal>

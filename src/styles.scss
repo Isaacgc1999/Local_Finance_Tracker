@@ -1,0 +1,81 @@
+// Fintrack — hoja global. El orden importa: fuentes → tokens → breakpoints
+// (redefinen tokens) → animaciones → controles.
+@use 'fonts';
+@use 'tokens';
+@use 'breakpoints';
+@use 'animations';
+@use 'controls';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background: var(--ft-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font: var(--ft-font-body);
+  color: var(--ft-text-1);
+  background: var(--ft-bg);
+  overflow: hidden; // el scroll vive dentro del <main> del shell
+}
+
+a {
+  color: var(--ft-accent);
+  text-decoration: none;
+  // Solo los enlaces de texto cambian de color. Un <a class="ft-btn"> ya
+  // define el suyo: con `a:hover` a secas el botón primario pintaba el texto
+  // del mismo acento que su fondo y se quedaba en blanco al pasar el ratón.
+  &:not(.ft-btn):hover {
+    color: var(--ft-accent-hover);
+  }
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+button {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+svg {
+  display: block;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  font-weight: inherit;
+  font-size: inherit;
+}

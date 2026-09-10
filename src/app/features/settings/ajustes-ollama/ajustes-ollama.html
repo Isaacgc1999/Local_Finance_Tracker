@@ -1,0 +1,34 @@
+<div class="cabecera">
+  <h2 class="ft-card__title">Ollama</h2>
+  <ft-pill-estado [tono]="tono()" [punto]="facade.probe() !== 'unknown'">{{ etiqueta() }}</ft-pill-estado>
+</div>
+
+<div class="campos">
+  <label class="ft-field">
+    <span class="ft-field__label">Modelo</span>
+    <select class="ft-select" [value]="facade.settings().ollamaModel" (change)="onModelo($any($event.target).value)">
+      @for (modelo of opcionesModelo(); track modelo) {
+        <option [value]="modelo">{{ modelo }}</option>
+      }
+    </select>
+  </label>
+  <label class="ft-field">
+    <span class="ft-field__label">Endpoint</span>
+    <input
+      class="ft-input num"
+      inputmode="url"
+      spellcheck="false"
+      [value]="endpoint()"
+      (input)="onEndpointInput($any($event.target).value)"
+      (blur)="guardarEndpoint()"
+    />
+  </label>
+</div>
+
+<button type="button" class="ft-btn ft-btn--secondary probar" [disabled]="facade.probe() === 'checking'" (click)="probar()">
+  Probar conexión
+</button>
+
+@if (facade.probeMessage()) {
+  <p class="mensaje" role="status">{{ facade.probeMessage() }}</p>
+}

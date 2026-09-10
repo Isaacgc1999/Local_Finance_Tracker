@@ -1,0 +1,66 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--ft-radius-control);
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    border-color: var(--ft-border-hover);
+  }
+}
+
+.operacion {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultado {
+  font: 600 15px/1 var(--ft-font-family);
+  color: var(--ft-text-1);
+  flex: none;
+}
+
+.vacio {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+// 390: filas algo más altas para el pulgar (handoff, 12px de padding).
+:host(.compacta) {
+  gap: 8px;
+
+  .fila {
+    padding: 12px;
+  }
+}

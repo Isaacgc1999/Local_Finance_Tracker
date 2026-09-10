@@ -1,0 +1,91 @@
+// Escritorio y tablet: columna de 400px pegada al borde derecho del shell,
+// con borde izquierdo de 1px. Es un hermano del contenido, no una capa
+// flotante: así la vista de detrás sigue montada y visible.
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: min(var(--ft-calc-panel-w), 100vw);
+  height: 100%;
+  background: var(--ft-surface);
+  border-left: 1px solid var(--ft-border);
+  z-index: var(--ft-z-panel);
+  outline: none;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--ft-border);
+  flex: none;
+}
+
+.titulo {
+  font: var(--ft-font-title);
+  color: var(--ft-text-1);
+}
+
+.cerrar {
+  background: var(--ft-surface-elevated);
+  font: var(--ft-font-body);
+  color: var(--ft-text-2);
+}
+
+.cuerpo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.pie {
+  flex: none;
+  border-top: 1px solid var(--ft-border);
+  padding: 16px 24px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// 390: hoja modal anclada abajo, por encima de la tab bar, con asa de 40×4.
+:host(.hoja) {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  max-height: 92vh;
+  border-left: 0;
+  border-top: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card) var(--ft-radius-card) 0 0;
+  padding: 12px 0 0;
+}
+
+:host(.hoja) .asa {
+  width: var(--ft-sheet-handle-w);
+  height: var(--ft-sheet-handle-h);
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-border);
+  align-self: center;
+  flex: none;
+}
+
+:host(.hoja) .pie {
+  border-top: 0;
+  padding: 0 16px 20px;
+}
+
+// Tablet: el panel flota pegado al borde derecho sobre el contenido velado.
+:host(.flotante) {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
+}

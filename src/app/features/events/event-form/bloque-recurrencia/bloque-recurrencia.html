@@ -1,0 +1,34 @@
+<div class="cabecera" [formGroup]="form()">
+  <div>
+    <p class="titulo" id="recurrencia-label">{{ label() }}</p>
+    @if (expanded() && resumen()) {
+      <p class="hint">{{ resumen() }}</p>
+    } @else if (hint()) {
+      <p class="hint">{{ hint() }}</p>
+    }
+  </div>
+  @if (mode() === 'toggle') {
+    <ft-toggle formControlName="recurrent" labelledBy="recurrencia-label" />
+  }
+</div>
+
+@if (expanded() && !locked()) {
+  <hr class="ft-divider" />
+  <div class="ft-field">
+    <span class="ft-field__label" id="frecuencia-label">Frecuencia</span>
+    <ft-segmented-control
+      label="Frecuencia"
+      layout="stretch"
+      tone="subtle"
+      [options]="frecuencias"
+      [value]="form().controls.frequency.value"
+      (valueChange)="setFrequency($event)"
+    />
+  </div>
+  <div class="ft-field" [formGroup]="form()">
+    <label class="ft-field__label" for="fecha-fin">Fecha de fin <span class="ft-field__label-hint">· opcional</span></label>
+    <input id="fecha-fin" class="ft-input num" type="date" formControlName="endDate" />
+  </div>
+} @else if (locked()) {
+  <p class="hint">Esta fila pertenece a una regla. Edita o desactiva la regla desde Ajustes.</p>
+}

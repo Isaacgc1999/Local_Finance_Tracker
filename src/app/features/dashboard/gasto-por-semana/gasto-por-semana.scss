@@ -1,0 +1,64 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: var(--ft-card-padding);
+  background: var(--ft-surface);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titulo {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.pista {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.leyenda {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.leyenda__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-2);
+}
+
+.leyenda__cuadro {
+  width: var(--ft-legend-sq);
+  height: var(--ft-legend-sq);
+  border-radius: var(--ft-radius-legend);
+}
+
+.area {
+  height: var(--ft-week-chart-h);
+  min-width: 0;
+
+  &--scroll {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+}
+
+.grafico {
+  width: 100%;
+  height: 100%;
+}

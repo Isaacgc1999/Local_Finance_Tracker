@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="width:100%;height:100%;background:#131519;border-right:1px solid #262A31;display:flex;flex-direction:column;padding:20px 0">
+  <div style="display:flex;align-items:center;gap:10px;padding:0 20px 24px 20px">
+    <div style="width:28px;height:28px;border-radius:8px;background:#6E56F8;flex:none"></div>
+    <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}"><div style="font:700 16px/1 Inter,sans-serif;color:#F2F4F7;letter-spacing:-0.01em">Fintrack</div></sc-if>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:2px;padding:0 12px">
+    <sc-for list="{{ items }}" as="it" hint-placeholder-count="5">
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:{{ it.bg }};color:{{ it.fg }};cursor:pointer">
+        <div style="width:18px;height:18px;flex:none;display:flex">{{ it.icon }}</div>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}"><div style="font:500 15px/1 Inter,sans-serif;white-space:nowrap">{{ it.label }}</div></sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <div style="flex:1"></div>
+  <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+    <div style="margin:0 20px;padding:12px;border:1px solid #262A31;border-radius:12px;background:#1B1E24">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:6px;height:6px;border-radius:999px;background:#22C55E"></div>
+        <div style="font:400 13px/1 Inter,sans-serif;color:#9BA3AF">Datos locales</div>
+      </div>
+      <div style="font:400 13px/1.4 Inter,sans-serif;color:#6B7280;margin-top:6px">fintrack.db · 2,4 MB</div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:240,&quot;height&quot;:620},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dashboard&quot;,&quot;movimientos&quot;,&quot;analitica&quot;,&quot;ia&quot;,&quot;ajustes&quot;],&quot;default&quot;:&quot;dashboard&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;collapsed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const S = (paths, extra) => React.createElement('svg', Object.assign({width:18,height:18,viewBox:'0 0 18 18',fill:'none',stroke:'currentColor','strokeWidth':1.6,'strokeLinecap':'round'}, extra||{}), paths);
+const ICONS = {
+  dashboard: () => S([
+    React.createElement('rect',{key:1,x:2,y:2,width:6,height:6,rx:1.5}),
+    React.createElement('rect',{key:2,x:10,y:2,width:6,height:6,rx:1.5}),
+    React.createElement('rect',{key:3,x:2,y:10,width:6,height:6,rx:1.5}),
+    React.createElement('rect',{key:4,x:10,y:10,width:6,height:6,rx:1.5})]),
+  movimientos: () => S([
+    React.createElement('line',{key:1,x1:3,y1:4.5,x2:15,y2:4.5}),
+    React.createElement('line',{key:2,x1:3,y1:9,x2:15,y2:9}),
+    React.createElement('line',{key:3,x1:3,y1:13.5,x2:11,y2:13.5})]),
+  analitica: () => S([
+    React.createElement('rect',{key:1,x:2.5,y:9,width:3.5,height:6.5,rx:1}),
+    React.createElement('rect',{key:2,x:7.5,y:5,width:3.5,height:10.5,rx:1}),
+    React.createElement('rect',{key:3,x:12.5,y:2.5,width:3.5,height:13,rx:1})]),
+  ia: () => S([
+    React.createElement('circle',{key:1,cx:9,cy:9,r:6.5}),
+    React.createElement('circle',{key:2,cx:9,cy:9,r:2.2})]),
+  ajustes: () => S([
+    React.createElement('circle',{key:1,cx:9,cy:9,r:3}),
+    React.createElement('line',{key:2,x1:9,y1:1.5,x2:9,y2:4}),
+    React.createElement('line',{key:3,x1:9,y1:14,x2:9,y2:16.5}),
+    React.createElement('line',{key:4,x1:1.5,y1:9,x2:4,y2:9}),
+    React.createElement('line',{key:5,x1:14,y1:9,x2:16.5,y2:9})])
+};
+class Component extends DCLogic {
+  renderVals() {
+    const active = this.props.active || 'dashboard';
+    const defs = [['dashboard','Dashboard'],['movimientos','Movimientos'],['analitica','Analítica'],['ia','Análisis IA'],['ajustes','Ajustes']];
+    return {
+      showLabels: this.props.collapsed !== true,
+      items: defs.map(([id,label]) => ({
+        id, label,
+        icon: ICONS[id](),
+        bg: id === active ? '#1B1E24' : 'transparent',
+        fg: id === active ? '#F2F4F7' : '#9BA3AF'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

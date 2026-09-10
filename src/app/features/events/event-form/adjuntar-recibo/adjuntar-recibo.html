@@ -1,0 +1,22 @@
+@if (!compact()) {
+  <p class="titulo">Adjuntar recibo</p>
+}
+@if (attachment(); as file) {
+  <div class="fichero">
+    <span class="icono" aria-hidden="true"></span>
+    <span class="datos">
+      <span class="nombre">{{ file.name }}</span>
+      @if (peso(file.bytes)) {
+        <span class="peso num">{{ peso(file.bytes) }}</span>
+      }
+    </span>
+    <button type="button" class="quitar" aria-label="Quitar adjunto" (click)="detach.emit()">✕</button>
+  </div>
+} @else if (compact()) {
+  <button type="button" class="zona zona--compacta" (click)="attach.emit()">Adjuntar recibo</button>
+} @else {
+  <button type="button" class="zona" (click)="attach.emit()">
+    <span class="icono icono--grande" aria-hidden="true"></span>
+    <span class="ayuda">Arrastra un archivo o pulsa para buscar<br />PNG, JPG o PDF · máx. 8 MB</span>
+  </button>
+}

@@ -1,0 +1,42 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--ft-grid-gap);
+  align-items: start;
+}
+
+.span-7 {
+  grid-column: span 7;
+}
+
+.span-5 {
+  grid-column: span 5;
+}
+
+.columna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ft-grid-gap);
+  min-width: 0;
+}
+
+// 768: una sola columna, con presupuesto y moneda a la par al final.
+:host(.v-tablet) .columna {
+  gap: 20px;
+}
+
+.par {
+  display: flex;
+  gap: 16px;
+  align-items: start;
+
+  > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// 390: ritmo de 16px, como el resto de pantallas de móvil.
+:host(.v-mobile) .columna {
+  gap: 16px;
+}

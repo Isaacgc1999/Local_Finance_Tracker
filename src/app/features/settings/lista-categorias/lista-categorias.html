@@ -1,0 +1,34 @@
+<div class="cabecera">
+  <h2 class="ft-card__title">Categorías</h2>
+  <button type="button" class="ft-link" (click)="nueva()">
+    {{ bp.isDesktop() ? '+ Añadir categoría' : '+ Añadir' }}
+  </button>
+</div>
+
+@if (facade.loading()) {
+  <ft-skeleton variant="fila" [rows]="6" />
+} @else {
+  <ul class="lista">
+    @for (fila of facade.categories(); track fila.category.id) {
+      <li>
+        <button type="button" class="fila" (click)="editar(fila.category)">
+          <span
+            class="muestra"
+            aria-hidden="true"
+            [style.background]="fila.category.color + '1F'"
+            [style.border-color]="fila.category.color"
+          ></span>
+          <span class="nombre">{{ fila.category.name }}</span>
+          <span class="usos">{{ fila.usesLabel }}</span>
+          @if (bp.isDesktop()) {
+            <span class="editar">Editar</span>
+          }
+        </button>
+      </li>
+    } @empty {
+      <li class="vacio">No hay categorías. Añade la primera para clasificar tus movimientos.</li>
+    }
+  </ul>
+}
+
+<ft-modal-categoria [(abierto)]="modalAbierto" [categoria]="enEdicion()" />
