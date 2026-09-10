@@ -6,7 +6,7 @@ Aplicación de escritorio de finanzas personales para un único usuario. **Local
 - UI: Angular 21 LTS, standalone, zoneless, signals
 - Datos: SQLite vía `@tauri-apps/plugin-sql`
 - Gráficos: ECharts (import directo, `echarts/core`)
-- Diseño: `design/design_handoff_fintrack/` (fuente de verdad de lo visual)
+- Diseño: propio. Basado en aplicaciones fintech como trade republic o revolut
 
 ## Requisitos
 
