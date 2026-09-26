@@ -7,7 +7,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
   it('aplica el esquema y la semilla, y es idempotente', async () => {
     const db = NodeSqliteDatabase.open();
     const first = await applyPendingMigrations(db, MIGRATIONS);
-    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4]);
+    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4, 5]);
 
     const tables = await db.select<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
@@ -30,7 +30,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
 
     const second = await applyPendingMigrations(db, MIGRATIONS);
     expect(second.ok && second.value.applied).toEqual([]);
-    expect(second.ok && second.value.current).toBe(4);
+    expect(second.ok && second.value.current).toBe(5);
   });
 
   it('la 0003 convierte el presupuesto antiguo solo si el usuario lo había cambiado', async () => {
@@ -56,21 +56,69 @@ describe('applyPendingMigrations (SQLite real)', () => {
     expect(clave.ok && clave.value[0]?.n).toBe(0);
   });
 
+  const movimientoAntiguo = (id: string, date: string) =>
+    `INSERT INTO events (id, type, amount_cents, date, concept, created_at, updated_at)
+     VALUES ('${id}', 'expense', 1000, '${date}', 'Antes de las cuentas', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`;
+
   it('la 0004 deja los movimientos existentes sin cuenta y no inventa ninguna', async () => {
-    const hastaLa3 = MIGRATIONS.filter((m) => m.version <= 3);
+    const hastaLa4 = MIGRATIONS.filter((m) => m.version <= 4);
     const db = NodeSqliteDatabase.open();
-    await applyPendingMigrations(db, hastaLa3);
-    await db.executeRaw(
-      `INSERT INTO events (id, type, amount_cents, date, concept, created_at, updated_at)
-       VALUES ('e1', 'expense', 1000, '2026-09-01', 'Antes de las cuentas', '2026-09-01T00:00:00Z', '2026-09-01T00:00:00Z')`,
-    );
-    const migrated = await applyPendingMigrations(db, MIGRATIONS);
+    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 3));
+    await db.executeRaw(movimientoAntiguo('e1', '2026-09-01'));
+    const migrated = await applyPendingMigrations(db, hastaLa4);
     expect(migrated.ok && migrated.value.applied).toEqual([4]);
 
     const events = await db.select<{ account_id: string | null }>('SELECT account_id FROM events');
     expect(events.ok && events.value).toEqual([{ account_id: null }]);
     const accounts = await db.select<{ n: number }>('SELECT COUNT(*) AS n FROM accounts');
     expect(accounts.ok && accounts.value[0]?.n).toBe(0);
+  });
+
+  it('la 0005 pasa los movimientos y reglas sin cuenta a «Cuenta principal», abierta en el más antiguo', async () => {
+    const db = NodeSqliteDatabase.open();
+    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 4));
+    await db.executeRaw(movimientoAntiguo('e1', '2026-03-15'));
+    await db.executeRaw(movimientoAntiguo('e2', '2025-11-02'));
+    await db.executeRaw(
+      `INSERT INTO recurrences (id, type, amount_cents, concept, frequency, start_date, created_at, updated_at)
+       VALUES ('r1', 'subscription', 1399, 'Netflix', 'monthly', '2026-01-14', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,
+    );
+    const migrated = await applyPendingMigrations(db, MIGRATIONS);
+    expect(migrated.ok && migrated.value.applied).toEqual([5]);
+
+    const accounts = await db.select<{ id: string; name: string; opening_date: string; opening_balance_cents: number; sort_order: number }>(
+      'SELECT id, name, opening_date, opening_balance_cents, sort_order FROM accounts',
+    );
+    expect(accounts.ok && accounts.value).toEqual([
+      { id: 'account-main', name: 'Cuenta principal', opening_date: '2000-01-01', opening_balance_cents: 0, sort_order: -1 },
+    ]);
+    const sinCuenta = await db.select<{ n: number }>(
+      'SELECT (SELECT COUNT(*) FROM events WHERE account_id IS NULL) + (SELECT COUNT(*) FROM recurrences WHERE account_id IS NULL) AS n',
+    );
+    expect(sinCuenta.ok && sinCuenta.value[0]?.n).toBe(0);
+  });
+
+  it('la 0005 crea la cuenta vacía en una instalación nueva', async () => {
+    const db = NodeSqliteDatabase.open();
+    await applyPendingMigrations(db, MIGRATIONS);
+    const accounts = await db.select<{ name: string; opening_date: string }>('SELECT name, opening_date FROM accounts');
+    expect(accounts.ok && accounts.value.map((a) => a.name)).toEqual(['Cuenta principal']);
+    expect(accounts.ok && accounts.value[0]?.opening_date).toBe('2000-01-01');
+  });
+
+  it('la 0005 reutiliza una cuenta que ya se llamara así', async () => {
+    const db = NodeSqliteDatabase.open();
+    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 4));
+    await db.executeRaw(
+      `INSERT INTO accounts (id, name, kind, color, opening_date, created_at, updated_at)
+       VALUES ('mia', 'cuenta PRINCIPAL', 'bank', '#22C55E', '2026-01-01', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,
+    );
+    await db.executeRaw(movimientoAntiguo('e1', '2026-03-15'));
+    await applyPendingMigrations(db, MIGRATIONS);
+    const accounts = await db.select<{ id: string }>('SELECT id FROM accounts');
+    expect(accounts.ok && accounts.value).toEqual([{ id: 'mia' }]);
+    const events = await db.select<{ account_id: string }>('SELECT account_id FROM events');
+    expect(events.ok && events.value).toEqual([{ account_id: 'mia' }]);
   });
 
   it('respeta lo que el usuario cambió en la semilla al reaplicar', async () => {
