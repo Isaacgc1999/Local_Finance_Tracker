@@ -75,6 +75,15 @@
 
         <div class="categorias">
           <label class="ft-field">
+            <span class="ft-field__label">Cuenta</span>
+            <select class="ft-select" (change)="setCuenta($event)">
+              @for (a of facade.accounts(); track a.id) {
+                <option [value]="a.id" [selected]="a.id === facade.accountId()">{{ a.name }}</option>
+              }
+              <option value="" [selected]="facade.accountId() === null">Sin cuenta</option>
+            </select>
+          </label>
+          <label class="ft-field">
             <span class="ft-field__label">Categoría de los gastos</span>
             <select class="ft-select" (change)="setCategoria('expense', $event)">
               @for (c of facade.expenseCategories(); track c.id) {

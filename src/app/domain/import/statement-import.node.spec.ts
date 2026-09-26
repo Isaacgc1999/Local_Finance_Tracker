@@ -46,6 +46,7 @@ function santanderXlsx(dataRows: (string | number)[][]): Uint8Array {
 
 const OPTIONS = {
   fileName: 'extracto.xlsx',
+  accountId: null,
   expenseCategoryId: DEFAULT_IMPORT_CATEGORIES.expense,
   incomeCategoryId: DEFAULT_IMPORT_CATEGORIES.income,
 };
@@ -172,6 +173,7 @@ describe('buildPreview y StatementImportService', () => {
     notes: null,
     attachmentPath: null,
     recurrenceId: null,
+    accountId: null,
     meta: { type: 'expense' },
     ...overrides,
   });

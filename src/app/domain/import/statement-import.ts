@@ -179,12 +179,11 @@ export function selectedByDefault(row: ImportRow): boolean {
   return row.status === 'new';
 }
 
-/**
- * Opciones del guardado. Cuando exista la tabla de cuentas, la cuenta
- * destino se añade aquí y viaja a cada borrador.
- */
+/** Opciones del guardado: fichero de origen, cuenta del extracto y categorías por defecto. */
 export interface ImportCommitOptions {
   readonly fileName: string;
+  /** Cuenta a la que pertenece el extracto; `null` = sin cuenta asignada. */
+  readonly accountId: string | null;
   readonly expenseCategoryId: string;
   readonly incomeCategoryId: string;
 }
@@ -208,6 +207,7 @@ export function toDraft(row: ImportRow, options: ImportCommitOptions): EventDraf
     notes: `Importado de ${options.fileName}`,
     attachmentPath: null,
     recurrenceId: null,
+    accountId: options.accountId,
     meta: expense ? { type: 'expense' } : { type: 'income' },
   };
 }
