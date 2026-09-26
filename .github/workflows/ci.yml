@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+
+jobs:
+  checks:
+    name: Typecheck, tests y build web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # TEMPORAL: imprime el hash del tarball de SheetJS para fijarlo en el lockfile.
+      - name: Hash del tarball de xlsx
+        run: |
+          curl -fsSL -o xlsx.tgz https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
+          echo "integrity: sha512-$(openssl dgst -sha512 -binary xlsx.tgz | base64 -w0)"
+          tar -xOzf xlsx.tgz package/package.json | jq '{name, version, license, bin, engines, dependencies}'
+          rm xlsx.tgz
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: |
+          npx tsc -p tsconfig.app.json --noEmit
+          npx tsc -p tsconfig.spec.json --noEmit
+          npx tsc -p tsconfig.node-spec.json --noEmit
+
+      - name: Tests de Angular
+        run: npx ng test --watch=false
+
+      - name: Tests de Node
+        run: npm run test:node
+
+      - name: Build web
+        run: npm run build
+
+  rust:
+    name: Rust fmt y clippy
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias de sistema de Tauri
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libxdo-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: cargo fmt
+        working-directory: src-tauri
+        run: cargo fmt --check
+
+      # generate_context! exige que exista frontendDist; clippy no necesita el build real.
+      - name: cargo clippy
+        working-directory: src-tauri
+        run: |
+          mkdir -p ../dist/fintrack/browser
+          cargo clippy --locked --all-targets -- -D warnings
+
+  tauri:
+    name: Tauri build (${{ matrix.platform }})
+    needs: checks
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            os: ubuntu-22.04
+          - platform: macos
+            os: macos-latest
+          - platform: windows
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias de sistema de Tauri
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libxdo-dev
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      # Instaladores sin firmar: sirven para comprobar que el empaquetado funciona.
+      - name: tauri build
+        run: npx tauri build --ci
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fintrack-${{ matrix.platform }}
+          path: src-tauri/target/release/bundle/
+          if-no-files-found: error
+          retention-days: 7
