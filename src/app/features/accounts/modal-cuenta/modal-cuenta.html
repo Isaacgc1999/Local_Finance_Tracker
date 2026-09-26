@@ -1,0 +1,91 @@
+<ft-modal [(open)]="abierto" [titulo]="titulo()" (cerrar)="cerrar()">
+  <label class="ft-field">
+    <span class="ft-field__label">Nombre</span>
+    <input
+      class="ft-input"
+      [attr.maxlength]="nombreMax"
+      placeholder="BBVA nómina, Efectivo, Revolut…"
+      [value]="nombre()"
+      [attr.aria-invalid]="error('name') ? 'true' : null"
+      (input)="nombre.set($any($event.target).value); limpiar('name')"
+    />
+    @if (error('name')) {
+      <span class="ft-field__error">{{ error('name') }}</span>
+    }
+  </label>
+
+  <div class="ft-field">
+    <span class="ft-field__label">Tipo</span>
+    <ft-segmented-control layout="stretch" tone="subtle" label="Tipo de cuenta" [options]="tipos" [value]="tipo()" (valueChange)="$event && setTipo($event)" />
+  </div>
+
+  <div class="fila-2">
+    <label class="ft-field">
+      <span class="ft-field__label">Saldo inicial</span>
+      <input
+        class="ft-input num"
+        inputmode="decimal"
+        placeholder="0,00"
+        [value]="saldoTexto()"
+        [attr.aria-invalid]="error('openingBalance') ? 'true' : null"
+        (input)="saldoTexto.set($any($event.target).value); limpiar('openingBalance')"
+      />
+      @if (error('openingBalance')) {
+        <span class="ft-field__error">{{ error('openingBalance') }}</span>
+      }
+    </label>
+    <label class="ft-field">
+      <span class="ft-field__label">A fecha de</span>
+      <input
+        class="ft-input num"
+        type="date"
+        [value]="fecha()"
+        [attr.aria-invalid]="error('openingDate') ? 'true' : null"
+        (input)="fecha.set($any($event.target).value); limpiar('openingDate')"
+      />
+      @if (error('openingDate')) {
+        <span class="ft-field__error">{{ error('openingDate') }}</span>
+      }
+    </label>
+  </div>
+  <p class="pista">
+    El saldo que tenía la cuenta al empezar ese día. Los movimientos anteriores ya están dentro y no se vuelven a sumar.
+    En una tarjeta de crédito con deuda, escríbelo en negativo.
+  </p>
+
+  <div class="ft-field">
+    <span class="ft-field__label">Color</span>
+    <div class="colores" role="radiogroup" aria-label="Color de la cuenta">
+      @for (c of colores; track c) {
+        <button
+          type="button"
+          role="radio"
+          class="muestra"
+          [class.activa]="c === color()"
+          [attr.aria-checked]="c === color()"
+          [attr.aria-label]="'Color ' + c"
+          [style.background]="c + '1F'"
+          [style.border-color]="c"
+          (click)="setColor(c)"
+        ></button>
+      }
+    </div>
+  </div>
+
+  @if (error('account')) {
+    <p class="confirmar">{{ error('account') }}</p>
+  } @else if (edicion() && confirmandoBorrado()) {
+    <p class="confirmar">Se borrará la cuenta. Pulsa «Borrar» otra vez para confirmarlo.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" [disabled]="guardando()" (click)="borrar()">Borrar</button>
+      <button type="button" class="ft-btn ft-btn--secondary" [disabled]="guardando()" (click)="alternarArchivo()">
+        {{ archivada() ? 'Recuperar' : 'Archivar' }}
+      </button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>

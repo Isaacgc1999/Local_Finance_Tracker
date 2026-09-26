@@ -4,7 +4,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Icono } from '../../shared/components/icono/icono';
 import { NAV_ITEMS } from '../navegacion';
 
-/** Tab bar inferior de 76px con 5 destinos (README, layout de 640px o menos). */
+/** Tab bar inferior de 76px con los destinos de la navegación (README, layout de 640px o menos). */
 @Component({
   selector: 'ft-tab-bar',
   imports: [RouterLink, RouterLinkActive, Icono],

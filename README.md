@@ -41,6 +41,8 @@ npm start          # http://localhost:4200
 
 **No hay datos de ejemplo en ningún modo.** Tanto la demo como la aplicación instalada arrancan vacías: solo existen las categorías y los ajustes por defecto, sin movimientos ni presupuestos, para que todo lo que muestran el dashboard, la analítica y la IA salga de lo que registra cada usuario.
 
+En **Cuentas** se dan de alta las cuentas (banco, efectivo, tarjeta, ahorro) con su saldo de apertura, se ven los saldos de hoy, se registran traspasos entre ellas (no cuentan como ingreso ni gasto) y se concilia cada cuenta con el saldo del extracto del banco. Al registrar un movimiento se elige la cuenta; los movimientos anteriores a esta función quedan sin cuenta hasta que se les asigne una.
+
 En **Ajustes** se configuran los presupuestos (límites de gasto total, fijos, variables, ocio, suscripciones o por categoría, y objetivos de ahorro e inversión) y la moneda de visualización (euro o dólar; los importes no se convierten, solo cambia el símbolo). La tarjeta «Presupuestos» de Analítica muestra hasta dónde se ha llegado en cada uno.
 
 Tests (dos vías: componentes y utilidades en jsdom; repositorios contra SQLite real en Node):
@@ -77,6 +79,7 @@ Pruebas de extremo a extremo sobre el build demo (Chrome real, sin Rust ni Ollam
 
 ```bash
 node tools/export-e2e.mjs      # descarga y valida los tres formatos de exportación
+node tools/accounts-e2e.mjs    # cuentas, traspaso, gasto con cuenta y conciliación
 node tools/fake-ollama.mjs 11434 ok   # servidor falso de Ollama, en otra terminal
 node tools/ai-e2e.mjs informe.png     # registra un movimiento y genera el informe semanal
 node tools/calc-e2e.mjs calc.png      # Ctrl+K, la operación del handoff y «Usar X en nuevo evento»

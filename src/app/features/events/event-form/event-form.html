@@ -145,6 +145,18 @@
       }
     </div>
 
+    @if (facade.accounts().length > 0) {
+      <div class="ft-field">
+        <label class="ft-field__label" for="cuenta-id">{{ s.type === 'income' ? 'Cuenta de destino' : 'Cuenta de cargo' }}</label>
+        <select id="cuenta-id" class="ft-select" formControlName="accountId">
+          <option [ngValue]="null">Sin cuenta</option>
+          @for (a of facade.accounts(); track a.id) {
+            <option [ngValue]="a.id">{{ a.name }}</option>
+          }
+        </select>
+      </div>
+    }
+
     @if (facade.visible('notes')) {
       <div class="ft-field">
         <label class="ft-field__label" for="notas">Notas</label>

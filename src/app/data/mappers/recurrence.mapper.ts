@@ -21,13 +21,14 @@ export interface RecurrenceRow {
   readonly end_date: string | null;
   readonly active: number;
   readonly payment_method: string | null;
+  readonly account_id: string | null;
   readonly meta: string | null;
   readonly created_at: string;
   readonly updated_at: string;
 }
 
 export const RECURRENCE_COLUMNS =
-  'id, type, amount_cents, category_id, concept, frequency, interval, day_of_month, weekday, start_date, end_date, active, payment_method, meta, created_at, updated_at';
+  'id, type, amount_cents, category_id, concept, frequency, interval, day_of_month, weekday, start_date, end_date, active, payment_method, account_id, meta, created_at, updated_at';
 
 export function rowToRecurrence(row: RecurrenceRow): Result<Recurrence> {
   if (!isEventType(row.type)) return err(dbError(`Tipo de regla desconocido: ${row.type}`));
@@ -54,6 +55,7 @@ export function rowToRecurrence(row: RecurrenceRow): Result<Recurrence> {
     endDate: row.end_date,
     active: row.active === 1,
     paymentMethod: row.payment_method,
+    accountId: row.account_id,
     meta: meta.value,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -75,6 +77,7 @@ export function recurrenceInsertParams(id: string, draft: RecurrenceDraft, now: 
     draft.endDate,
     draft.active ? 1 : 0,
     draft.paymentMethod,
+    draft.accountId,
     toJsonColumn(draft.meta),
     now,
     now,

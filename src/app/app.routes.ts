@@ -37,6 +37,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/events/event-form/event-form').then((m) => m.EventForm),
   },
   {
+    path: 'accounts',
+    title: 'Cuentas · Fintrack',
+    data: data('cuentas', true),
+    loadComponent: () => import('./features/accounts/accounts').then((m) => m.Accounts),
+  },
+  {
+    path: 'accounts/:id',
+    title: 'Conciliar cuenta · Fintrack',
+    data: data('cuentas', false),
+    loadComponent: () => import('./features/accounts/conciliacion/conciliacion').then((m) => m.Conciliacion),
+  },
+  {
     path: 'analytics',
     title: 'Analítica · Fintrack',
     data: data('analitica', false),

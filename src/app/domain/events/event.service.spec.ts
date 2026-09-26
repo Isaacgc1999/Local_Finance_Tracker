@@ -13,7 +13,7 @@ const draft = (overrides: Partial<EventDraft> = {}): EventDraft => ({
   paymentMethod: null,
   notes: null,
   attachmentPath: null,
-  recurrenceId: null,
+  recurrenceId: null, accountId: null,
   meta: { type: 'expense' },
   ...overrides,
 });

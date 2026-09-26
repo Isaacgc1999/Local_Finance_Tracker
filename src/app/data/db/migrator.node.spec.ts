@@ -7,19 +7,22 @@ describe('applyPendingMigrations (SQLite real)', () => {
   it('aplica el esquema y la semilla, y es idempotente', async () => {
     const db = NodeSqliteDatabase.open();
     const first = await applyPendingMigrations(db, MIGRATIONS);
-    expect(first.ok && first.value.applied).toEqual([1, 2, 3]);
+    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4]);
 
     const tables = await db.select<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
     );
     expect(tables.ok && tables.value.map((t) => t.name)).toEqual([
+      'accounts',
       'ai_reports',
       'budgets',
       'categories',
       'events',
+      'reconciliations',
       'recurrences',
       'schema_migrations',
       'settings',
+      'transfers',
     ]);
 
     const cats = await db.select<{ n: number }>('SELECT COUNT(*) AS n FROM categories');
@@ -27,7 +30,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
 
     const second = await applyPendingMigrations(db, MIGRATIONS);
     expect(second.ok && second.value.applied).toEqual([]);
-    expect(second.ok && second.value.current).toBe(3);
+    expect(second.ok && second.value.current).toBe(4);
   });
 
   it('la 0003 convierte el presupuesto antiguo solo si el usuario lo había cambiado', async () => {
@@ -51,6 +54,23 @@ describe('applyPendingMigrations (SQLite real)', () => {
     // La clave antigua desaparece en los dos casos.
     const clave = await cambiado.select<{ n: number }>("SELECT COUNT(*) AS n FROM settings WHERE key = 'budget_target_cents'");
     expect(clave.ok && clave.value[0]?.n).toBe(0);
+  });
+
+  it('la 0004 deja los movimientos existentes sin cuenta y no inventa ninguna', async () => {
+    const hastaLa3 = MIGRATIONS.filter((m) => m.version <= 3);
+    const db = NodeSqliteDatabase.open();
+    await applyPendingMigrations(db, hastaLa3);
+    await db.executeRaw(
+      `INSERT INTO events (id, type, amount_cents, date, concept, created_at, updated_at)
+       VALUES ('e1', 'expense', 1000, '2026-09-01', 'Antes de las cuentas', '2026-09-01T00:00:00Z', '2026-09-01T00:00:00Z')`,
+    );
+    const migrated = await applyPendingMigrations(db, MIGRATIONS);
+    expect(migrated.ok && migrated.value.applied).toEqual([4]);
+
+    const events = await db.select<{ account_id: string | null }>('SELECT account_id FROM events');
+    expect(events.ok && events.value).toEqual([{ account_id: null }]);
+    const accounts = await db.select<{ n: number }>('SELECT COUNT(*) AS n FROM accounts');
+    expect(accounts.ok && accounts.value[0]?.n).toBe(0);
   });
 
   it('respeta lo que el usuario cambió en la semilla al reaplicar', async () => {

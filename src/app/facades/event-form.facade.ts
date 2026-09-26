@@ -8,6 +8,7 @@ import { type AppError, type ValidationError, describeError } from '../core/erro
 import { FREQUENCY_LABEL } from '../core/types/recurrence';
 import { formatDayMonth } from '../core/format/date-format';
 import { formatMoney } from '../core/format/money-format';
+import type { Account } from '../core/types/account';
 import type { Category } from '../core/types/category';
 import type { AssetClass, Event, EventDraft, EventMeta, EventType, Nature } from '../core/types/event';
 import { type IsoDate, day, isIsoDate, todayIso, weekdayIso } from '../core/types/iso-date';
@@ -31,6 +32,7 @@ export interface EventFormControls {
   source: FormControl<string>;
   issuer: FormControl<string>;
   account: FormControl<string>;
+  accountId: FormControl<string | null>;
   goal: FormControl<string>;
   ticker: FormControl<string>;
   platform: FormControl<string>;
@@ -94,6 +96,7 @@ export class EventFormFacade {
     source: this.fb.control(''),
     issuer: this.fb.control(''),
     account: this.fb.control(''),
+    accountId: this.fb.control<string | null>(null),
     goal: this.fb.control(''),
     ticker: this.fb.control(''),
     platform: this.fb.control(''),
@@ -106,6 +109,7 @@ export class EventFormFacade {
   private readonly typeSig = signal<EventType>('expense');
   private readonly editingSig = signal<Event | null>(null);
   private readonly categoriesSig = signal<readonly Category[]>([]);
+  private readonly accountsSig = signal<readonly Account[]>([]);
   private readonly submittedSig = signal(false);
   private readonly savingSig = signal(false);
   private readonly attachmentSig = signal<AttachmentInfo | null>(null);
@@ -132,6 +136,15 @@ export class EventFormFacade {
   readonly categories = computed(() => {
     const kind = this.strategy().categoryKind;
     return kind ? this.categoriesSig().filter((c) => c.kind === kind || c.kind === 'both') : [];
+  });
+
+  /**
+   * Cuentas que ofrece el selector: las activas y, al editar, también la del
+   * movimiento aunque esté archivada, para no perderla al guardar.
+   */
+  readonly accounts = computed(() => {
+    const current = this.editingSig()?.accountId ?? null;
+    return this.accountsSig().filter((a) => !a.archived || a.id === current);
   });
 
   readonly recurrenceEnabled = computed(() => {
@@ -172,12 +185,14 @@ export class EventFormFacade {
   }
 
   async init(params: { readonly id?: string | undefined; readonly presetAmountCents?: string | undefined }): Promise<void> {
-    await this.loadCategories();
+    await Promise.all([this.loadCategories(), this.loadAccounts()]);
     if (params.id) {
       await this.loadEvent(params.id);
       return;
     }
     this.setType('expense');
+    // Con cuentas, el movimiento nuevo va a la primera activa; se puede cambiar o dejar sin cuenta.
+    this.form.controls.accountId.setValue(this.accounts()[0]?.id ?? null);
     const preset = Number(params.presetAmountCents);
     if (params.presetAmountCents && Number.isSafeInteger(preset) && preset > 0) {
       this.form.controls.amount.setValue(preset as Money);
@@ -198,8 +213,8 @@ export class EventFormFacade {
   async saveAndAddAnother(): Promise<Result<Event>> {
     const result = await this.persist({ stay: true });
     if (result.ok) {
-      const { date, categoryId } = this.form.getRawValue();
-      this.form.reset({ date, categoryId, nature: 'variable', frequency: 'monthly' });
+      const { date, categoryId, accountId } = this.form.getRawValue();
+      this.form.reset({ date, categoryId, accountId, nature: 'variable', frequency: 'monthly' });
       this.attachmentSig.set(null);
       this.submittedSig.set(false);
     }
@@ -294,6 +309,7 @@ export class EventFormFacade {
       notes: this.visible('notes') ? clean(v.notes) : null,
       attachmentPath: this.attachmentSig()?.path ?? null,
       recurrenceId: this.editingSig()?.recurrenceId ?? null,
+      accountId: v.accountId,
       meta: this.buildMeta(type, v),
     };
   }
@@ -340,6 +356,7 @@ export class EventFormFacade {
       endDate: isIsoDate(v.endDate) ? v.endDate : null,
       active: true,
       paymentMethod: draft.paymentMethod,
+      accountId: draft.accountId,
       meta: draft.meta,
     };
   }
@@ -370,6 +387,13 @@ export class EventFormFacade {
     if (result.ok) this.categoriesSig.set(result.value);
   }
 
+  private async loadAccounts(): Promise<void> {
+    const repos = this.db.require();
+    if (!repos.ok) return;
+    const result = await repos.value.accounts.findAll();
+    if (result.ok) this.accountsSig.set(result.value);
+  }
+
   private async loadEvent(id: string): Promise<void> {
     const repos = this.db.require();
     if (!repos.ok) return;
@@ -394,6 +418,7 @@ export class EventFormFacade {
       source: e.meta?.type === 'income' ? (e.meta.source ?? '') : '',
       issuer: e.meta?.type === 'direct_debit' ? (e.meta.issuer ?? '') : '',
       account: e.meta?.type === 'saving' ? (e.meta.account ?? '') : '',
+      accountId: e.accountId,
       goal: e.meta?.type === 'saving' ? (e.meta.goal ?? '') : '',
       ticker: e.meta?.type === 'investment' ? e.meta.ticker : '',
       platform: e.meta?.type === 'investment' ? (e.meta.platform ?? '') : '',

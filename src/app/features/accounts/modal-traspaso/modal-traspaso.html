@@ -1,0 +1,74 @@
+<ft-modal [(open)]="abierto" [titulo]="titulo()" subtitulo="Mueve dinero entre tus cuentas. No cuenta como ingreso ni gasto." (cerrar)="cerrar()">
+  <div class="fila-2">
+    <label class="ft-field">
+      <span class="ft-field__label">Desde</span>
+      <select class="ft-select" [value]="desde()" [attr.aria-invalid]="error('from') ? 'true' : null" (change)="desde.set($any($event.target).value); limpiar('from'); limpiar('to')">
+        @for (a of cuentas(); track a.id) {
+          <option [value]="a.id" [selected]="a.id === desde()">{{ a.name }}</option>
+        }
+      </select>
+      @if (error('from')) {
+        <span class="ft-field__error">{{ error('from') }}</span>
+      }
+    </label>
+    <label class="ft-field">
+      <span class="ft-field__label">Hacia</span>
+      <select class="ft-select" [value]="hacia()" [attr.aria-invalid]="error('to') ? 'true' : null" (change)="hacia.set($any($event.target).value); limpiar('to')">
+        @for (a of cuentas(); track a.id) {
+          <option [value]="a.id" [selected]="a.id === hacia()">{{ a.name }}</option>
+        }
+      </select>
+      @if (error('to')) {
+        <span class="ft-field__error">{{ error('to') }}</span>
+      }
+    </label>
+  </div>
+  <button type="button" class="ft-link invertir" (click)="invertir()">⇄ Invertir origen y destino</button>
+
+  <div class="fila-2">
+    <label class="ft-field">
+      <span class="ft-field__label">Importe</span>
+      <input
+        class="ft-input num"
+        inputmode="decimal"
+        placeholder="0,00"
+        [value]="importeTexto()"
+        [attr.aria-invalid]="error('amount') ? 'true' : null"
+        (input)="importeTexto.set($any($event.target).value); limpiar('amount')"
+      />
+      @if (error('amount')) {
+        <span class="ft-field__error">{{ error('amount') }}</span>
+      }
+    </label>
+    <label class="ft-field">
+      <span class="ft-field__label">Fecha</span>
+      <input
+        class="ft-input num"
+        type="date"
+        [value]="fecha()"
+        [attr.aria-invalid]="error('date') ? 'true' : null"
+        (input)="fecha.set($any($event.target).value); limpiar('date')"
+      />
+      @if (error('date')) {
+        <span class="ft-field__error">{{ error('date') }}</span>
+      }
+    </label>
+  </div>
+
+  <label class="ft-field">
+    <span class="ft-field__label">Concepto <span class="ft-field__label-hint">· opcional</span></span>
+    <input class="ft-input" maxlength="80" placeholder="Cajero, paso a ahorro…" [value]="concepto()" (input)="concepto.set($any($event.target).value)" />
+  </label>
+
+  @if (edicion() && confirmandoBorrado()) {
+    <p class="confirmar">Se borrará el traspaso y los saldos de las dos cuentas volverán a como estaban. Pulsa «Borrar» otra vez.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" [disabled]="guardando()" (click)="borrar()">Borrar</button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>
