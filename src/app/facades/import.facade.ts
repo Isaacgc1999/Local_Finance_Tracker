@@ -48,7 +48,7 @@ export class ImportFacade {
 
   readonly expenseCategoryId = signal<string>(DEFAULT_IMPORT_CATEGORIES.expense);
   readonly incomeCategoryId = signal<string>(DEFAULT_IMPORT_CATEGORIES.income);
-  /** Cuenta del extracto; por defecto la primera activa. */
+  /** Cuenta del extracto; por defecto «Cuenta principal» o, si no existe, la primera activa. */
   readonly accountId = signal<string | null>(null);
 
   readonly sheet = this.sheetSig.asReadonly();
@@ -167,7 +167,7 @@ export class ImportFacade {
       this.accountsSig.set(accounts.value);
       const current = this.accountId();
       const active = this.accounts();
-      if (!active.some((a) => a.id === current)) this.accountId.set(active[0]?.id ?? null);
+      if (!active.some((a) => a.id === current)) this.accountId.set(defaultAccount(active)?.id ?? null);
     }
   }
 
@@ -203,4 +203,10 @@ function firstNonEmptyRow(sheet: StatementSheet): number {
 
 function isValidationList(e: AppError | readonly ValidationError[]): e is readonly ValidationError[] {
   return Array.isArray(e);
+}
+
+const MAIN_ACCOUNT_NAMES = ['cuenta principal', 'main account'];
+
+function defaultAccount(accounts: readonly Account[]): Account | null {
+  return accounts.find((a) => MAIN_ACCOUNT_NAMES.includes(a.name.trim().toLocaleLowerCase('es'))) ?? accounts[0] ?? null;
 }
