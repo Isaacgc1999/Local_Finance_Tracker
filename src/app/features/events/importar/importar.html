@@ -1,0 +1,167 @@
+<ft-cabecera-pagina titulo="Importar extracto" subtitulo="CSV o Excel exportado de tu banco. Nada se guarda hasta que confirmes.">
+  <a acciones routerLink="/events" class="ft-btn ft-btn--secondary">Volver</a>
+</ft-cabecera-pagina>
+
+@if (facade.error(); as error) {
+  <p class="aviso ft-card" role="alert">{{ error }}</p>
+}
+
+@switch (facade.step()) {
+  @case ('file') {
+    <label
+      class="zona ft-card"
+      [class.zona--activa]="arrastrando()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="arrastrando.set(false)"
+      (drop)="onDrop($event)"
+    >
+      <input class="ft-sr-only" type="file" [accept]="accept" [disabled]="facade.busy()" (change)="onFile($event)" />
+      <span class="zona__titulo">{{ facade.busy() ? 'Leyendo…' : 'Arrastra el extracto o pulsa para buscarlo' }}</span>
+      <span class="zona__hint">CSV, XLSX, XLS u ODS · máx. 10 MB · Santander se reconoce solo</span>
+    </label>
+  }
+
+  @case ('review') {
+    <section class="ft-card bloque">
+      <header class="bloque__cabecera">
+        <h2 class="ft-card__title">{{ facade.sheet()?.fileName }}</h2>
+        <button type="button" class="ft-link" (click)="otroFichero()">Elegir otro fichero</button>
+      </header>
+
+      @if (mostrarColumnas()) {
+        @if (!facade.autoDetected()) {
+          <p class="nota">No se reconocieron las columnas. Indica en qué fila está la cabecera y qué columna es cada cosa.</p>
+        }
+        <div class="columnas">
+          <label class="ft-field">
+            <span class="ft-field__label">Fila de cabecera</span>
+            <select class="ft-select" [value]="facade.mapping().headerRow" (change)="setCabecera($event)">
+              @for (i of filasCabecera(); track i) {
+                <option [value]="i" [selected]="i === facade.mapping().headerRow">Fila {{ i + 1 }}</option>
+              }
+            </select>
+          </label>
+          @for (campo of campos; track campo.key) {
+            <label class="ft-field">
+              <span class="ft-field__label">{{ campo.label }}@if (campo.hint) {<span class="ft-field__label-hint"> · {{ campo.hint }}</span>}</span>
+              <select class="ft-select" (change)="setColumna(campo.key, $event)">
+                <option value="" [selected]="facade.mapping()[campo.key] === null">—</option>
+                @for (col of facade.columns(); track $index) {
+                  <option [value]="$index" [selected]="facade.mapping()[campo.key] === $index">{{ col }}</option>
+                }
+              </select>
+            </label>
+          }
+        </div>
+        @if (!facade.mappingComplete()) {
+          <p class="ft-field__error">Falta la fecha, el concepto o el importe (con signo, o cargo y abono).</p>
+        }
+      } @else {
+        <p class="nota">
+          {{ resumenColumnas() }}
+          <button type="button" class="ft-link" (click)="editarColumnas.set(true)">Cambiar</button>
+        </p>
+      }
+    </section>
+
+    @if (facade.preview(); as preview) {
+      <section class="ft-card bloque">
+        <div class="contadores">
+          <span class="contador"><strong class="num">{{ preview.counts.new }}</strong> nuevos</span>
+          <span class="contador"><strong class="num">{{ preview.counts.duplicate }}</strong> ya existen</span>
+          <span class="contador"><strong class="num">{{ preview.counts.possible_duplicate }}</strong> posibles duplicados</span>
+          <span class="contador"><strong class="num">{{ preview.counts.invalid }}</strong> no válidos</span>
+        </div>
+
+        <div class="categorias">
+          <label class="ft-field">
+            <span class="ft-field__label">Categoría de los gastos</span>
+            <select class="ft-select" (change)="setCategoria('expense', $event)">
+              @for (c of facade.expenseCategories(); track c.id) {
+                <option [value]="c.id" [selected]="c.id === facade.expenseCategoryId()">{{ c.name }}</option>
+              }
+            </select>
+          </label>
+          <label class="ft-field">
+            <span class="ft-field__label">Categoría de los ingresos</span>
+            <select class="ft-select" (change)="setCategoria('income', $event)">
+              @for (c of facade.incomeCategories(); track c.id) {
+                <option [value]="c.id" [selected]="c.id === facade.incomeCategoryId()">{{ c.name }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <div class="tabla-scroll">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th class="col-check">
+                  <input type="checkbox" aria-label="Marcar todos" [checked]="todasMarcadas()" (change)="toggleTodas($event)" />
+                </th>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th class="col-importe">Importe</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of preview.rows; track row.line) {
+                <tr [class.fila--apagada]="!facade.selected().has(row.line)" [class]="'estado-' + row.status">
+                  <td class="col-check">
+                    <input
+                      type="checkbox"
+                      [attr.aria-label]="'Importar fila ' + row.line"
+                      [checked]="facade.selected().has(row.line)"
+                      [disabled]="row.status === 'invalid'"
+                      (change)="facade.toggle(row.line)"
+                    />
+                  </td>
+                  <td class="num">{{ fecha(row.date) }}</td>
+                  <td class="concepto">
+                    {{ row.concept }}
+                    @if (detalle(row); as d) {
+                      <span class="detalle">Fila {{ row.line }} · {{ d }}</span>
+                    }
+                  </td>
+                  <td class="col-importe num" [class.ft-c-income]="(row.signedCents ?? 0) > 0" [class.ft-c-expense]="(row.signedCents ?? 0) < 0">
+                    {{ importe(row.signedCents) }}
+                  </td>
+                  <td><span class="pill">{{ estado(row.status) }}</span></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="5" class="vacio">No hay filas con fecha e importe debajo de la cabecera.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="barra">
+        <span class="barra__total num">Saldo de la selección: {{ importe(totalSeleccion()) }}</span>
+        <button type="button" class="ft-btn ft-btn--elevated" [disabled]="facade.busy()" (click)="otroFichero()">Cancelar</button>
+        <button
+          type="button"
+          class="ft-btn ft-btn--primary"
+          [disabled]="facade.busy() || facade.selectedRows().length === 0"
+          (click)="facade.commit()"
+        >
+          {{ botonImportar() }}
+        </button>
+      </div>
+    }
+  }
+
+  @case ('done') {
+    <section class="ft-card bloque hecho">
+      <h2 class="ft-card__title">
+        {{ facade.inserted() === 1 ? 'Se importó 1 movimiento' : 'Se importaron ' + facade.inserted() + ' movimientos' }}
+      </h2>
+      <p class="nota">Quedan con la categoría elegida y la nota «Importado de {{ facade.sheet()?.fileName }}». Puedes editarlos uno a uno desde Movimientos.</p>
+      <div class="hecho__acciones">
+        <a routerLink="/events" class="ft-btn ft-btn--primary">Ver movimientos</a>
+        <button type="button" class="ft-btn ft-btn--elevated" (click)="otroFichero()">Importar otro</button>
+      </div>
+    </section>
+  }
+}

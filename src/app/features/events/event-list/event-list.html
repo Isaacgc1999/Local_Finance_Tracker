@@ -2,9 +2,12 @@
   <div inicio class="inicio">
     <ft-selector-mes [(value)]="facade.month" [compacto]="!bp.isDesktop()" />
   </div>
-  @if (!bp.isMobile()) {
-    <a acciones routerLink="/events/new" class="ft-btn ft-btn--primary"><span class="mas" aria-hidden="true">+</span>Nuevo evento</a>
-  }
+  <div acciones class="acciones">
+    <a routerLink="/events/import" class="ft-btn ft-btn--secondary">{{ bp.isMobile() ? 'Importar' : 'Importar extracto' }}</a>
+    @if (!bp.isMobile()) {
+      <a routerLink="/events/new" class="ft-btn ft-btn--primary"><span class="mas" aria-hidden="true">+</span>Nuevo evento</a>
+    }
+  </div>
 </ft-cabecera-pagina>
 
 <div class="filtros">
