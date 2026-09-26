@@ -1,0 +1,135 @@
+@let v = vista();
+
+<ft-cabecera-pagina [titulo]="titulo()" subtitulo="Compara el saldo con tu extracto del banco y busca la diferencia.">
+  <a acciones routerLink="/accounts" class="ft-btn ft-btn--secondary">← Cuentas</a>
+</ft-cabecera-pagina>
+
+@if (!v) {
+  <div class="ft-card"><ft-skeleton variant="fila" [rows]="4" /></div>
+} @else {
+  <div class="rejilla">
+    <div class="columna">
+      <section class="ft-card bloque">
+        <h2 class="ft-card__title">Extracto</h2>
+
+        <div class="fila-2">
+          <label class="ft-field">
+            <span class="ft-field__label">Fecha del extracto</span>
+            <input
+              class="ft-input num"
+              type="date"
+              [value]="facade.reconcileDate()"
+              [attr.aria-invalid]="error('date') ? 'true' : null"
+              (change)="onFecha($any($event.target).value)"
+            />
+            @if (error('date')) {
+              <span class="ft-field__error">{{ error('date') }}</span>
+            }
+          </label>
+          <label class="ft-field">
+            <span class="ft-field__label">Saldo según el banco</span>
+            <input
+              class="ft-input num"
+              inputmode="decimal"
+              placeholder="0,00"
+              [value]="extractoTexto()"
+              [attr.aria-invalid]="error('statement') ? 'true' : null"
+              (input)="onExtracto($any($event.target).value)"
+            />
+            @if (error('statement')) {
+              <span class="ft-field__error">{{ error('statement') }}</span>
+            }
+          </label>
+        </div>
+
+        <dl class="resumen">
+          <div class="resumen__fila">
+            <dt>Saldo en Fintrack</dt>
+            <dd class="num">{{ saldoCalculado() }}</dd>
+          </div>
+          <div class="resumen__fila fuerte">
+            <dt>Diferencia</dt>
+            <dd class="num" [class.ft-c-income]="diferencia() === 0" [class.ft-c-expense]="diferencia() !== null && diferencia() !== 0">
+              {{ diferenciaTexto() }}
+            </dd>
+          </div>
+        </dl>
+
+        @if (diferencia() === 0) {
+          <p class="nota ft-c-income">Cuadra al céntimo.</p>
+        } @else if (diferencia() !== null) {
+          <label class="casilla">
+            <input type="checkbox" [checked]="ajustar()" (change)="ajustar.set($any($event.target).checked)" />
+            <span>Registrar un ajuste de {{ diferenciaTexto() }} para que la cuenta cuadre</span>
+          </label>
+          <p class="nota">
+            Antes, repasa los movimientos de la cuenta: suele faltar uno o haber uno repetido. El ajuste no cuenta como
+            ingreso ni gasto.
+          </p>
+        }
+
+        <button type="button" class="ft-btn ft-btn--primary conciliar" [disabled]="guardando()" (click)="conciliar()">
+          Conciliar
+        </button>
+      </section>
+
+      <section class="ft-card bloque">
+        <h2 class="ft-card__title">Historial</h2>
+        <ul class="lista">
+          @for (h of historial(); track h.reconciliation.id; let primera = $first) {
+            <li class="fila">
+              <span class="texto">
+                <span class="concepto">{{ h.fecha }}</span>
+                <span class="meta">{{ h.ajuste }}</span>
+              </span>
+              <span class="derecha">
+                <span class="importe num">{{ h.saldo }}</span>
+                @if (primera) {
+                  <button type="button" class="ft-link deshacer" (click)="borrar(h.reconciliation)">Deshacer</button>
+                }
+              </span>
+            </li>
+          } @empty {
+            <li class="vacio">Todavía no has conciliado esta cuenta.</li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section class="ft-card bloque extracto">
+      <header class="extracto__cabecera">
+        <h2 class="ft-card__title">Movimientos</h2>
+        <span class="meta">{{ desdeTexto() }}</span>
+      </header>
+      <ul class="lista">
+        <li class="fila saldo">
+          <span class="concepto">{{ saldoInicialTexto() }}</span>
+          <span class="importe num">{{ formatMoney(v.startingBalance) }}</span>
+        </li>
+        @for (l of v.ledger; track l.kind + l.id) {
+          <li class="fila">
+            <span class="fecha num">{{ formatDayMonth(l.date) }}</span>
+            <span class="texto">
+              <span class="concepto">{{ l.concept }}</span>
+              @if (l.kind !== 'event') {
+                <span class="meta">Traspaso</span>
+              }
+            </span>
+            <span class="derecha columna-importes">
+              <span class="importe num" [class.ft-c-income]="l.amountCents > 0" [class.ft-c-expense]="l.amountCents < 0">
+                {{ formatMoney(l.amountCents, { sign: 'always' }) }}
+              </span>
+              <span class="meta num">{{ formatMoney(l.balanceCents) }}</span>
+            </span>
+          </li>
+        } @empty {
+          <li class="vacio">No hay movimientos de esta cuenta en ese periodo.</li>
+        }
+        <li class="fila saldo">
+          <span class="concepto">Saldo al cierre del {{ formatDayMonth(v.range.to) }}</span>
+          <span class="importe num">{{ saldoCalculado() }}</span>
+        </li>
+      </ul>
+    </section>
+  </div>
+}

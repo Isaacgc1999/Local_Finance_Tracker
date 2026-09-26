@@ -1,0 +1,111 @@
+<ft-cabecera-pagina titulo="Cuentas" subtitulo="Saldos a día de hoy. Los traspasos no cuentan como ingreso ni gasto.">
+  <div acciones class="acciones">
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="nuevaCuenta()">+ Nueva cuenta</button>
+    @if (!bp.isMobile()) {
+      <button
+        type="button"
+        class="ft-btn ft-btn--primary"
+        [disabled]="!puedeTraspasar()"
+        [attr.title]="puedeTraspasar() ? null : 'Necesitas al menos dos cuentas activas'"
+        (click)="nuevoTraspaso()"
+      >
+        Nuevo traspaso
+      </button>
+    }
+  </div>
+</ft-cabecera-pagina>
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudieron cargar las cuentas" [texto]="errorTexto()" />
+} @else if (facade.loading() && facade.accounts().length === 0) {
+  <div class="ft-card"><ft-skeleton variant="fila" [rows]="3" /></div>
+} @else if (facade.accounts().length === 0) {
+  <ft-estado-vacio
+    titulo="Todavía no hay cuentas"
+    texto="Añade tu cuenta del banco, el efectivo o la tarjeta con el saldo que tienen hoy y verás cuánto hay en cada una."
+    accionLabel="Nueva cuenta"
+    (accion)="nuevaCuenta()"
+  />
+  @if (avisoSinCuenta()) {
+    <p class="aviso">{{ avisoSinCuenta() }}</p>
+  }
+} @else {
+  <section class="ft-card total">
+    <span class="total__etiqueta">Total en cuentas</span>
+    <span class="total__cifra num" [class.ft-c-expense]="facade.total() < 0">{{ total() }}</span>
+    <span class="total__meta">{{ resumen() }}</span>
+    @if (avisoSinCuenta()) {
+      <p class="aviso">{{ avisoSinCuenta() }}</p>
+    }
+  </section>
+
+  <div class="cuentas">
+    @for (t of activas(); track t.row.account.id) {
+      <article class="ft-card cuenta">
+        <header class="cuenta__cabecera">
+          <span class="punto" [style.background]="t.row.account.color" aria-hidden="true"></span>
+          <span class="cuenta__nombre">{{ t.row.account.name }}</span>
+        </header>
+        <span class="cuenta__saldo num" [class.ft-c-expense]="t.row.balance < 0">{{ t.saldo }}</span>
+        <span class="cuenta__meta">{{ t.tipo }} · {{ t.conciliada }}</span>
+        <div class="cuenta__acciones">
+          <button type="button" class="ft-link" (click)="conciliar(t.row.account)">Conciliar</button>
+          <button type="button" class="ft-link" (click)="editarCuenta(t.row.account)">Editar</button>
+        </div>
+      </article>
+    }
+  </div>
+
+  @if (bp.isMobile()) {
+    <button type="button" class="ft-btn ft-btn--primary traspaso-movil" [disabled]="!puedeTraspasar()" (click)="nuevoTraspaso()">
+      Nuevo traspaso
+    </button>
+  }
+
+  <section class="ft-card lista-card">
+    <h2 class="ft-card__title">Traspasos recientes</h2>
+    <ul class="lista">
+      @for (f of traspasos(); track f.transfer.id) {
+        <li>
+          <button type="button" class="fila" (click)="editarTraspaso(f.transfer)">
+            <span class="texto">
+              <span class="concepto">{{ f.ruta }}</span>
+              <span class="meta">{{ f.detalle }}</span>
+            </span>
+            <span class="importe num">{{ f.importe }}</span>
+          </button>
+        </li>
+      } @empty {
+        <li class="vacio">
+          @if (puedeTraspasar()) {
+            Todavía no hay traspasos. Úsalos para mover dinero entre tus cuentas (sacar del cajero, pasar a ahorro) sin que cuente como gasto.
+          } @else {
+            Con dos cuentas o más podrás mover dinero entre ellas sin que cuente como gasto.
+          }
+        </li>
+      }
+    </ul>
+  </section>
+
+  @if (archivadas().length > 0) {
+    <details class="ft-card lista-card archivadas">
+      <summary class="ft-card__title">Archivadas ({{ archivadas().length }})</summary>
+      <ul class="lista">
+        @for (t of archivadas(); track t.row.account.id) {
+          <li>
+            <button type="button" class="fila" (click)="editarCuenta(t.row.account)">
+              <span class="texto">
+                <span class="concepto">{{ t.row.account.name }}</span>
+                <span class="meta">{{ t.tipo }}</span>
+              </span>
+              <span class="importe num">{{ t.saldo }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </details>
+  }
+}
+
+<ft-modal-cuenta [(abierto)]="modalCuenta" [cuenta]="cuentaEnEdicion()" />
+<ft-modal-traspaso [(abierto)]="modalTraspaso" [traspaso]="traspasoEnEdicion()" />

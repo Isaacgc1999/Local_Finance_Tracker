@@ -30,6 +30,7 @@ const PATCH_COLUMNS: Readonly<Record<keyof RecurrencePatch, string>> = {
   endDate: 'end_date',
   active: 'active',
   paymentMethod: 'payment_method',
+  accountId: 'account_id',
   meta: 'meta',
 };
 
@@ -63,7 +64,7 @@ export class RecurrencesRepository {
     const now = nowIsoTimestamp();
     const result = await this.db.transaction([
       stmt(
-        `INSERT INTO recurrences (${RECURRENCE_COLUMNS}) VALUES (${placeholders(16)})`,
+        `INSERT INTO recurrences (${RECURRENCE_COLUMNS}) VALUES (${placeholders(17)})`,
         ...recurrenceInsertParams(id, draft, now),
       ),
     ]);

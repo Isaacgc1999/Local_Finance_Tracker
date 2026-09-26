@@ -17,6 +17,7 @@ const base: Recurrence = {
   endDate: null,
   active: true,
   paymentMethod: null,
+  accountId: null,
   meta: null,
   createdAt: '',
   updatedAt: '',

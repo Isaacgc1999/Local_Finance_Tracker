@@ -18,13 +18,14 @@ export interface EventRow {
   readonly notes: string | null;
   readonly attachment_path: string | null;
   readonly recurrence_id: string | null;
+  readonly account_id: string | null;
   readonly meta: string | null;
   readonly created_at: string;
   readonly updated_at: string;
 }
 
 export const EVENT_COLUMNS =
-  'id, type, amount_cents, date, concept, category_id, nature, payment_method, notes, attachment_path, recurrence_id, meta, created_at, updated_at';
+  'id, type, amount_cents, date, concept, category_id, nature, payment_method, notes, attachment_path, recurrence_id, account_id, meta, created_at, updated_at';
 
 export function rowToEvent(row: EventRow): Result<Event> {
   if (!isEventType(row.type)) return err(dbError(`Tipo de evento desconocido: ${row.type}`));
@@ -46,6 +47,7 @@ export function rowToEvent(row: EventRow): Result<Event> {
     notes: row.notes,
     attachmentPath: row.attachment_path,
     recurrenceId: row.recurrence_id,
+    accountId: row.account_id,
     meta: meta.value,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -66,6 +68,7 @@ export function eventInsertParams(id: string, draft: EventDraft, now: string): S
     draft.notes,
     draft.attachmentPath,
     draft.recurrenceId,
+    draft.accountId,
     toJsonColumn(draft.meta),
     now,
     now,

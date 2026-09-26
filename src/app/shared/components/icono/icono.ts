@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /** Iconos geométricos del handoff (18px, trazo 1.6, currentColor, extremos redondos). */
-export type IconName = 'dashboard' | 'movimientos' | 'analitica' | 'ia' | 'ajustes';
+export type IconName = 'dashboard' | 'movimientos' | 'cuentas' | 'analitica' | 'ia' | 'ajustes';
 
 @Component({
   selector: 'ft-icono',

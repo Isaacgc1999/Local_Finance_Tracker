@@ -76,6 +76,7 @@ export function generateRandomEvents(n: number, seed = 1, from: IsoDate = isoDat
       notes: null,
       attachmentPath: null,
       recurrenceId: null,
+      accountId: null,
       meta: null,
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-01-01T00:00:00.000Z',
@@ -86,7 +87,7 @@ export function generateRandomEvents(n: number, seed = 1, from: IsoDate = isoDat
 
 /** Inserta los movimientos en lotes de 500 por transacción. */
 export async function seedEvents(db: DatabaseHandle, events: readonly Event[]): Promise<number> {
-  const sql = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(14)})`;
+  const sql = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(15)})`;
   let inserted = 0;
   for (let i = 0; i < events.length; i += 500) {
     const batch = events.slice(i, i + 500);

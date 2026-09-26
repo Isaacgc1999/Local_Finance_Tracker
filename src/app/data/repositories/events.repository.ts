@@ -10,11 +10,12 @@ import { mapRows, toJsonColumn } from '../mappers/json';
 export interface EventQueryFilters {
   readonly types?: readonly EventType[];
   readonly categoryIds?: readonly string[];
+  readonly accountIds?: readonly string[];
   /** Búsqueda en concepto (sin distinguir mayúsculas). */
   readonly search?: string;
 }
 
-const INSERT_SQL = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(14)})`;
+const INSERT_SQL = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(15)})`;
 
 /** Columnas editables y su nombre en SQL, para construir el UPDATE dinámico. */
 const PATCH_COLUMNS: Readonly<Record<keyof EventPatch, string>> = {
@@ -27,6 +28,7 @@ const PATCH_COLUMNS: Readonly<Record<keyof EventPatch, string>> = {
   notes: 'notes',
   attachmentPath: 'attachment_path',
   recurrenceId: 'recurrence_id',
+  accountId: 'account_id',
   meta: 'meta',
 };
 
@@ -51,6 +53,10 @@ export class EventsRepository {
     if (filters.categoryIds && filters.categoryIds.length > 0) {
       where.push(`category_id IN (${placeholders(filters.categoryIds.length)})`);
       params.push(...filters.categoryIds);
+    }
+    if (filters.accountIds && filters.accountIds.length > 0) {
+      where.push(`account_id IN (${placeholders(filters.accountIds.length)})`);
+      params.push(...filters.accountIds);
     }
     const search = filters.search?.trim();
     if (search) {
@@ -127,7 +133,7 @@ export class EventsRepository {
     const now = nowIsoTimestamp();
     const statements: SqlStatement[] = drafts.map((draft) =>
       stmt(
-        `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(14)})
+        `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(15)})
          ON CONFLICT(recurrence_id, date) WHERE recurrence_id IS NOT NULL DO NOTHING`,
         ...eventInsertParams(uuidV7(), draft, now),
       ),

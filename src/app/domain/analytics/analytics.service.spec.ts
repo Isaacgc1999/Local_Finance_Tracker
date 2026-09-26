@@ -18,7 +18,7 @@ const ev = (type: EventType, cents: number, date: string, categoryId: string | n
   paymentMethod: null,
   notes: null,
   attachmentPath: null,
-  recurrenceId: null,
+  recurrenceId: null, accountId: null,
   meta: null,
   createdAt: '',
   updatedAt: '',

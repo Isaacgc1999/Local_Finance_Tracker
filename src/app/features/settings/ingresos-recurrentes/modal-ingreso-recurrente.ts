@@ -106,6 +106,7 @@ export class ModalIngresoRecurrente {
           endDate: null,
           active: this.activo(),
           paymentMethod: null,
+          accountId: null,
           meta: null,
         });
     this.guardando.set(false);

@@ -24,7 +24,7 @@ const ev = (type: EventType, cents: number, date: string, categoryId: string | n
   paymentMethod: type === 'expense' ? 'Tarjeta' : null,
   notes: '',
   attachmentPath: null,
-  recurrenceId: null,
+  recurrenceId: null, accountId: null,
   meta: null,
   createdAt: '',
   updatedAt: '',

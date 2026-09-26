@@ -33,6 +33,8 @@ export interface Recurrence {
   readonly endDate: IsoDate | null;
   readonly active: boolean;
   readonly paymentMethod: string | null;
+  /** Cuenta en la que se apuntan las instancias. */
+  readonly accountId: string | null;
   readonly meta: EventMeta | null;
   readonly createdAt: string;
   readonly updatedAt: string;

@@ -1,4 +1,5 @@
 import { NodeSqliteDatabase } from '../../../../tools/node-sqlite-database';
+import type { AccountDraft } from '../../core/types/account';
 import { SYSTEM_CATEGORY } from '../../core/types/category';
 import type { EventDraft } from '../../core/types/event';
 import { isoDate } from '../../core/types/iso-date';
@@ -26,6 +27,7 @@ const gasto = (overrides: Partial<EventDraft> = {}): EventDraft => ({
   notes: null,
   attachmentPath: null,
   recurrenceId: null,
+  accountId: null,
   meta: { type: 'expense' },
   ...overrides,
 });
@@ -140,6 +142,7 @@ const regla = (overrides: Partial<RecurrenceDraft> = {}): RecurrenceDraft => ({
   endDate: null,
   active: true,
   paymentMethod: 'Tarjeta ·5417',
+  accountId: null,
   meta: { type: 'subscription', service: 'Netflix' },
   ...overrides,
 });
@@ -284,5 +287,87 @@ describe('AiReportsRepository', () => {
     expect(applied.ok && applied.value.recommendations[0]?.applied).toBe(true);
     const byWeek = await repos.aiReports.findByWeek(isoDate(2026, 8, 31));
     expect(byWeek.ok && byWeek.value?.recommendations[0]?.applied).toBe(true);
+  });
+});
+
+const cuenta = (overrides: Partial<AccountDraft> = {}): AccountDraft => ({
+  name: 'BBVA',
+  kind: 'bank',
+  color: '#6E56F8',
+  openingBalanceCents: money(100_000),
+  openingDate: isoDate(2026, 9, 1),
+  archived: false,
+  sortOrder: 0,
+  ...overrides,
+});
+
+describe('AccountsRepository y TransfersRepository', () => {
+  it('crea, edita y archiva cuentas; el nombre es único sin distinguir mayúsculas', async () => {
+    const repos = await freshRepos();
+    const bbva = await repos.accounts.insert(cuenta());
+    expect(bbva.ok).toBe(true);
+    if (!bbva.ok) return;
+    const dup = await repos.accounts.insert(cuenta({ name: 'bbva' }));
+    expect(!dup.ok && dup.error.kind).toBe('db');
+
+    const archived = await repos.accounts.update(bbva.value.id, { archived: true, openingBalanceCents: money(-5000) });
+    expect(archived.ok && archived.value.archived).toBe(true);
+    expect(archived.ok && archived.value.openingBalanceCents).toBe(-5000);
+  });
+
+  it('un traspaso impide borrar sus cuentas y no admite el mismo origen y destino', async () => {
+    const repos = await freshRepos();
+    const a = await repos.accounts.insert(cuenta());
+    const b = await repos.accounts.insert(cuenta({ name: 'Efectivo', kind: 'cash', sortOrder: 1 }));
+    if (!a.ok || !b.ok) throw new Error('cuentas');
+
+    const same = await repos.transfers.insert({ fromAccountId: a.value.id, toAccountId: a.value.id, amountCents: money(100), date: isoDate(2026, 9, 2), concept: null });
+    expect(same.ok).toBe(false);
+
+    const t = await repos.transfers.insert({ fromAccountId: a.value.id, toAccountId: b.value.id, amountCents: money(5000), date: isoDate(2026, 9, 2), concept: 'Cajero' });
+    expect(t.ok).toBe(true);
+    const blocked = await repos.accounts.delete(a.value.id);
+    expect(blocked.ok).toBe(false);
+    expect((await repos.accounts.countUses(a.value.id)).ok).toBe(true);
+
+    const forB = await repos.transfers.findForAccount(b.value.id, { from: isoDate(2026, 9, 1), to: isoDate(2026, 9, 30) });
+    expect(forB.ok && forB.value.map((x) => x.concept)).toEqual(['Cajero']);
+  });
+
+  it('al borrar una cuenta vacía sus movimientos quedan sin cuenta y sus conciliaciones desaparecen', async () => {
+    const repos = await freshRepos();
+    const a = await repos.accounts.insert(cuenta());
+    if (!a.ok) throw new Error('cuenta');
+    const e = await repos.events.insert(gasto({ accountId: a.value.id }));
+    await repos.reconciliations.insert({ accountId: a.value.id, date: isoDate(2026, 9, 10), statementBalanceCents: money(0), adjustmentCents: money(0) });
+    expect(await repos.accounts.delete(a.value.id)).toEqual({ ok: true, value: undefined });
+    const found = e.ok ? await repos.events.findById(e.value.id) : null;
+    expect(found?.ok && found.value?.accountId).toBe(null);
+    const recs = await repos.reconciliations.findAll();
+    expect(recs.ok && recs.value.length).toBe(0);
+  });
+
+  it('flowsUpTo agrupa por cuenta y tipo desde la apertura hasta la fecha', async () => {
+    const repos = await freshRepos();
+    const a = await repos.accounts.insert(cuenta());
+    const b = await repos.accounts.insert(cuenta({ name: 'Ahorro', kind: 'savings', sortOrder: 1 }));
+    if (!a.ok || !b.ok) throw new Error('cuentas');
+    await repos.events.insert(gasto({ accountId: a.value.id, date: isoDate(2026, 8, 31) })); // antes de la apertura
+    await repos.events.insert(gasto({ accountId: a.value.id, date: isoDate(2026, 9, 3) }));
+    await repos.events.insert(gasto({ accountId: a.value.id, date: isoDate(2026, 10, 1) })); // después de la fecha
+    await repos.events.insert(gasto({ accountId: a.value.id, type: 'income', categoryId: null, nature: null, amountCents: money(200_000), meta: { type: 'income' } }));
+    await repos.transfers.insert({ fromAccountId: a.value.id, toAccountId: b.value.id, amountCents: money(30_000), date: isoDate(2026, 9, 5), concept: null });
+
+    const flows = await repos.accounts.flowsUpTo(isoDate(2026, 9, 30));
+    expect(flows.ok).toBe(true);
+    if (!flows.ok) return;
+    const fa = flows.value.get(a.value.id);
+    expect(fa?.eventsByType.get('expense')).toBe(7241);
+    expect(fa?.eventsByType.get('income')).toBe(200_000);
+    expect(fa?.transfersOut).toBe(30_000);
+    expect(flows.value.get(b.value.id)?.transfersIn).toBe(30_000);
+
+    const byAccount = await repos.events.findInRange({ from: isoDate(2026, 1, 1), to: isoDate(2026, 12, 31) }, { accountIds: [b.value.id] });
+    expect(byAccount.ok && byAccount.value.length).toBe(0);
   });
 });

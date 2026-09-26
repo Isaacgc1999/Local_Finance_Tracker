@@ -109,6 +109,8 @@ export interface Event {
   readonly attachmentPath: string | null;
   /** Presente cuando la fila es una instancia materializada de una regla. */
   readonly recurrenceId: string | null;
+  /** Cuenta de la que sale o a la que entra el dinero; `null` = sin cuenta asignada. */
+  readonly accountId: string | null;
   readonly meta: EventMeta | null;
   readonly createdAt: string;
   readonly updatedAt: string;

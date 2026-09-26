@@ -138,6 +138,7 @@ export function instanceDraft(rule: Recurrence, date: IsoDate): EventDraft & { r
     notes: null,
     attachmentPath: null,
     recurrenceId: rule.id,
+    accountId: rule.accountId,
     meta: rule.meta,
   };
 }
