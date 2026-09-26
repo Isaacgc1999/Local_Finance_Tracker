@@ -116,6 +116,15 @@ export class EventsRepository {
     return ok({ ...draft, id, createdAt: now, updatedAt: now });
   }
 
+  /** Alta en bloque (importación de extractos) en una sola transacción. */
+  async insertMany(drafts: readonly EventDraft[]): Promise<Result<{ readonly inserted: number }>> {
+    if (drafts.length === 0) return ok({ inserted: 0 });
+    const now = nowIsoTimestamp();
+    const result = await this.db.transaction(drafts.map((draft) => stmt(INSERT_SQL, ...eventInsertParams(uuidV7(), draft, now))));
+    if (!result.ok) return result;
+    return ok({ inserted: result.value.rowsAffected });
+  }
+
   /**
    * Materialización idempotente: una regla solo puede tener una fila por
    * fecha (índice único parcial). Las ya existentes, editadas o no, se respetan.

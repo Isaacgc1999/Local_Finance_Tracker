@@ -31,6 +31,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/events/event-form/event-form').then((m) => m.EventForm),
   },
   {
+    path: 'events/import',
+    title: 'Importar extracto · Fintrack',
+    data: data('movimientos', false),
+    loadComponent: () => import('./features/events/importar/importar').then((m) => m.Importar),
+  },
+  {
     path: 'events/:id',
     title: 'Editar evento · Fintrack',
     data: data('movimientos', false),
