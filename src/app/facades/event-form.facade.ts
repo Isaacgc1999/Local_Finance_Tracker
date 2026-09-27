@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, NonNullableFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,12 +10,15 @@ import { formatDayMonth } from '../core/format/date-format';
 import { formatMoney } from '../core/format/money-format';
 import type { Account } from '../core/types/account';
 import type { Category } from '../core/types/category';
+import type { CategoryRule } from '../core/types/category-rule';
 import type { AssetClass, Event, EventDraft, EventMeta, EventType, Nature } from '../core/types/event';
 import { type IsoDate, day, isIsoDate, todayIso, weekdayIso } from '../core/types/iso-date';
 import type { Money } from '../core/types/money';
 import type { Frequency, RecurrenceDraft } from '../core/types/recurrence';
 import { type Result, err, ok } from '../core/types/result';
 import { DbConnection } from '../data/db/db-connection';
+import type { ConceptUsage } from '../data/repositories/events.repository';
+import { type CategorySuggestion, compileRules, suggestCategory } from '../domain/categorization/category-rules';
 import { FORM_STRATEGIES, type FieldKey } from '../domain/events/event-form-strategy';
 import { EventService, validateEventDraft } from '../domain/events/event.service';
 import { type AttachmentInfo, attachmentInfo, pickAndStoreAttachment, removeStoredAttachment } from '../infra/fs/attachments';
@@ -58,6 +61,9 @@ const OPTIONAL_FIELDS: readonly (keyof EventFormControls)[] = [
   'platform',
   'assetClass',
 ];
+
+/** Conceptos recientes que alimentan el autocompletado y la sugerencia por historial. */
+const RECENT_CONCEPTS = 300;
 
 const FIELD_TO_CONTROL: Partial<Record<FieldKey, keyof EventFormControls>> = {
   category: 'categoryId',
@@ -114,6 +120,11 @@ export class EventFormFacade {
   private readonly savingSig = signal(false);
   private readonly attachmentSig = signal<AttachmentInfo | null>(null);
   private readonly saveErrorSig = signal<string>('');
+  private readonly rulesSig = signal<readonly CategoryRule[]>([]);
+  private readonly conceptsSig = signal<readonly ConceptUsage[]>([]);
+  private readonly suggestionSig = signal<CategorySuggestion | null>(null);
+  /** El usuario ha elegido categoría a mano en este formulario: la sugerencia deja de pisarla. */
+  private readonly categoryPickedSig = signal(false);
 
   readonly type = this.typeSig.asReadonly();
   readonly editing = this.editingSig.asReadonly();
@@ -123,6 +134,18 @@ export class EventFormFacade {
   readonly saving = this.savingSig.asReadonly();
   readonly attachment = this.attachmentSig.asReadonly();
   readonly saveError = this.saveErrorSig.asReadonly();
+  /** Categoría propuesta para el concepto escrito (regla o último uso), si la hay. */
+  readonly suggestion = this.suggestionSig.asReadonly();
+
+  /** Conceptos ya usados con un tipo compatible, para el `<datalist>` del concepto. */
+  readonly conceptOptions = computed<readonly string[]>(() => this.conceptsSig().map((c) => c.concept));
+
+  /** «Sugerida por la regla «netflix»» o «Como la última vez que apuntaste «Farmacia»». */
+  readonly suggestionLabel = computed(() => {
+    const s = this.suggestionSig();
+    if (!s || this.value().categoryId !== s.categoryId) return '';
+    return s.source === 'rule' && s.rule ? `Sugerida por la regla «${s.rule.pattern}».` : 'Como la última vez con este concepto.';
+  });
 
   /** Valor bruto del formulario como signal (incluye controles desactivados). */
   readonly value = toSignal(
@@ -180,12 +203,30 @@ export class EventFormFacade {
     return a ? formatMoney(a) : '';
   });
 
+  constructor() {
+    // Al escribir el concepto de un movimiento nuevo se propone la categoría:
+    // manda la regla y, si no hay, la del último movimiento con ese concepto.
+    // Una categoría elegida a mano no se toca.
+    effect(() => {
+      const concept = this.value().concept;
+      const rules = this.rulesSig();
+      const history = this.conceptsSig();
+      untracked(() => this.suggestFor(concept, rules, history));
+    });
+  }
+
   visible(field: FieldKey): boolean {
     return this.strategy().fields.includes(field);
   }
 
+  /** Elección manual de categoría (chips): se recuerda para no pisarla con la sugerencia. */
+  pickCategory(id: string | null): void {
+    this.categoryPickedSig.set(true);
+    this.form.controls.categoryId.setValue(id);
+  }
+
   async init(params: { readonly id?: string | undefined; readonly presetAmountCents?: string | undefined }): Promise<void> {
-    await Promise.all([this.loadCategories(), this.loadAccounts()]);
+    await Promise.all([this.loadCategories(), this.loadAccounts(), this.loadSuggestions()]);
     if (params.id) {
       await this.loadEvent(params.id);
       return;
@@ -217,6 +258,9 @@ export class EventFormFacade {
       this.form.reset({ date, categoryId, accountId, nature: 'variable', frequency: 'monthly' });
       this.attachmentSig.set(null);
       this.submittedSig.set(false);
+      this.categoryPickedSig.set(false);
+      this.suggestionSig.set(null);
+      void this.loadSuggestions();
     }
     return result;
   }
@@ -385,6 +429,31 @@ export class EventFormFacade {
     if (!repos.ok) return;
     const result = await repos.value.categories.findAll();
     if (result.ok) this.categoriesSig.set(result.value);
+  }
+
+  private suggestFor(concept: string, rules: readonly CategoryRule[], history: readonly ConceptUsage[]): void {
+    if (this.editingSig() || !this.strategy().categoryKind) return;
+    const suggestion = concept.trim().length >= 2 ? suggestCategory(compileRules(rules), concept, history) : null;
+    const previous = this.suggestionSig();
+    if (suggestion?.categoryId === previous?.categoryId && suggestion?.source === previous?.source) return;
+    this.suggestionSig.set(suggestion);
+    if (this.categoryPickedSig()) return;
+    const control = this.form.controls.categoryId;
+    const allowed = new Set(this.categories().map((c) => c.id));
+    if (suggestion && allowed.has(suggestion.categoryId)) {
+      if (control.value !== suggestion.categoryId) control.setValue(suggestion.categoryId);
+    } else if (previous && control.value === previous.categoryId) {
+      // Se borró o cambió el concepto: la categoría que vino de la sugerencia se retira.
+      control.setValue(null);
+    }
+  }
+
+  private async loadSuggestions(): Promise<void> {
+    const repos = this.db.require();
+    if (!repos.ok) return;
+    const [rules, concepts] = await Promise.all([repos.value.categoryRules.findAll(), repos.value.events.recentConcepts(RECENT_CONCEPTS)]);
+    if (rules.ok) this.rulesSig.set(rules.value);
+    if (concepts.ok) this.conceptsSig.set(concepts.value);
   }
 
   private async loadAccounts(): Promise<void> {

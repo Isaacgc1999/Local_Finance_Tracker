@@ -7,7 +7,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
   it('aplica el esquema y la semilla, y es idempotente', async () => {
     const db = NodeSqliteDatabase.open();
     const first = await applyPendingMigrations(db, MIGRATIONS);
-    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4]);
+    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4, 5]);
 
     const tables = await db.select<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
@@ -17,6 +17,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
       'ai_reports',
       'budgets',
       'categories',
+      'category_rules',
       'events',
       'reconciliations',
       'recurrences',
@@ -30,7 +31,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
 
     const second = await applyPendingMigrations(db, MIGRATIONS);
     expect(second.ok && second.value.applied).toEqual([]);
-    expect(second.ok && second.value.current).toBe(4);
+    expect(second.ok && second.value.current).toBe(5);
   });
 
   it('la 0003 convierte el presupuesto antiguo solo si el usuario lo había cambiado', async () => {
@@ -65,7 +66,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
        VALUES ('e1', 'expense', 1000, '2026-09-01', 'Antes de las cuentas', '2026-09-01T00:00:00Z', '2026-09-01T00:00:00Z')`,
     );
     const migrated = await applyPendingMigrations(db, MIGRATIONS);
-    expect(migrated.ok && migrated.value.applied).toEqual([4]);
+    expect(migrated.ok && migrated.value.applied).toEqual([4, 5]);
 
     const events = await db.select<{ account_id: string | null }>('SELECT account_id FROM events');
     expect(events.ok && events.value).toEqual([{ account_id: null }]);

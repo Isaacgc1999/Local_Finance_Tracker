@@ -73,6 +73,7 @@
           <span class="contador"><strong class="num">{{ preview.counts.invalid }}</strong> no válidos</span>
         </div>
 
+        <p class="nota">{{ resumenReglas() }} Las demás filas reciben la categoría por defecto:</p>
         <div class="categorias">
           <label class="ft-field">
             <span class="ft-field__label">Categoría de los gastos</span>
@@ -102,6 +103,7 @@
                 <th>Fecha</th>
                 <th>Concepto</th>
                 <th class="col-importe">Importe</th>
+                <th>Categoría</th>
                 <th>Estado</th>
               </tr>
             </thead>
@@ -127,10 +129,16 @@
                   <td class="col-importe num" [class.ft-c-income]="(row.signedCents ?? 0) > 0" [class.ft-c-expense]="(row.signedCents ?? 0) < 0">
                     {{ importe(row.signedCents) }}
                   </td>
+                  <td class="categoria">
+                    @if (row.status !== 'invalid') {
+                      @let cat = categoria(row);
+                      <span [class.categoria--regla]="cat.porRegla" [attr.title]="cat.porRegla ? 'Asignada por una regla de categorización' : 'Categoría por defecto'">{{ cat.nombre }}</span>
+                    }
+                  </td>
                   <td><span class="pill">{{ estado(row.status) }}</span></td>
                 </tr>
               } @empty {
-                <tr><td colspan="5" class="vacio">No hay filas con fecha e importe debajo de la cabecera.</td></tr>
+                <tr><td colspan="6" class="vacio">No hay filas con fecha e importe debajo de la cabecera.</td></tr>
               }
             </tbody>
           </table>
@@ -157,7 +165,7 @@
       <h2 class="ft-card__title">
         {{ facade.inserted() === 1 ? 'Se importó 1 movimiento' : 'Se importaron ' + facade.inserted() + ' movimientos' }}
       </h2>
-      <p class="nota">Quedan con la categoría elegida y la nota «Importado de {{ facade.sheet()?.fileName }}». Puedes editarlos uno a uno desde Movimientos.</p>
+      <p class="nota">Llevan la categoría de tus reglas o la elegida por defecto, y la nota «Importado de {{ facade.sheet()?.fileName }}». En Movimientos puedes seleccionar varios y cambiarles la categoría de golpe.</p>
       <div class="hecho__acciones">
         <a routerLink="/events" class="ft-btn ft-btn--primary">Ver movimientos</a>
         <button type="button" class="ft-btn ft-btn--elevated" (click)="otroFichero()">Importar otro</button>

@@ -1,0 +1,40 @@
+<ft-modal [(open)]="abierto" [titulo]="titulo()" subtitulo="Sin distinguir mayúsculas ni acentos." (cerrar)="cerrar()">
+  <label class="ft-field">
+    <span class="ft-field__label">Si el concepto contiene</span>
+    <input
+      class="ft-input"
+      maxlength="80"
+      placeholder="mercadona"
+      [value]="patron()"
+      [attr.aria-invalid]="error() ? 'true' : null"
+      (input)="patron.set($any($event.target).value); error.set('')"
+    />
+  </label>
+
+  <label class="ft-field">
+    <span class="ft-field__label">La categoría será</span>
+    <select class="ft-select" [value]="categoriaId()" (change)="categoriaId.set($any($event.target).value); error.set('')">
+      @for (c of categorias(); track c.id) {
+        <option [value]="c.id" [selected]="c.id === categoriaId()">{{ c.name }}</option>
+      }
+    </select>
+  </label>
+
+  @if (error()) {
+    <p class="ft-field__error">{{ error() }}</p>
+  } @else if (lectura()) {
+    <p class="pista">{{ lectura() }}</p>
+  }
+
+  @if (edicion() && confirmandoBorrado()) {
+    <p class="confirmar">Se borrará la regla. Los movimientos ya clasificados no cambian. Pulsa «Borrar» otra vez.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" [disabled]="guardando()" (click)="borrar()">Borrar</button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>

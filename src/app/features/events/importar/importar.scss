@@ -185,3 +185,14 @@
   gap: 12px;
   flex-wrap: wrap;
 }
+
+.categoria {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+  white-space: nowrap;
+}
+
+.categoria--regla {
+  color: var(--ft-accent);
+  font: var(--ft-font-meta-strong);
+}
