@@ -172,6 +172,7 @@ describe('buildPreview y StatementImportService', () => {
     notes: null,
     attachmentPath: null,
     recurrenceId: null,
+    accountId: null,
     meta: { type: 'expense' },
     ...overrides,
   });
@@ -210,6 +211,30 @@ describe('buildPreview y StatementImportService', () => {
     // Reimportar el mismo fichero ya no trae nada nuevo.
     const again = await service.preview(parsed);
     expect(again.ok && again.value.counts.new).toBe(0);
+  });
+
+  it('las reglas de categoría ponen la categoría en la vista previa y al guardar, y cuentan el acierto', async () => {
+    const repos = await freshRepos();
+    const rule = await repos.categoryRules.insert({ pattern: 'mercadona', categoryId: SYSTEM_CATEGORY.alimentacion });
+    if (!rule.ok) throw new Error('regla');
+    const rows = parseCsv(['Fecha;Concepto;Importe', '25/09/2026;COMPRA TARJ. MERCADONA;-72,41', '26/09/2026;PARKING;-3,00'].join('\n'));
+    const parsed = parseRows(rows, detectColumns(rows)!, 'EUR');
+    const service = new StatementImportService(repos);
+    const preview = await service.preview(parsed);
+    if (!preview.ok) throw new Error('preview');
+    expect(preview.value.rows.map((r) => [r.categoryId, r.ruleId])).toEqual([
+      [SYSTEM_CATEGORY.alimentacion, rule.value.id],
+      [null, null],
+    ]);
+
+    const saved = await service.commit(preview.value.rows, OPTIONS);
+    expect(saved.ok && saved.value.inserted).toBe(2);
+    const all = await repos.events.findInRange({ from: isoDate(2026, 9, 1), to: isoDate(2026, 9, 30) });
+    if (!all.ok) throw new Error('lectura');
+    expect(all.value.find((e) => e.concept === 'COMPRA TARJ. MERCADONA')?.categoryId).toBe(SYSTEM_CATEGORY.alimentacion);
+    expect(all.value.find((e) => e.concept === 'PARKING')?.categoryId).toBe(SYSTEM_CATEGORY.otros);
+    const withHits = await repos.categoryRules.findById(rule.value.id);
+    expect(withHits.ok && withHits.value?.hits).toBe(1);
   });
 
   it('las filas inválidas nunca se guardan', () => {

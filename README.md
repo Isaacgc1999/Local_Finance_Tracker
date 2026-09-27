@@ -43,6 +43,8 @@ npm start          # http://localhost:4200
 
 En **Cuentas** se dan de alta las cuentas (banco, efectivo, tarjeta, ahorro) con su saldo de apertura, se ven los saldos de hoy, se registran traspasos entre ellas (no cuentan como ingreso ni gasto) y se concilia cada cuenta con el saldo del extracto del banco. Todo va por defecto a **Cuenta principal**, que existe siempre: los movimientos que ya había pasaron a ella al actualizar, y el formulario la propone la primera. Los extractos que importa cada usuario se quedan en su equipo, como el resto de los datos.
 
+Las **reglas de categoría** («si el concepto contiene *mercadona*, la categoría es Alimentación») se crean en Ajustes o desde la lista de movimientos: con «Seleccionar» se marcan varios, «Cambiar categoría» los recategoriza de golpe y la casilla «Recordar como regla» guarda el texto común para los siguientes. Las reglas se aplican al importar un extracto (la vista previa muestra la categoría que recibirá cada fila) y se proponen al escribir el concepto de un movimiento nuevo; sin regla, el formulario propone la categoría de la última vez que se apuntó ese mismo concepto. «Aplicar a los movimientos sin clasificar» pasa las reglas por lo que quedó sin categoría o en «Otros», sin tocar las categorías elegidas a mano.
+
 En **Ajustes** se configuran los presupuestos (límites de gasto total, fijos, variables, ocio, suscripciones o por categoría, y objetivos de ahorro e inversión) y la moneda de visualización (euro o dólar; los importes no se convierten, solo cambia el símbolo). La tarjeta «Presupuestos» de Analítica muestra hasta dónde se ha llegado en cada uno.
 
 Tests (dos vías: componentes y utilidades en jsdom; repositorios contra SQLite real en Node):

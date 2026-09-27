@@ -7,7 +7,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
   it('aplica el esquema y la semilla, y es idempotente', async () => {
     const db = NodeSqliteDatabase.open();
     const first = await applyPendingMigrations(db, MIGRATIONS);
-    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4, 5]);
+    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4, 5, 6]);
 
     const tables = await db.select<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
@@ -17,6 +17,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
       'ai_reports',
       'budgets',
       'categories',
+      'category_rules',
       'events',
       'reconciliations',
       'recurrences',
@@ -30,7 +31,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
 
     const second = await applyPendingMigrations(db, MIGRATIONS);
     expect(second.ok && second.value.applied).toEqual([]);
-    expect(second.ok && second.value.current).toBe(5);
+    expect(second.ok && second.value.current).toBe(6);
   });
 
   it('la 0003 convierte el presupuesto antiguo solo si el usuario lo había cambiado', async () => {
@@ -74,9 +75,9 @@ describe('applyPendingMigrations (SQLite real)', () => {
     expect(accounts.ok && accounts.value[0]?.n).toBe(0);
   });
 
-  it('la 0005 pasa los movimientos y reglas sin cuenta a «Cuenta principal», abierta en el más antiguo', async () => {
+  it('la 0006 pasa los movimientos y reglas sin cuenta a «Cuenta principal»', async () => {
     const db = NodeSqliteDatabase.open();
-    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 4));
+    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 5));
     await db.executeRaw(movimientoAntiguo('e1', '2026-03-15'));
     await db.executeRaw(movimientoAntiguo('e2', '2025-11-02'));
     await db.executeRaw(
@@ -84,7 +85,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
        VALUES ('r1', 'subscription', 1399, 'Netflix', 'monthly', '2026-01-14', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,
     );
     const migrated = await applyPendingMigrations(db, MIGRATIONS);
-    expect(migrated.ok && migrated.value.applied).toEqual([5]);
+    expect(migrated.ok && migrated.value.applied).toEqual([6]);
 
     const accounts = await db.select<{ id: string; name: string; opening_date: string; opening_balance_cents: number; sort_order: number }>(
       'SELECT id, name, opening_date, opening_balance_cents, sort_order FROM accounts',
@@ -98,7 +99,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
     expect(sinCuenta.ok && sinCuenta.value[0]?.n).toBe(0);
   });
 
-  it('la 0005 crea la cuenta vacía en una instalación nueva', async () => {
+  it('la 0006 crea la cuenta vacía en una instalación nueva', async () => {
     const db = NodeSqliteDatabase.open();
     await applyPendingMigrations(db, MIGRATIONS);
     const accounts = await db.select<{ name: string; opening_date: string }>('SELECT name, opening_date FROM accounts');
@@ -106,9 +107,9 @@ describe('applyPendingMigrations (SQLite real)', () => {
     expect(accounts.ok && accounts.value[0]?.opening_date).toBe('2000-01-01');
   });
 
-  it('la 0005 reutiliza una cuenta que ya se llamara así', async () => {
+  it('la 0006 reutiliza una cuenta que ya se llamara así', async () => {
     const db = NodeSqliteDatabase.open();
-    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 4));
+    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 5));
     await db.executeRaw(
       `INSERT INTO accounts (id, name, kind, color, opening_date, created_at, updated_at)
        VALUES ('mia', 'cuenta PRINCIPAL', 'bank', '#22C55E', '2026-01-01', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,

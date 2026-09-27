@@ -10,7 +10,7 @@ const NOW = `strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`;
 
 /**
  * «Cuenta principal»: todos los movimientos y reglas sin cuenta pasan a ella
- * (decisión del usuario, ADR-084). Se crea también en instalaciones nuevas,
+ * (decisión del usuario, ADR-087). Se crea también en instalaciones nuevas,
  * vacía, para que el formulario y el importador tengan siempre una cuenta
  * de destino.
  *
@@ -22,8 +22,8 @@ const NOW = `strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`;
  * - Si el usuario ya tenía una cuenta con ese nombre, se reutiliza en vez de
  *   chocar con el índice único.
  */
-export const MIGRATION_0005_MAIN_ACCOUNT: Migration = {
-  version: 5,
+export const MIGRATION_0006_MAIN_ACCOUNT: Migration = {
+  version: 6,
   name: 'main-account',
   statements: [
     `INSERT INTO accounts (id, name, kind, color, opening_balance_cents, opening_date, archived, sort_order, created_at, updated_at)

@@ -1,0 +1,24 @@
+.pista {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+.confirmar {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-expense);
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.borrar {
+  margin-right: auto;
+  color: var(--ft-expense);
+  border-color: var(--ft-expense);
+}
