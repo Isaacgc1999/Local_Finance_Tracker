@@ -1,0 +1,47 @@
+<ft-modal [(open)]="abierto" titulo="Cambiar categoría" [subtitulo]="subtitulo()" (cerrar)="cerrar()">
+  <div class="ft-field">
+    <span class="ft-field__label">Nueva categoría</span>
+    <div class="chips" role="group" aria-label="Nueva categoría">
+      @for (c of facade.bulkCategories(); track c.id) {
+        <ft-chip-categoria [label]="c.name" [selected]="categoriaId() === c.id" (toggle)="categoriaId.set(categoriaId() === c.id ? null : c.id)" />
+      } @empty {
+        <span class="vacio">No hay una categoría válida para esta mezcla de tipos.</span>
+      }
+    </div>
+  </div>
+
+  <label class="recordar">
+    <input type="checkbox" [checked]="recordar()" (change)="recordar.set($any($event.target).checked); error.set('')" />
+    <span>Recordar como regla para los próximos movimientos</span>
+  </label>
+
+  @if (recordar()) {
+    <label class="ft-field">
+      <span class="ft-field__label">Si el concepto contiene</span>
+      <input
+        class="ft-input"
+        maxlength="80"
+        placeholder="mercadona"
+        [value]="patron()"
+        [attr.aria-invalid]="error() ? 'true' : null"
+        (input)="patron.set($any($event.target).value); error.set('')"
+      />
+      <span class="ayuda">Se aplicará al importar extractos y se propondrá en el formulario. Puedes editarla en Ajustes.</span>
+    </label>
+  }
+
+  @if (excluidos() > 0) {
+    <p class="ayuda">{{ excluidos() === 1 ? '1 movimiento de ahorro o inversión no lleva categoría y no cambiará.' : excluidos() + ' movimientos de ahorro o inversión no llevan categoría y no cambiarán.' }}</p>
+  }
+
+  @if (error()) {
+    <p class="ft-field__error">{{ error() }}</p>
+  }
+
+  <div acciones class="acciones">
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="facade.bulkBusy() || facade.bulkCategories().length === 0" (click)="aplicar()">
+      {{ facade.bulkBusy() ? 'Guardando…' : 'Cambiar categoría' }}
+    </button>
+  </div>
+</ft-modal>

@@ -77,6 +77,8 @@
         </div>
         @if (error('category')) {
           <p class="ft-field__error">{{ error('category') }}</p>
+        } @else if (facade.suggestionLabel()) {
+          <p class="sugerencia">{{ facade.suggestionLabel() }}</p>
         }
       </div>
     }
@@ -139,7 +141,12 @@
 
     <div class="ft-field">
       <label class="ft-field__label" for="concepto">{{ s.conceptLabel }}</label>
-      <input id="concepto" class="ft-input" type="text" formControlName="concept" [placeholder]="s.conceptPlaceholder" [attr.aria-invalid]="error('concept') ? 'true' : null" />
+      <input id="concepto" class="ft-input" type="text" formControlName="concept" list="conceptos-recientes" autocomplete="off" [placeholder]="s.conceptPlaceholder" [attr.aria-invalid]="error('concept') ? 'true' : null" />
+      <datalist id="conceptos-recientes">
+        @for (c of facade.conceptOptions(); track c) {
+          <option [value]="c"></option>
+        }
+      </datalist>
       @if (error('concept')) {
         <p class="ft-field__error">{{ error('concept') }}</p>
       }

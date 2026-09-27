@@ -1,0 +1,34 @@
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vacio,
+.ayuda {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+.recordar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+  cursor: pointer;
+
+  input {
+    accent-color: var(--ft-accent);
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+}

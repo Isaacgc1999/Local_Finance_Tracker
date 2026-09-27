@@ -111,7 +111,7 @@ export class EventForm {
   }
 
   protected setCategory(id: string): void {
-    this.form.controls.categoryId.setValue(this.form.controls.categoryId.value === id ? null : id);
+    this.facade.pickCategory(this.form.controls.categoryId.value === id ? null : id);
   }
 
   protected setAssetClass(value: AssetClass): void {
