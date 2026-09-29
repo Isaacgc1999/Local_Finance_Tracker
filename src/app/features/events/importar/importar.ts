@@ -88,6 +88,20 @@ export class Importar {
     return cents === null ? '—' : formatMoney(cents as Money, { sign: 'always' });
   }
 
+  /** Nombre de la categoría que recibirá la fila: la de la regla o la elegida por defecto. */
+  protected categoria(row: ImportRow): { readonly nombre: string; readonly porRegla: boolean } {
+    const byId = this.facade.categoryById();
+    if (row.categoryId) return { nombre: byId.get(row.categoryId)?.name ?? 'Categoría', porRegla: true };
+    const fallback = row.type === 'income' ? this.facade.incomeCategoryId() : this.facade.expenseCategoryId();
+    return { nombre: byId.get(fallback)?.name ?? '—', porRegla: false };
+  }
+
+  protected readonly resumenReglas = computed(() => {
+    const n = this.facade.ruledCount();
+    if (n === 0) return 'Ninguna regla de categorización coincide. Puedes crearlas en Ajustes → Reglas de categoría.';
+    return n === 1 ? '1 fila ya tiene categoría por tus reglas.' : `${n} filas ya tienen categoría por tus reglas.`;
+  });
+
   protected detalle(row: ImportRow): string {
     if (row.error) return row.error;
     if (row.matchedConcept) return `Coincide con «${row.matchedConcept}»`;

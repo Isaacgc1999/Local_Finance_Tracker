@@ -5,6 +5,7 @@ import { type IsoDate, maxIso, minIso } from '../../core/types/iso-date';
 import { money } from '../../core/types/money';
 import { type Result, err, ok } from '../../core/types/result';
 import type { Repositories } from '../../data/repositories';
+import { type CompiledRule, compileRules, matchRule, normalizeText } from '../categorization/category-rules';
 import { validateEventDraft } from '../events/event.service';
 import {
   type ColumnMapping,
@@ -39,6 +40,10 @@ export interface ImportRow {
   readonly error: string | null;
   /** Concepto del movimiento existente con el que coincide. */
   readonly matchedConcept: string | null;
+  /** Categoría que le asigna una regla de categorización, o `null` si ninguna coincide. */
+  readonly categoryId: string | null;
+  /** La regla que decidió esa categoría. */
+  readonly ruleId: string | null;
 }
 
 export interface ImportPreview {
@@ -93,21 +98,15 @@ export function parseRows(rows: SheetRows, mapping: ColumnMapping, expectedCurre
   return out;
 }
 
-export function normalizeConcept(concept: string): string {
-  return concept
-    .normalize('NFD')
-    .replace(/\p{M}/gu, '')
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .trim();
-}
+/** Misma normalización que las reglas de categorización: sin acentos, mayúsculas ni puntuación. */
+export const normalizeConcept = normalizeText;
 
 /**
  * Marca duplicados contra los movimientos existentes. Cada movimiento
  * existente cuenta una sola vez: si el extracto trae dos cafés iguales el
  * mismo día y ya hay uno guardado, el segundo sigue siendo nuevo.
  */
-export function buildPreview(parsed: readonly ParsedRow[], existing: readonly Event[]): ImportPreview {
+export function buildPreview(parsed: readonly ParsedRow[], existing: readonly Event[], rules: readonly CompiledRule[] = []): ImportPreview {
   const exactPool = new Map<string, Event[]>();
   const loosePool = new Map<string, Event[]>();
   const push = (map: Map<string, Event[]>, key: string, e: Event): void => {
@@ -151,6 +150,7 @@ export function buildPreview(parsed: readonly ParsedRow[], existing: readonly Ev
   const rows = base.map(({ p, type }): ImportRow => {
     const s = p.error ? { status: 'invalid' as const, matched: null } : (status.get(p.line) ?? { status: 'new' as const, matched: null });
     counts[s.status]++;
+    const rule = p.error ? null : matchRule(rules, p.concept);
     return {
       line: p.line,
       date: p.date,
@@ -160,6 +160,8 @@ export function buildPreview(parsed: readonly ParsedRow[], existing: readonly Ev
       status: s.status,
       error: p.error,
       matchedConcept: s.matched,
+      categoryId: rule?.categoryId ?? null,
+      ruleId: rule?.id ?? null,
     };
   });
   return { rows, counts, range: dateRangeOf(parsed) };
@@ -186,6 +188,8 @@ export interface ImportCommitOptions {
   readonly accountId: string | null;
   readonly expenseCategoryId: string;
   readonly incomeCategoryId: string;
+  /** Cuenta a la que van todos los movimientos, o `null` para dejarlos sin cuenta. */
+  readonly accountId?: string | null;
 }
 
 export const DEFAULT_IMPORT_CATEGORIES = {
@@ -201,13 +205,13 @@ export function toDraft(row: ImportRow, options: ImportCommitOptions): EventDraf
     amountCents: money(Math.abs(row.signedCents)),
     date: row.date,
     concept: row.concept,
-    categoryId: expense ? options.expenseCategoryId : options.incomeCategoryId,
+    categoryId: row.categoryId ?? (expense ? options.expenseCategoryId : options.incomeCategoryId),
     nature: expense ? 'variable' : null,
     paymentMethod: null,
     notes: `Importado de ${options.fileName}`,
     attachmentPath: null,
     recurrenceId: null,
-    accountId: options.accountId,
+    accountId: options.accountId ?? null,
     meta: expense ? { type: 'expense' } : { type: 'income' },
   };
 }
@@ -216,12 +220,16 @@ export function toDraft(row: ImportRow, options: ImportCommitOptions): EventDraf
 export class StatementImportService {
   constructor(private readonly repos: Repositories) {}
 
+  /** Vista previa: duplicados contra la base de datos y categoría según las reglas. */
   async preview(parsed: readonly ParsedRow[]): Promise<Result<ImportPreview>> {
+    const rules = await this.repos.categoryRules.findAll();
+    if (!rules.ok) return rules;
+    const compiled = compileRules(rules.value);
     const range = dateRangeOf(parsed);
-    if (!range) return ok(buildPreview(parsed, []));
+    if (!range) return ok(buildPreview(parsed, [], compiled));
     const existing = await this.repos.events.findInRange(range);
     if (!existing.ok) return existing;
-    return ok(buildPreview(parsed, existing.value));
+    return ok(buildPreview(parsed, existing.value, compiled));
   }
 
   /** Guarda las filas elegidas en una única transacción: o entran todas o ninguna. */
@@ -237,6 +245,18 @@ export class StatementImportService {
     if (drafts.length === 0) return ok({ inserted: 0 });
     const result = await this.repos.events.insertMany(drafts);
     if (!result.ok) return result;
+    // Los aciertos de las reglas son solo estadística: si falla, la importación ya está hecha.
+    await this.repos.categoryRules.addHits(countHits(rows));
     return ok({ inserted: result.value.inserted });
   }
+}
+
+/** Veces que cada regla ha clasificado una fila de las que se van a guardar. */
+export function countHits(rows: readonly Pick<ImportRow, 'ruleId' | 'status'>[]): ReadonlyMap<string, number> {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    if (row.status === 'invalid' || !row.ruleId) continue;
+    counts.set(row.ruleId, (counts.get(row.ruleId) ?? 0) + 1);
+  }
+  return counts;
 }

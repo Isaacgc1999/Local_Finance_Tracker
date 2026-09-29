@@ -7,6 +7,14 @@ import { type DatabaseHandle, type SqlStatement, type SqlValue, placeholders, st
 import { EVENT_COLUMNS, type EventRow, eventInsertParams, rowToEvent } from '../mappers/event.mapper';
 import { mapRows, toJsonColumn } from '../mappers/json';
 
+/** Un concepto ya usado, con la categoría de su uso más reciente. */
+export interface ConceptUsage {
+  readonly concept: string;
+  readonly categoryId: string | null;
+  readonly lastDate: IsoDate;
+  readonly uses: number;
+}
+
 export interface EventQueryFilters {
   readonly types?: readonly EventType[];
   readonly categoryIds?: readonly string[];
@@ -170,6 +178,70 @@ export class EventsRepository {
     const updated = await this.findById(id);
     if (!updated.ok) return updated;
     return updated.value ? ok(updated.value) : err(notFound('el movimiento', id));
+  }
+
+  /**
+   * Cambia la categoría de varios movimientos en una transacción. Devuelve
+   * cuántas filas cambiaron de verdad (las que ya la tenían no cuentan).
+   */
+  async updateCategoryMany(ids: readonly string[], categoryId: string | null): Promise<Result<{ readonly updated: number }>> {
+    if (ids.length === 0) return ok({ updated: 0 });
+    const result = await this.db.transaction([
+      stmt(
+        `UPDATE events SET category_id = ?, updated_at = ? WHERE id IN (${placeholders(ids.length)}) AND category_id IS NOT ?`,
+        categoryId,
+        nowIsoTimestamp(),
+        ...ids,
+        categoryId,
+      ),
+    ]);
+    if (!result.ok) return result;
+    return ok({ updated: result.value.rowsAffected });
+  }
+
+  async deleteMany(ids: readonly string[]): Promise<Result<{ readonly deleted: number }>> {
+    if (ids.length === 0) return ok({ deleted: 0 });
+    const result = await this.db.transaction([stmt(`DELETE FROM events WHERE id IN (${placeholders(ids.length)})`, ...ids)]);
+    if (!result.ok) return result;
+    return ok({ deleted: result.value.rowsAffected });
+  }
+
+  /**
+   * Conceptos distintos ya usados, del más reciente al más antiguo, con la
+   * categoría de su último uso: alimenta el autocompletado del formulario y
+   * la sugerencia por historial. Agrupa sin distinguir mayúsculas.
+   */
+  async recentConcepts(limit: number, types?: readonly EventType[]): Promise<Result<readonly ConceptUsage[]>> {
+    const where = types && types.length > 0 ? `WHERE type IN (${placeholders(types.length)})` : '';
+    const params: SqlValue[] = types && types.length > 0 ? [...types] : [];
+    params.push(limit);
+    // Ventanas en vez de GROUP BY: con más de un agregado, SQLite no garantiza
+    // de qué fila salen las columnas sueltas (concept, category_id).
+    const rows = await this.db.select<{ concept: string; category_id: string | null; last_date: string; uses: number }>(
+      `SELECT concept, category_id, date AS last_date, uses FROM (
+         SELECT concept, category_id, date,
+                ROW_NUMBER() OVER (PARTITION BY lower(concept) ORDER BY date DESC, created_at DESC) AS rn,
+                COUNT(*) OVER (PARTITION BY lower(concept)) AS uses
+         FROM events ${where}
+       ) WHERE rn = 1 ORDER BY last_date DESC LIMIT ?`,
+      params,
+    );
+    if (!rows.ok) return rows;
+    return ok(rows.value.map((r) => ({ concept: r.concept, categoryId: r.category_id, lastDate: r.last_date as IsoDate, uses: r.uses })));
+  }
+
+  /**
+   * Candidatos a recategorizar en bloque con las reglas: los que no tienen
+   * categoría o tienen una de las «cajón de sastre» que asigna la importación.
+   */
+  async findCategorizable(fallbackCategoryIds: readonly string[]): Promise<Result<readonly Event[]>> {
+    const ids = fallbackCategoryIds.length > 0 ? `OR category_id IN (${placeholders(fallbackCategoryIds.length)})` : '';
+    const rows = await this.db.select<EventRow>(
+      `SELECT ${EVENT_COLUMNS} FROM events WHERE type IN ('expense','income','subscription','direct_debit') AND (category_id IS NULL ${ids}) ORDER BY date DESC`,
+      [...fallbackCategoryIds],
+    );
+    if (!rows.ok) return rows;
+    return mapRows(rows.value, rowToEvent);
   }
 
   async delete(id: string): Promise<Result<void>> {

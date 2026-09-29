@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { describeError } from '../../../core/errors/app-error';
@@ -11,19 +11,22 @@ import { BreakpointService } from '../../../infra/platform/breakpoint.service';
 import { CabeceraPagina } from '../../../layout/cabecera-pagina/cabecera-pagina';
 import { EstadoVacio } from '../../../shared/components/estado-vacio/estado-vacio';
 import { FilaMovimiento } from '../../../shared/components/fila-movimiento/fila-movimiento';
+import { Modal } from '../../../shared/components/modal/modal';
 import { type MultiOption, PopoverMultiseleccion } from '../../../shared/components/popover-multiseleccion/popover-multiseleccion';
 import { SelectorMes } from '../../../shared/components/selector-mes/selector-mes';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { TarjetaError } from '../../../shared/components/tarjeta-error/tarjeta-error';
+import { ModalRecategorizar } from './modal-recategorizar';
 
 /**
  * Listado de movimientos (pantalla sin diseño en el handoff; propuesta
  * FASE-0 §a-1): selector de mes, búsqueda, filtro de tipos y filas agrupadas
- * por día con la Fila de movimiento del handoff. Pulsar una fila edita.
+ * por día con la Fila de movimiento del handoff. Pulsar una fila edita; en
+ * modo selección la marca, para cambiar la categoría o borrar en bloque.
  */
 @Component({
   selector: 'ft-event-list',
-  imports: [RouterLink, CabeceraPagina, SelectorMes, PopoverMultiseleccion, FilaMovimiento, EstadoVacio, Skeleton, TarjetaError],
+  imports: [RouterLink, CabeceraPagina, SelectorMes, PopoverMultiseleccion, FilaMovimiento, EstadoVacio, Skeleton, TarjetaError, Modal, ModalRecategorizar],
   templateUrl: './event-list.html',
   styleUrl: './event-list.scss',
   host: { class: 'ft-page' },
@@ -35,6 +38,13 @@ export class EventList {
   private readonly router = inject(Router);
 
   protected readonly tipos: readonly MultiOption[] = EVENT_TYPES.map((t) => ({ value: t, label: EVENT_TYPE_LABEL[t] }));
+  protected readonly modalCategoria = signal(false);
+  protected readonly confirmarBorrado = signal(false);
+
+  protected readonly seleccionLabel = computed(() => {
+    const n = this.facade.selectedCount();
+    return n === 1 ? '1 seleccionado' : `${n} seleccionados`;
+  });
 
   protected readonly mesLabel = computed(() => formatMonthYear(this.facade.month()).toLowerCase());
   protected readonly errorTexto = computed(() => {
@@ -67,7 +77,24 @@ export class EventList {
   }
 
   protected abrir(e: FtEvent): void {
+    if (this.facade.selecting()) {
+      this.facade.toggleSelected(e.id);
+      return;
+    }
     void this.router.navigate(['/events', e.id]);
+  }
+
+  protected estadoFila(e: FtEvent): 'normal' | 'activo' {
+    return this.facade.selecting() && this.facade.selected().has(e.id) ? 'activo' : 'normal';
+  }
+
+  protected toggleTodos(event: Event): void {
+    this.facade.selectAllVisible((event.target as HTMLInputElement).checked);
+  }
+
+  protected async borrarSeleccion(): Promise<void> {
+    this.confirmarBorrado.set(false);
+    await this.facade.deleteSelected();
   }
 
   protected esMesActual(): boolean {

@@ -1,0 +1,53 @@
+<div class="cabecera">
+  <h2 class="ft-card__title">Reglas de categoría</h2>
+  <button type="button" class="ft-link" (click)="nueva()">
+    {{ bp.isDesktop() ? '+ Añadir regla' : '+ Añadir' }}
+  </button>
+</div>
+
+<p class="intro">
+  Si el concepto contiene el texto, el movimiento recibe la categoría. Se aplican al importar extractos y se
+  proponen al escribir un concepto en el formulario.
+</p>
+
+@if (facade.loading()) {
+  <ft-skeleton variant="fila" [rows]="3" />
+} @else {
+  <ul class="lista">
+    @for (fila of facade.rows(); track fila.rule.id) {
+      <li>
+        <button type="button" class="fila" (click)="editar(fila)">
+          <span class="texto">
+            <span class="patron">«{{ fila.rule.pattern }}»</span>
+            <span class="meta">{{ fila.hitsLabel }}</span>
+          </span>
+          <span class="flecha" aria-hidden="true">→</span>
+          <span class="categoria">
+            @if (fila.category; as c) {
+              <span class="muestra" aria-hidden="true" [style.background]="c.color + '1F'" [style.border-color]="c.color"></span>
+              {{ c.name }}
+            } @else {
+              Categoría borrada
+            }
+          </span>
+        </button>
+      </li>
+    } @empty {
+      <li class="vacio">
+        Todavía no hay reglas. Al recategorizar varios movimientos desde la lista puedes marcar «Recordar como regla»,
+        o añade una aquí: por ejemplo «mercadona» → Alimentación.
+      </li>
+    }
+  </ul>
+
+  @if (facade.rules().length > 0) {
+    <div class="pie">
+      <button type="button" class="ft-btn ft-btn--secondary" [disabled]="facade.applying()" (click)="aplicar()">
+        {{ facade.applying() ? 'Aplicando…' : 'Aplicar a los movimientos sin clasificar' }}
+      </button>
+      <span class="ayuda">Solo cambia los que no tienen categoría o tienen «Otros». Las elegidas a mano no se tocan.</span>
+    </div>
+  }
+}
+
+<ft-modal-regla-categoria [(abierto)]="modalAbierto" [fila]="enEdicion()" />

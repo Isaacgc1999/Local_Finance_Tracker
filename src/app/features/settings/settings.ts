@@ -11,6 +11,7 @@ import { IngresosRecurrentes } from './ingresos-recurrentes/ingresos-recurrentes
 import { ListaCategorias } from './lista-categorias/lista-categorias';
 import { MonedaFormato } from './moneda-formato/moneda-formato';
 import { Presupuestos } from './presupuestos/presupuestos';
+import { ReglasCategoria } from './reglas-categoria/reglas-categoria';
 
 /**
  * Pantalla 6 del handoff. Tres layouts reales: dos columnas 7/5 en
@@ -31,6 +32,7 @@ import { Presupuestos } from './presupuestos/presupuestos';
     ListaCategorias,
     IngresosRecurrentes,
     Presupuestos,
+    ReglasCategoria,
     MonedaFormato,
   ],
   templateUrl: './settings.html',

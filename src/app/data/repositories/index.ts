@@ -3,6 +3,7 @@ import { AccountsRepository } from './accounts.repository';
 import { AiReportsRepository } from './ai-reports.repository';
 import { BudgetsRepository } from './budgets.repository';
 import { CategoriesRepository } from './categories.repository';
+import { CategoryRulesRepository } from './category-rules.repository';
 import { EventsRepository } from './events.repository';
 import { ReconciliationsRepository } from './reconciliations.repository';
 import { RecurrencesRepository } from './recurrences.repository';
@@ -13,6 +14,7 @@ export interface Repositories {
   readonly events: EventsRepository;
   readonly recurrences: RecurrencesRepository;
   readonly categories: CategoriesRepository;
+  readonly categoryRules: CategoryRulesRepository;
   readonly aiReports: AiReportsRepository;
   readonly settings: SettingsRepository;
   readonly budgets: BudgetsRepository;
@@ -26,6 +28,7 @@ export function createRepositories(db: DatabaseHandle): Repositories {
     events: new EventsRepository(db),
     recurrences: new RecurrencesRepository(db),
     categories: new CategoriesRepository(db),
+    categoryRules: new CategoryRulesRepository(db),
     aiReports: new AiReportsRepository(db),
     settings: new SettingsRepository(db),
     budgets: new BudgetsRepository(db),
@@ -40,6 +43,7 @@ export {
   AiReportsRepository,
   BudgetsRepository,
   CategoriesRepository,
+  CategoryRulesRepository,
   EventsRepository,
   ReconciliationsRepository,
   RecurrencesRepository,

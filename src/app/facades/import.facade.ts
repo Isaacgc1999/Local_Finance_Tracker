@@ -71,6 +71,10 @@ export class ImportFacade {
   readonly expenseCategories = computed(() => this.categoriesSig().filter((c) => c.kind !== 'income'));
   readonly accounts = computed(() => this.accountsSig().filter((a) => !a.archived));
   readonly incomeCategories = computed(() => this.categoriesSig().filter((c) => c.kind !== 'expense'));
+  readonly categoryById = computed(() => new Map(this.categoriesSig().map((c) => [c.id, c])));
+
+  /** Filas de la vista previa a las que una regla ya ha puesto categoría. */
+  readonly ruledCount = computed(() => (this.previewSig()?.rows ?? []).filter((r) => r.status !== 'invalid' && r.categoryId !== null).length);
 
   readonly selectedRows = computed<readonly ImportRow[]>(() => {
     const selected = this.selectedSig();

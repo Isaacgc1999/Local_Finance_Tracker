@@ -20,7 +20,25 @@
     <button type="button" class="ft-link" (click)="facade.clearFilters()">Limpiar</button>
   }
   <span class="resumen num">{{ resumen() }}</span>
+  @if (!facade.selecting() && facade.total() > 0) {
+    <button type="button" class="ft-link" (click)="facade.startSelecting()">Seleccionar</button>
+  }
 </div>
+
+@if (facade.selecting()) {
+  <div class="seleccion ft-card" role="toolbar" aria-label="Acciones sobre la selección">
+    <label class="seleccion__todos">
+      <input type="checkbox" [checked]="facade.allVisibleSelected()" (change)="toggleTodos($event)" />
+      <span>Todos los visibles</span>
+    </label>
+    <span class="seleccion__contador num">{{ seleccionLabel() }}</span>
+    <div class="seleccion__acciones">
+      <button type="button" class="ft-btn ft-btn--primary" [disabled]="facade.selectedCount() === 0 || facade.bulkBusy()" (click)="modalCategoria.set(true)">Cambiar categoría</button>
+      <button type="button" class="ft-btn ft-btn--secondary peligro" [disabled]="facade.selectedCount() === 0 || facade.bulkBusy()" (click)="confirmarBorrado.set(true)">Eliminar</button>
+      <button type="button" class="ft-link" (click)="facade.stopSelecting()">Cancelar</button>
+    </div>
+  </div>
+}
 
 @if (facade.error()) {
   <ft-tarjeta-error titulo="No se pudieron cargar los movimientos" [texto]="errorTexto()" />
@@ -53,10 +71,18 @@
         </header>
         <div class="grupo__filas">
           @for (e of grupo.items; track e.id) {
-            <ft-fila-movimiento [event]="e" [categoria]="facade.categoryById().get(e.categoryId ?? '') ?? null" (seleccionar)="abrir($event)" />
+            <ft-fila-movimiento [event]="e" [categoria]="facade.categoryById().get(e.categoryId ?? '') ?? null" [estado]="estadoFila(e)" (seleccionar)="abrir($event)" />
           }
         </div>
       </section>
     }
   </div>
 }
+
+<ft-modal-recategorizar [(abierto)]="modalCategoria" />
+
+<ft-modal [(open)]="confirmarBorrado" titulo="Eliminar movimientos" subtitulo="Esta acción no se puede deshacer.">
+  <p class="texto-modal">Se eliminarán {{ seleccionLabel() === '1 seleccionado' ? 'el movimiento seleccionado' : facade.selectedCount() + ' movimientos' }} del fichero local.</p>
+  <button acciones type="button" class="ft-btn ft-btn--elevated" (click)="confirmarBorrado.set(false)">Cancelar</button>
+  <button acciones type="button" class="ft-btn ft-btn--primary peligro" [disabled]="facade.bulkBusy()" (click)="borrarSeleccion()">Eliminar</button>
+</ft-modal>
