@@ -23,6 +23,7 @@ import { FORM_STRATEGIES, type FieldKey } from '../domain/events/event-form-stra
 import { EventService, validateEventDraft } from '../domain/events/event.service';
 import { type AttachmentInfo, attachmentInfo, pickAndStoreAttachment, removeStoredAttachment } from '../infra/fs/attachments';
 import { AppStatusFacade } from './app-status.facade';
+import { EventsFacade } from './events.facade';
 
 export interface EventFormControls {
   amount: FormControl<Money | null>;
@@ -90,6 +91,7 @@ export class EventFormFacade {
   private readonly db = inject(DbConnection);
   private readonly status = inject(AppStatusFacade);
   private readonly router = inject(Router);
+  private readonly events = inject(EventsFacade);
 
   readonly form: FormGroup<EventFormControls> = this.fb.group({
     amount: this.fb.control<Money | null>(null),
@@ -265,22 +267,17 @@ export class EventFormFacade {
     return result;
   }
 
-  async remove(): Promise<Result<void>> {
+  /**
+   * Elimina el movimiento en edición con «Deshacer» (ver
+   * `EventsFacade.scheduleDelete`) y vuelve al listado, donde ya no aparece.
+   * El recibo adjunto solo se borra del disco si el borrado se confirma.
+   */
+  remove(): void {
     const current = this.editingSig();
-    const repos = this.db.require();
-    if (!current || !repos.ok) return err(repos.ok ? { kind: 'not_found', entity: 'el movimiento', id: '' } : repos.error);
-    this.savingSig.set(true);
-    const result = await new EventService(repos.value).remove(current.id);
-    this.savingSig.set(false);
-    if (result.ok) {
-      if (current.attachmentPath) await removeStoredAttachment(current.attachmentPath);
-      this.status.touch();
-      this.status.notify('Movimiento eliminado.');
-      void this.router.navigate(['/events']);
-    } else {
-      this.saveErrorSig.set(describeError(result.error));
-    }
-    return result;
+    if (!current) return;
+    const attachment = current.attachmentPath;
+    this.events.scheduleDelete([current], attachment ? () => removeStoredAttachment(attachment).then(() => undefined) : undefined);
+    void this.router.navigate(['/events']);
   }
 
   cancel(): void {

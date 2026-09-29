@@ -78,12 +78,12 @@
 }
 
 .barra {
-  width: 220px;
+  flex: 0 1 220px;
+  min-width: 80px;
   height: var(--ft-progress-thin);
   border-radius: var(--ft-radius-pill);
   background: var(--ft-surface-elevated);
   overflow: hidden;
-  flex: none;
 
   &--indeterminada {
     background: var(--ft-skeleton-gradient);

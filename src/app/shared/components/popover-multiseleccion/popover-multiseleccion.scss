@@ -17,6 +17,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transform-origin: top left;
+  animation: ft-pop var(--ft-dur-fast) var(--ft-ease-out);
 }
 
 .chips {

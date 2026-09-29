@@ -21,7 +21,7 @@
 
 @if (facade.error()) {
   <ft-tarjeta-error titulo="No se pudo cargar el dashboard" [texto]="errorTexto()" />
-} @else if (facade.loading()) {
+} @else if (facade.initialLoading()) {
   <div class="grid">
     <ft-skeleton class="span-5" variant="tarjeta" />
     <div class="span-7 kpis"><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /><ft-skeleton variant="tarjeta" /></div>
@@ -37,7 +37,7 @@
     (accion)="nuevoEvento()"
   />
 } @else {
-  <div class="grid">
+  <div class="grid" [class.ft-refreshing]="facade.refreshing()" [attr.aria-busy]="facade.refreshing()">
     <ft-hero-balance
       class="span-5 hero"
       [variante]="v"

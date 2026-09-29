@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { formatMoney } from '../../../core/format/money-format';
 import { formatInteger } from '../../../core/format/percent-format';
 import type { Money } from '../../../core/types/money';
+import { tweened } from '../../../shared/motion/tweened';
 
 /**
  * Hero «Balance del mes» del handoff: display `+868,31 €`, delta ▲/▼ en
@@ -27,7 +28,13 @@ export class HeroBalance {
   readonly count = input.required<number>();
   readonly variante = input<'desktop' | 'tablet' | 'mobile'>('desktop');
 
-  protected readonly balanceTexto = computed(() => formatMoney(this.balance(), { sign: 'always' }));
+  // Las cifras cuentan hasta su valor al entrar y al cambiar de mes; los
+  // céntimos se redondean en cada paso para no mostrar decimales imposibles.
+  private readonly balanceAnim = tweened(() => this.balance(), { from: 0 });
+  private readonly ingresosAnim = tweened(() => this.income(), { from: 0 });
+  private readonly gastosAnim = tweened(() => this.outflow(), { from: 0 });
+
+  protected readonly balanceTexto = computed(() => formatMoney(Math.round(this.balanceAnim()) as Money, { sign: 'always' }));
   protected readonly deltaTexto = computed(() => {
     const d = this.delta();
     const flecha = d < 0 ? '▼' : '▲';
@@ -36,7 +43,7 @@ export class HeroBalance {
   protected readonly deltaPositivo = computed(() => this.delta() >= 0);
   protected readonly referencia = computed(() => `frente a ${this.prevMonthName()} (${formatMoney(this.prevBalance())})`);
   protected readonly referenciaCorta = computed(() => `vs ${this.prevMonthName()}`);
-  protected readonly ingresosTexto = computed(() => formatMoney(this.income()));
-  protected readonly gastosTexto = computed(() => formatMoney(this.outflow()));
+  protected readonly ingresosTexto = computed(() => formatMoney(Math.round(this.ingresosAnim()) as Money));
+  protected readonly gastosTexto = computed(() => formatMoney(Math.round(this.gastosAnim()) as Money));
   protected readonly movimientosTexto = computed(() => formatInteger(this.count()));
 }

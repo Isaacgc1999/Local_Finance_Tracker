@@ -22,6 +22,7 @@
 }
 
 .contenido {
+  view-transition-name: ft-contenido;
   flex: 1;
   min-width: 0;
   height: 100%;
@@ -42,17 +43,17 @@
 }
 
 // Avisos discretos (misma anatomía que la pill de estado), abajo a la izquierda.
-.toasts {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: var(--ft-z-toast);
+// Los avisos salen en la esquina del contenido, no encima del estado de la
+// base de datos del pie del sidebar.
+:host(.desktop) ft-avisos {
+  left: calc(var(--ft-sidebar-w) + 16px);
 }
 
-:host(.mobile) .toasts {
+:host(.tablet) ft-avisos {
+  left: calc(var(--ft-sidebar-collapsed-w) + 16px);
+}
+
+ft-avisos.sobre-tabbar {
   bottom: calc(var(--ft-tabbar-h) + 12px);
 }
 
@@ -78,6 +79,10 @@
 // Handoff: en escritorio el panel es una tercera columna y el contenido de
 // detrás sigue ahí, al 45 %. Por debajo de 1024 no quedan 800px utilizables,
 // así que el panel flota sobre el contenido con un velo en vez de estrujarlo.
+.marco {
+  transition: opacity var(--ft-dur-slow) linear;
+}
+
 :host(.con-panel.desktop) .marco {
   opacity: var(--ft-opacity-dimmed);
 }
@@ -87,4 +92,5 @@
   inset: 0;
   background: rgba(10, 11, 13, 0.55);
   z-index: calc(var(--ft-z-panel) - 1);
+  animation: ft-fade var(--ft-dur-slow) linear;
 }

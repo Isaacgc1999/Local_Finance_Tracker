@@ -21,13 +21,34 @@ export interface DbInfo {
   readonly schemaVersion: number;
 }
 
+export interface ToastAction {
+  readonly label: string;
+  readonly run: () => void;
+}
+
 export interface Toast {
   readonly id: string;
   readonly text: string;
   readonly tone: 'income' | 'expense' | 'neutral';
+  /** Botón opcional («Deshacer»). Pulsarlo cierra el aviso sin llamar a `onExpire`. */
+  readonly action: ToastAction | null;
+  readonly durationMs: number;
+  /** `true` durante la animación de salida, antes de quitarlo de la lista. */
+  readonly leaving: boolean;
+}
+
+export interface NotifyOptions {
+  readonly action?: ToastAction;
+  readonly durationMs?: number;
+  /** Se ejecuta si el aviso caduca o se cierra sin pulsar la acción. */
+  readonly onExpire?: () => void;
 }
 
 const TOAST_MS = 4000;
+/** Lo que tarda la animación de salida del aviso (`ft-toast-out`). */
+const TOAST_LEAVE_MS = 180;
+/** Como mucho tres avisos a la vez: el más antiguo sale para dejar sitio. */
+const TOAST_MAX = 3;
 
 /** Arranque (BD + migraciones + materialización), información del fichero y avisos. */
 @Injectable({ providedIn: 'root' })
@@ -41,6 +62,8 @@ export class AppStatusFacade {
   private readonly demoSig = signal(false);
   /** Cambia cada vez que se materializan instancias o se escribe; las facades lo observan para recargar. */
   private readonly dataVersionSig = signal(0);
+  private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly onExpire = new Map<string, () => void>();
 
   readonly boot = this.bootSig.asReadonly();
   readonly bootError = this.bootErrorSig.asReadonly();
@@ -104,14 +127,41 @@ export class AppStatusFacade {
     });
   }
 
-  notify(text: string, tone: Toast['tone'] = 'neutral'): void {
-    const toast: Toast = { id: uuidV7(), text, tone };
+  notify(text: string, tone: Toast['tone'] = 'neutral', options: NotifyOptions = {}): string {
+    const durationMs = options.durationMs ?? TOAST_MS;
+    const toast: Toast = { id: uuidV7(), text, tone, action: options.action ?? null, durationMs, leaving: false };
+    if (options.onExpire) this.onExpire.set(toast.id, options.onExpire);
+    const visible = this.toastsSig().filter((t) => !t.leaving);
+    const oldest = visible.length >= TOAST_MAX ? visible[0] : undefined;
+    if (oldest) this.dismiss(oldest.id);
     this.toastsSig.update((list) => [...list, toast]);
-    setTimeout(() => this.dismiss(toast.id), TOAST_MS);
+    this.timers.set(
+      toast.id,
+      setTimeout(() => this.dismiss(toast.id), durationMs),
+    );
+    return toast.id;
   }
 
+  /** Pulsa la acción del aviso: la ejecuta y lo cierra sin disparar `onExpire`. */
+  runAction(id: string): void {
+    const toast = this.toastsSig().find((t) => t.id === id);
+    if (!toast?.action || toast.leaving) return;
+    this.onExpire.delete(id);
+    toast.action.run();
+    this.dismiss(id);
+  }
+
+  /** Cierra el aviso (caducado o descartado). Si tenía `onExpire`, se ejecuta una vez. */
   dismiss(id: string): void {
-    this.toastsSig.update((list) => list.filter((t) => t.id !== id));
+    const toast = this.toastsSig().find((t) => t.id === id);
+    if (!toast || toast.leaving) return;
+    clearTimeout(this.timers.get(id));
+    this.timers.delete(id);
+    const expire = this.onExpire.get(id);
+    this.onExpire.delete(id);
+    expire?.();
+    this.toastsSig.update((list) => list.map((t) => (t.id === id ? { ...t, leaving: true } : t)));
+    setTimeout(() => this.toastsSig.update((list) => list.filter((t) => t.id !== id)), TOAST_LEAVE_MS);
   }
 
   private async openDatabase(): Promise<Result<DatabaseHandle>> {

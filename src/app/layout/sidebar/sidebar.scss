@@ -59,6 +59,9 @@
   border-radius: var(--ft-radius-control);
   color: var(--ft-text-2);
   cursor: pointer;
+  transition:
+    background-color var(--ft-dur-fast) linear,
+    color var(--ft-dur-fast) linear;
 
   &:hover {
     color: var(--ft-text-1);

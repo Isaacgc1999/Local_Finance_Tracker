@@ -59,15 +59,19 @@
 
 .fila-importe {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   align-items: flex-end;
 
+  // Sin anchos fijos: con la calculadora abierta la columna encoge aunque la
+  // ventana siga en «escritorio», y la fecha baja de línea en vez de cortarse.
   .importe {
-    flex: 1;
+    flex: 1 1 260px;
+    min-width: 0;
   }
   .fecha {
-    width: 220px;
-    flex: none;
+    flex: 0 1 220px;
+    min-width: 160px;
   }
 }
 
@@ -101,26 +105,13 @@
   grid-column: 1 / -1;
 }
 
-.texto-modal {
-  font: var(--ft-font-body);
-  color: var(--ft-text-2);
-}
-
-.peligro {
-  background: var(--ft-expense);
-  &:hover {
-    background: var(--ft-expense);
-    opacity: 0.9;
-  }
-}
-
 @include bp.ft-media(not-desktop) {
   .principal,
   .lateral {
     grid-column: 1 / -1;
   }
   .fila-importe .fecha {
-    width: 190px;
+    flex-basis: 190px;
   }
 }
 
@@ -137,6 +128,11 @@
   .fila-importe {
     flex-direction: column;
     align-items: stretch;
+    // En columna, la base del flex sería una altura: se anula.
+    .importe,
+    .fecha {
+      flex-basis: auto;
+    }
     .fecha {
       width: 100%;
     }

@@ -212,11 +212,5 @@
   (guardar)="guardar()"
   (guardarYOtro)="guardarYOtro()"
   (cancelar)="facade.cancel()"
-  (eliminar)="confirmarBorrado.set(true)"
+  (eliminar)="facade.remove()"
 />
-
-<ft-modal [(open)]="confirmarBorrado" titulo="Eliminar movimiento" subtitulo="Esta acción no se puede deshacer.">
-  <p class="texto-modal">Se eliminará «{{ v.concept || 'este movimiento' }}» del fichero local.</p>
-  <button acciones type="button" class="ft-btn ft-btn--elevated" (click)="confirmarBorrado.set(false)">Cancelar</button>
-  <button acciones type="button" class="ft-btn ft-btn--primary peligro" (click)="confirmarBorrado.set(false); facade.remove()">Eliminar</button>
-</ft-modal>

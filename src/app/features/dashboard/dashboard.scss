@@ -53,3 +53,15 @@
   align-items: center;
   gap: 10px;
 }
+
+// Al montar, las tarjetas entran en cascada (hero, KPI, presupuesto…). La
+// rejilla se conserva en las recargas, así que solo ocurre una vez.
+.grid > * {
+  animation: ft-enter var(--ft-dur-base) var(--ft-ease-out) backwards;
+}
+
+@for $i from 2 through 8 {
+  .grid > :nth-child(#{$i}) {
+    animation-delay: calc(#{$i - 1} * 40ms);
+  }
+}

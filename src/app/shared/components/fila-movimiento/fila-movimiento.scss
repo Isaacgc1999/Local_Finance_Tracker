@@ -27,6 +27,9 @@
   text-align: left;
   cursor: pointer;
   color: inherit;
+  transition:
+    background-color var(--ft-dur-fast) linear,
+    border-color var(--ft-dur-fast) linear;
 
   &:hover:not(:disabled) {
     background: var(--ft-surface-elevated);

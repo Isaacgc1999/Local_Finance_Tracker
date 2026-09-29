@@ -11,7 +11,6 @@ import { BreakpointService } from '../../../infra/platform/breakpoint.service';
 import { CabeceraPagina } from '../../../layout/cabecera-pagina/cabecera-pagina';
 import { EstadoVacio } from '../../../shared/components/estado-vacio/estado-vacio';
 import { FilaMovimiento } from '../../../shared/components/fila-movimiento/fila-movimiento';
-import { Modal } from '../../../shared/components/modal/modal';
 import { type MultiOption, PopoverMultiseleccion } from '../../../shared/components/popover-multiseleccion/popover-multiseleccion';
 import { SelectorMes } from '../../../shared/components/selector-mes/selector-mes';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
@@ -26,7 +25,7 @@ import { ModalRecategorizar } from './modal-recategorizar';
  */
 @Component({
   selector: 'ft-event-list',
-  imports: [RouterLink, CabeceraPagina, SelectorMes, PopoverMultiseleccion, FilaMovimiento, EstadoVacio, Skeleton, TarjetaError, Modal, ModalRecategorizar],
+  imports: [RouterLink, CabeceraPagina, SelectorMes, PopoverMultiseleccion, FilaMovimiento, EstadoVacio, Skeleton, TarjetaError, ModalRecategorizar],
   templateUrl: './event-list.html',
   styleUrl: './event-list.scss',
   host: { class: 'ft-page' },
@@ -39,7 +38,6 @@ export class EventList {
 
   protected readonly tipos: readonly MultiOption[] = EVENT_TYPES.map((t) => ({ value: t, label: EVENT_TYPE_LABEL[t] }));
   protected readonly modalCategoria = signal(false);
-  protected readonly confirmarBorrado = signal(false);
 
   protected readonly seleccionLabel = computed(() => {
     const n = this.facade.selectedCount();
@@ -90,11 +88,6 @@ export class EventList {
 
   protected toggleTodos(event: Event): void {
     this.facade.selectAllVisible((event.target as HTMLInputElement).checked);
-  }
-
-  protected async borrarSeleccion(): Promise<void> {
-    this.confirmarBorrado.set(false);
-    await this.facade.deleteSelected();
   }
 
   protected esMesActual(): boolean {

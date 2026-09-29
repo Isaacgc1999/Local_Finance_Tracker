@@ -171,7 +171,21 @@
   --ft-z-modal: 20;
   --ft-z-toast: 30;
 
-  // ── Movimiento (solo dos animaciones en toda la app) ───────────────────
+  // ── Movimiento ─────────────────────────────────────────────────────────
+  // El handoff solo tenía `shim` y `pulse`. Desde 2026-09-29 (docs/decisiones.md,
+  // «Movimiento en la interfaz») hay un sistema de movimiento corto: solo
+  // opacidad y transform (nunca propiedades que fuercen layout), duraciones
+  // ≤ 320 ms y apagado entero con `prefers-reduced-motion`.
   --ft-anim-shim: shim 1.6s linear infinite;
   --ft-anim-pulse: pulse 1.4s ease-in-out infinite;
+  --ft-dur-instant: 90ms; // pulsar un botón
+  --ft-dur-fast: 140ms; // hover, color, borde
+  --ft-dur-base: 220ms; // entrar/salir un elemento, pastilla del toggle
+  --ft-dur-slow: 320ms; // paneles, cambio de ruta, relleno de barras
+  --ft-ease-out: cubic-bezier(0.22, 1, 0.36, 1); // entradas: rápido y se posa
+  --ft-ease-in: cubic-bezier(0.55, 0, 1, 0.45); // salidas
+  --ft-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); // rebote leve (toggle, toast)
+  --ft-press-scale: 0.97;
+  --ft-enter-shift: 6px;
+  --ft-stagger: 28ms; // retardo entre filas que entran en cascada
 }

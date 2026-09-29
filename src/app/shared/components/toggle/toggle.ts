@@ -33,10 +33,10 @@ import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
       border-radius: var(--ft-radius-pill);
       background: var(--ft-border);
       cursor: pointer;
+      transition: background-color var(--ft-dur-base) linear;
     }
     .pista.activo {
       background: var(--ft-accent);
-      justify-content: flex-end;
     }
     .pista:disabled {
       opacity: var(--ft-opacity-disabled-control);
@@ -47,9 +47,20 @@ import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
       height: var(--ft-toggle-knob);
       border-radius: var(--ft-radius-pill);
       background: var(--ft-text-3);
+      // La pastilla se desliza (transform) con un rebote leve en vez de saltar.
+      transition:
+        transform var(--ft-dur-base) var(--ft-ease-spring),
+        background-color var(--ft-dur-base) linear;
     }
     .activo .pastilla {
       background: #ffffff;
+      transform: translateX(calc(var(--ft-toggle-w) - var(--ft-toggle-knob) - 2 * var(--ft-toggle-pad)));
+    }
+    .pista:active:not(:disabled) .pastilla {
+      width: calc(var(--ft-toggle-knob) + 4px);
+    }
+    .activo.pista:active:not(:disabled) .pastilla {
+      transform: translateX(calc(var(--ft-toggle-w) - var(--ft-toggle-knob) - 4px - 2 * var(--ft-toggle-pad)));
     }
   `,
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Toggle), multi: true }],
