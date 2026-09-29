@@ -1,236 +1,286 @@
 # Fintrack
 
-Aplicación de escritorio de finanzas personales para un único usuario. **Local y sin conexión**: sin cuentas, sin nube, sin telemetría. Los datos viven en un fichero SQLite en tu equipo. La única llamada de red que la app puede hacer es a Ollama en `localhost:11434` para el informe semanal.
+A desktop personal finance application for a single user. **Local and offline**: no accounts, no cloud, no telemetry. Data is stored in a SQLite file on your computer. The only network request the app can make is to Ollama at `localhost:11434` for the weekly report.
 
-- Shell: [Tauri v2](https://v2.tauri.app) (webview del sistema, binario de pocos MB)
-- UI: Angular 21 LTS, standalone, zoneless, signals
-- Datos: SQLite vía `@tauri-apps/plugin-sql`
-- Gráficos: ECharts (import directo, `echarts/core`)
-- Diseño: propio. Basado en aplicaciones fintech como trade republic o revolut
+* Shell: [Tauri v2](https://v2.tauri.app) (system webview, binary only a few MB)
+* UI: Angular 21 LTS, standalone, zoneless, signals
+* Data: SQLite via `@tauri-apps/plugin-sql`
+* Charts: ECharts (direct import, `echarts/core`)
+* Design: custom. Inspired by fintech applications such as Trade Republic and Revolut
 
-## Requisitos
+# ⚽ Playground (run without installing anything)
+[https://stackblitz.com/~/github.com/Isaacgc1999/local_fincance_tracker](https://stackblitz.com/~/github.com/Isaacgc1999/Local_Finance_Tracker)
 
-| Herramienta | Versión | Para qué |
-|---|---|---|
-| Node.js | 22 o superior | build de Angular y CLI de Tauri |
-| npm | 10 | dependencias |
-| Rust (rustup) | estable, 1.77 o superior | compilar la shell de Tauri |
-| Windows: Visual Studio Build Tools con "Desktop development with C++" y WebView2 (viene con Windows 11) | | enlazador MSVC |
-| macOS: Xcode Command Line Tools (`xcode-select --install`) | | |
-| Linux: `libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev` | | |
-| Ollama (opcional) | reciente | informes de IA |
+# Installation
+## Requirements
 
-Instalación de Rust: <https://rustup.rs>. Guía completa de prerrequisitos de Tauri: <https://v2.tauri.app/start/prerequisites/>.
+| Tool                                                                                                                          | Version                | Purpose                     |
+| ----------------------------------------------------------------------------------------------------------------------------- | ---------------------- | --------------------------- |
+| Node.js                                                                                                                       | 22 or higher           | Angular build and Tauri CLI |
+| npm                                                                                                                           | 10                     | dependencies                |
+| Rust (rustup)                                                                                                                 | stable, 1.77 or higher | compile the Tauri shell     |
+| Windows: Visual Studio Build Tools with "Desktop development with C++" and WebView2 (included with Windows 11)                |                        | MSVC linker                 |
+| macOS: Xcode Command Line Tools (`xcode-select --install`)                                                                    |                        |                             |
+| Linux: `libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev` |                        |                             |
+| Ollama (optional)                                                                                                             | recent                 | AI reports                  |
 
-## Arranque en desarrollo
+Rust installation: https://rustup.rs. Full Tauri prerequisites guide: https://v2.tauri.app/start/prerequisites/.
+
+## Development
 
 ```bash
 npm install
-npm run dev        # tauri dev: levanta ng serve en :4200 y abre la ventana nativa
+npm run dev        # tauri dev: starts ng serve on :4200 and opens the native window
 ```
 
-Si `npm run dev` responde `failed to run 'cargo metadata' … program not found`, es que falta Rust:
-instálalo desde <https://rustup.rs>, **abre una terminal nueva** (el instalador añade `~/.cargo/bin` al PATH)
-y comprueba `cargo --version`. La primera compilación tarda varios minutos; las siguientes son inmediatas.
+If `npm run dev` returns `failed to run 'cargo metadata' … program not found`, Rust is missing:
 
-Solo la parte web, en un navegador (**modo demo**: SQLite en WebAssembly, en memoria; nada se guarda al recargar). Sirve para revisar las pantallas sin Rust:
+install it from https://rustup.rs, **open a new terminal** (the installer adds `~/.cargo/bin` to the PATH), and run `cargo --version` to verify it.
+
+The first compilation takes several minutes; subsequent ones are immediate.
+
+### Browser-only mode
+
+The web portion can also be run in a browser (**demo mode**: SQLite runs through WebAssembly, in memory; nothing is persisted after a reload). This is useful for reviewing the screens without Rust:
 
 ```bash
 npm start          # http://localhost:4200
 ```
 
-**No hay datos de ejemplo en ningún modo.** Tanto la demo como la aplicación instalada arrancan vacías: solo existen las categorías y los ajustes por defecto, sin movimientos ni presupuestos, para que todo lo que muestran el dashboard, la analítica y la IA salga de lo que registra cada usuario.
+**There is no sample data in either mode.** Both the demo and the installed application start empty: only the default categories and settings exist, with no transactions or budgets, so everything displayed by the dashboard, analytics, and AI comes from what each user records.
 
-En **Cuentas** se dan de alta las cuentas (banco, efectivo, tarjeta, ahorro) con su saldo de apertura, se ven los saldos de hoy, se registran traspasos entre ellas (no cuentan como ingreso ni gasto) y se concilia cada cuenta con el saldo del extracto del banco. Todo va por defecto a **Cuenta principal**, que existe siempre: los movimientos que ya había pasaron a ella al actualizar, y el formulario la propone la primera. Los extractos que importa cada usuario se quedan en su equipo, como el resto de los datos.
+In **Accounts**, users can create accounts (bank, cash, card, savings) with their opening balance, view today's balances, record transfers between them (which do not count as income or expenses), and reconcile each account against the balance shown on their bank statement.
 
-Las **reglas de categoría** («si el concepto contiene *mercadona*, la categoría es Alimentación») se crean en Ajustes o desde la lista de movimientos: con «Seleccionar» se marcan varios, «Cambiar categoría» los recategoriza de golpe y la casilla «Recordar como regla» guarda el texto común para los siguientes. Las reglas se aplican al importar un extracto (la vista previa muestra la categoría que recibirá cada fila) y se proponen al escribir el concepto de un movimiento nuevo; sin regla, el formulario propone la categoría de la última vez que se apuntó ese mismo concepto. «Aplicar a los movimientos sin clasificar» pasa las reglas por lo que quedó sin categoría o en «Otros», sin tocar las categorías elegidas a mano.
+Everything goes to **Main account** by default, which always exists: existing transactions were moved to it during the update, and the form selects it first. Statements imported by each user remain on their computer, just like the rest of the data.
 
-En **Ajustes** se configuran los presupuestos (límites de gasto total, fijos, variables, ocio, suscripciones o por categoría, y objetivos de ahorro e inversión) y la moneda de visualización (euro o dólar; los importes no se convierten, solo cambia el símbolo). La tarjeta «Presupuestos» de Analítica muestra hasta dónde se ha llegado en cada uno.
+**Category rules** ("if the description contains *mercadona*, the category is Food") can be created in Settings or from the transaction list. Using "Select", multiple transactions can be selected; "Change category" recategorizes them all at once; and the "Remember as rule" checkbox saves the common text for future transactions.
 
-Tests (dos vías: componentes y utilidades en jsdom; repositorios contra SQLite real en Node):
+Rules are applied when importing a statement (the preview shows the category that each row will receive) and are suggested when entering the description of a new transaction. Without a rule, the form suggests the category that was last used for the same description.
+
+"Apply to uncategorized transactions" applies the rules to transactions that have no category or are in "Other", without changing categories that were manually selected.
+
+In **Settings**, users can configure budgets (total, fixed, variable, leisure, subscriptions, or per-category spending limits, as well as savings and investment goals) and the display currency (euro or dollar; amounts are not converted, only the symbol changes).
+
+The **Budgets** card in Analytics shows how far each budget has progressed.
+
+### Tests
+
+Two approaches: components and utilities in jsdom; repositories against real SQLite in Node.
 
 ```bash
 npm test           # Angular + Vitest (jsdom)
-npm run test:node  # repositorios y migraciones sobre node:sqlite
+npm run test:node  # repositories and migrations using node:sqlite
 npm run test:all
 ```
 
-Probar el build real en el navegador (modo demo, sin Rust):
+### Demo build
+
+Test the real browser build in demo mode, without Rust:
 
 ```bash
 npm run build:demo
 npm run serve:demo   # http://localhost:4300
 ```
 
-Benchmark de la analítica con 10.000 movimientos (objetivo: menos de 16 ms por recálculo):
+### Analytics benchmark
+
+Benchmark analytics with 10,000 transactions (target: less than 16 ms per recalculation):
 
 ```bash
 npm run bench
 ```
 
-Captura de pantalla con viewport real (útil para comparar con el handoff en 390 / 768 / 1440):
+### Screenshots
+
+Take a screenshot using a real viewport (useful for comparing against the handoff at 390 / 768 / 1440):
 
 ```bash
-node tools/screenshot.mjs http://localhost:4200/events/new captura.png 390 900
+node tools/screenshot.mjs http://localhost:4200/events/new screenshot.png 390 900
 ```
 
-Se pueden encadenar varios clics antes de capturar separándolos con `;;` (por ejemplo abrir
-la calculadora y cambiar a la pestaña Financiera).
+Several clicks can be chained before taking the screenshot by separating them with `;;` (for example, opening the calculator and switching to the Financial tab).
 
-Pruebas de extremo a extremo sobre el build demo (Chrome real, sin Rust ni Ollama):
+### End-to-end tests
+
+End-to-end tests against the demo build (real Chrome, without Rust or Ollama):
 
 ```bash
-node tools/export-e2e.mjs      # descarga y valida los tres formatos de exportación
-node tools/accounts-e2e.mjs    # cuentas, traspaso, gasto con cuenta y conciliación
-node tools/fake-ollama.mjs 11434 ok   # servidor falso de Ollama, en otra terminal
-node tools/ai-e2e.mjs informe.png     # registra un movimiento y genera el informe semanal
-node tools/calc-e2e.mjs calc.png      # Ctrl+K, la operación del handoff y «Usar X en nuevo evento»
-node tools/settings-e2e.mjs ajustes.png # categorías, ingresos, presupuesto y formato de fecha
+node tools/export-e2e.mjs      # downloads and validates the three export formats
+node tools/accounts-e2e.mjs    # accounts, transfer, account expense and reconciliation
+node tools/fake-ollama.mjs 11434 ok   # fake Ollama server, in another terminal
+node tools/ai-e2e.mjs report.png     # records a transaction and generates the weekly report
+node tools/calc-e2e.mjs calc.png      # Ctrl+K, handoff operation and "Use X in new event"
+node tools/settings-e2e.mjs settings.png # categories, income, budget and date format
 ```
 
-Si el puerto 11434 ya está ocupado por un Ollama real, arranca el servidor falso en otro puerto
-y pásaselo a la prueba: la cambia desde Ajustes antes de generar.
+If port 11434 is already occupied by a real Ollama instance, start the fake server on another port and pass it to the test: the test changes the port from Settings before generating the report.
 
 ```bash
 node tools/fake-ollama.mjs 11435 ok
-node tools/ai-e2e.mjs informe.png http://localhost:4300 http://127.0.0.1:11435
+node tools/ai-e2e.mjs report.png http://localhost:4300 http://127.0.0.1:11435
 ```
 
-## Atajos de teclado
+## Keyboard shortcuts
 
-| Atajo | Qué hace |
-|---|---|
-| `Ctrl/Cmd + K` | Abre y cierra la calculadora sobre la pantalla actual, sin perderla |
-| `Esc` | Cierra la calculadora, los modales y los desplegables |
-| `Ctrl/Cmd + Intro` | Guarda el formulario de evento |
+| Shortcut           | Action                                                                    |
+| ------------------ | ------------------------------------------------------------------------- |
+| `Ctrl/Cmd + K`     | Opens and closes the calculator over the current screen without losing it |
+| `Esc`              | Closes the calculator, modals and dropdowns                               |
+| `Ctrl/Cmd + Enter` | Saves the event form                                                      |
 
-Con la calculadora abierta y el foco fuera de un campo de texto, el teclado físico escribe en
-ella: dígitos, `, . + - * /`, `Intro` (=), `Retroceso` y `Supr` (C).
+With the calculator open and focus outside a text field, the physical keyboard can be used to enter digits, `, . + - * /`, `Enter` (=), `Backspace`, and `Delete` (C).
 
-## Compilar el ejecutable
+## Building the executable
 
 ```bash
 npm run build:desktop
 ```
 
-Los instaladores quedan en `src-tauri/target/release/bundle/`:
+Installers are generated in `src-tauri/target/release/bundle/`:
 
-| SO | Salida |
-|---|---|
-| Windows | `nsis/Fintrack_0.1.0_x64-setup.exe` y `msi/Fintrack_0.1.0_x64_en-US.msi` |
-| macOS | `dmg/Fintrack_0.1.0_aarch64.dmg` (o `x64`) y `macos/Fintrack.app` |
-| Linux | `appimage/fintrack_0.1.0_amd64.AppImage` y `deb/fintrack_0.1.0_amd64.deb` |
+| OS      | Output                                                                      |
+| ------- | --------------------------------------------------------------------------- |
+| Windows | `nsis/Fintrack_0.1.0_x64-setup.exe` and `msi/Fintrack_0.1.0_x64_en-US.msi`  |
+| macOS   | `dmg/Fintrack_0.1.0_aarch64.dmg` (or `x64`) and `macos/Fintrack.app`        |
+| Linux   | `appimage/fintrack_0.1.0_amd64.AppImage` and `deb/fintrack_0.1.0_amd64.deb` |
 
-Cada sistema compila su propio instalador (no hay compilación cruzada).
+Each system builds its own installer (there is no cross-compilation).
 
-Si ya tenías Fintrack instalado, cierra la app y ejecuta el instalador nuevo encima: sustituye el
-ejecutable y conserva tu `fintrack.db`.
+If Fintrack was already installed, close the application and run the new installer over the existing installation: it replaces the executable while preserving your `fintrack.db`.
 
-Para ver por dentro la ventana real (errores de consola, CSP, estilos, conexión con Ollama y capturas de
-cada pantalla) hay una variante de inspección que nunca se distribuye. Usa su propio identificador, así
-que no toca tus datos ni choca con la app instalada si está abierta:
+To inspect the real application window from the inside (console errors, CSP, styles, Ollama connection, and screenshots of each screen), there is an inspection variant that is never distributed.
+
+It uses its own identifier, so it does not touch your data or conflict with the installed application if it is open:
 
 ```bash
 npx tauri build --no-bundle --config src-tauri/tauri.inspect.conf.json
-node tools/tauri-inspect.mjs src-tauri/target/release/fintrack.exe capturas dashboard,events,analytics,ai,settings
-npm run build:desktop   # vuelve a dejar el ejecutable de distribución
+node tools/tauri-inspect.mjs src-tauri/target/release/fintrack.exe screenshots dashboard,events,analytics,ai,settings
+npm run build:desktop   # restores the distribution executable
 ```
 
-## Dónde está el fichero de datos
+## Data file location
 
-`fintrack.db` se crea en el directorio de datos de la aplicación:
+`fintrack.db` is created in the application's data directory:
 
-| SO | Ruta |
-|---|---|
-| Windows | `%APPDATA%\com.fintrack.app\fintrack.db` |
-| macOS | `~/Library/Application Support/com.fintrack.app/fintrack.db` |
-| Linux | `~/.local/share/com.fintrack.app/fintrack.db` |
+| OS      | Path                                                         |
+| ------- | ------------------------------------------------------------ |
+| Windows | `%APPDATA%\com.fintrack.app\fintrack.db`                     |
+| macOS   | `~/Library/Application Support/com.fintrack.app/fintrack.db` |
+| Linux   | `~/.local/share/com.fintrack.app/fintrack.db`                |
 
-Desde Ajustes se puede cambiar la ubicación, crear copias de seguridad y restaurarlas. El fichero es SQLite estándar: se puede abrir con cualquier cliente.
+The data file location can be changed from Settings, where backups can also be created and restored. The file is a standard SQLite database and can be opened with any client.
 
-## Copias de seguridad y fichero de datos
+## Backups and data file
 
-Todo se gestiona desde **Ajustes → Fichero de datos**, y las tres operaciones necesitan la ventana de Tauri (`npm run dev` o la aplicación instalada); en el modo demo del navegador aparecen deshabilitadas.
+Everything is managed from **Settings → Data file**, and all three operations require the Tauri window (`npm run dev` or the installed application). They are disabled in browser demo mode.
 
-| Acción | Qué hace |
-|---|---|
-| **Crear copia de seguridad** | Escribe una copia consistente con `VACUUM INTO` sin cerrar la base de datos, en la ruta que elijas. El fichero sale compactado y con el WAL ya integrado. |
-| **Restaurar desde archivo** | Valida el fichero elegido (integridad, tablas de Fintrack y versión de esquema) y solo entonces sustituye tus datos. Una copia de una versión anterior se acepta: las migraciones la ponen al día. |
-| **Cambiar** | Mueve el fichero de datos a otra carpeta y apunta ahí la aplicación. El fichero anterior se conserva por si acaso. |
+| Action                | What it does                                                                                                                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Create backup**     | Writes a consistent copy using `VACUUM INTO` without closing the database. The file is compacted and the WAL is already integrated.                                                       |
+| **Restore from file** | Validates the selected file (integrity, Fintrack tables and schema version) and only then replaces your data. A backup from an older version is accepted: migrations bring it up to date. |
+| **Change**            | Moves the data file to another folder and points the application there. The previous file is kept just in case.                                                                           |
 
-La copia es un SQLite estándar: se puede abrir con cualquier cliente, guardar en la nube que prefieras o restaurar en otro equipo.
+The backup is a standard SQLite database: it can be opened with any client, stored in the cloud of your choice, or restored on another computer.
 
-## Ollama (informe semanal de IA)
+## Ollama (weekly AI report)
 
-1. Instala Ollama desde <https://ollama.com/download>.
-2. Descarga el modelo por defecto:
+1. Install Ollama from https://ollama.com/download.
+
+2. Download the default model:
+
    ```bash
    ollama pull llama3.1:8b
    ```
-3. Arranca el servicio (`ollama serve`, o la app de escritorio de Ollama) y comprueba que responde en `http://127.0.0.1:11434`.
-4. En Fintrack, Ajustes → Ollama → "Probar conexión". El modelo y el endpoint son configurables.
 
-Para probar la pantalla de IA sin instalar Ollama hay un servidor que imita su API:
+3. Start the service (`ollama serve`, or the Ollama desktop application) and verify that it responds at `http://127.0.0.1:11434`.
+
+4. In Fintrack, go to Settings → Ollama → "Test connection". The model and endpoint are configurable.
+
+To test the AI screen without installing Ollama, there is a server that mimics its API:
 
 ```bash
 node tools/fake-ollama.mjs 11434 ok        # ok | invalid | nomodel | error500 | timeout
 ```
 
-**Cuánto tarda.** El informe se genera en tu ordenador, así que el tiempo depende de tu máquina. Medido en CPU, sin tarjeta gráfica:
+### How long does it take?
 
-| Modelo | Lectura del prompt | Generación | Total |
-|---|---|---|---|
-| `llama3.1:8b` (por defecto) | 22 s | 84 s | unos 1 min 45 s |
-| `llama3.2:3b` | 20 s | 46 s | unos 1 min 10 s |
+The report is generated on your computer, so the time depends on your hardware. Measured on CPU, without a graphics card:
 
-El modelo se precarga al abrir la pantalla de IA y queda 30 minutos en memoria, así que el informe no paga la carga inicial. Casi todo el tiempo es la generación, que depende de la CPU: con una GPU es mucho más rápido, y el modelo de 3B es la opción rápida en un equipo sin GPU. Para usarlo, descárgalo con `ollama pull llama3.2:3b` y elígelo en Ajustes → Ollama.
+| Model                   | Prompt processing | Generation | Total            |
+| ----------------------- | ----------------- | ---------- | ---------------- |
+| `llama3.1:8b` (default) | 22 s              | 84 s       | about 1 min 45 s |
+| `llama3.2:3b`           | 20 s              | 46 s       | about 1 min 10 s |
 
-**Otros modelos.** Ajustes → Ollama lista todo lo que tengas descargado, así que puedes usar el que quieras. Ten en cuenta cuánta memoria piden los más recientes de Meta: Llama 4 Scout (`llama4:scout`) ocupa 67 GB, Llama 3.3 solo existe en 70B (de 26 a 43 GB) y Muse Glimmer 30B (`muse-glimmer`) ocupa 18 GB. El modelo tiene que caber entero en la RAM, o en la memoria de la GPU. Con 16 GB, los Llama más recientes que funcionan son `llama3.1:8b` y `llama3.2:3b` (ADR-080).
+The model is preloaded when opening the AI screen and remains in memory for 30 minutes, so the report does not pay the initial loading cost.
 
-Fintrack no corta la generación mientras el modelo escriba: solo cancela si se queda callado 30 segundos a mitad, si tarda más de 3 minutos en empezar o si pasa de 8 minutos en total. Para medir tu propio equipo:
+Most of the time is spent generating the response, which depends on the CPU. With a GPU it is much faster, and the 3B model is the faster option on a machine without a GPU.
+
+To use it, download it with:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+Then select it under Settings → Ollama.
+
+### Other models
+
+Settings → Ollama lists everything you have downloaded, so you can use whichever model you want.
+
+Keep in mind how much memory some of the latest Meta models require: Llama 4 Scout (`llama4:scout`) uses 67 GB, Llama 3.3 only exists in 70B (26 to 43 GB), and Muse Glimmer 30B (`muse-glimmer`) uses 18 GB.
+
+The model must fit entirely in RAM or GPU memory. With 16 GB, the latest Llama models that work are `llama3.1:8b` and `llama3.2:3b` (ADR-080).
+
+Fintrack does not interrupt generation while the model is writing. It only cancels if the model remains silent for 30 seconds halfway through, takes more than 3 minutes to start, or exceeds 8 minutes overall.
+
+To benchmark your own machine:
 
 ```bash
 FT_AI_BENCH=1 npx vitest run --config vitest.node.config.ts scripts/ai-bench.spec.ts
 FT_AI_BENCH=1 FT_AI_MODEL=llama3.2:3b npx vitest run --config vitest.node.config.ts scripts/ai-bench.spec.ts
 ```
 
-Fintrack nunca envía movimientos en bruto: construye un resumen compacto de la semana (totales por categoría, comparativa con las 4 semanas previas, suscripciones activas, tasa de ahorro, desviaciones) y solo eso llega al modelo, que corre en tu máquina.
+Fintrack never sends raw transactions. It builds a compact weekly summary (totals by category, comparison with the previous 4 weeks, active subscriptions, savings rate, and deviations), and only that summary is sent to the model, which runs on your machine.
 
-## Qué está verificado y qué no
+## What has been verified and what has not
 
-Verificado:
+### Verified
 
-- Compilación de producción sin avisos y las dos vías de tests en verde.
-- Las cuatro pruebas de extremo a extremo de `tools/` sobre el build servido en un Chrome real: exportación en los tres formatos, calculadora, ajustes e informe de IA.
-- **Informe de IA contra Ollama real** con Llama 3.1 8B: la semana se resume, el modelo responde, el JSON valida y la pantalla pinta veredicto, hallazgos, recomendaciones y potencial de ahorro coherentes.
-- **`npm run build:desktop` en Windows** con Rust 1.98.1: compila sin avisos y produce `fintrack.exe` (8,6 MB), el MSI (4,8 MB) y el instalador NSIS (3,9 MB).
-- **Arranque del ejecutable**: abre la ventana y crea `%APPDATA%\com.fintrack.app\fintrack.db` en modo WAL, con las seis tablas, el esquema en la versión 2, las 10 categorías de la semilla, los 7 ajustes y cero movimientos.
+* Production build completes without warnings and both test suites pass.
+* The four end-to-end tests in `tools/` run successfully against the build served in a real Chrome browser: export in all three formats, calculator, settings, and AI report.
+* **AI report against real Ollama** using Llama 3.1 8B: the week is summarized, the model responds, the JSON validates, and the screen displays a coherent verdict, findings, recommendations, and potential savings.
+* **`npm run build:desktop` on Windows** with Rust 1.98.1: compiles without warnings and produces `fintrack.exe` (8.6 MB), the MSI (4.8 MB), and the NSIS installer (3.9 MB).
+* **Executable startup**: opens the window and creates `%APPDATA%\com.fintrack.app\fintrack.db` in WAL mode, with six tables, schema version 2, the 10 seed categories, 7 settings, and zero transactions.
 
-Todavía **sin comprobar**, porque hace falta usar la ventana a mano:
+### Not yet verified
 
-- el diálogo nativo de guardado al exportar,
-- las tres operaciones de **Ajustes → Fichero de datos** (copia, restauración y cambio de ubicación), aunque su parte SQL sí está cubierta con SQLite real en `src/app/data/db/backup.node.spec.ts`,
-- los adjuntos de los movimientos, que se escriben en disco,
-- los instaladores de macOS y Linux, que cada sistema tiene que compilar por su cuenta.
+These require manual interaction with the application window:
 
-## Decisiones técnicas
+* the native save dialog when exporting;
+* the three operations under **Settings → Data file** (backup, restore and changing the location), although their SQL layer is covered using real SQLite in `src/app/data/db/backup.node.spec.ts`;
+* transaction attachments, which are written to disk;
+* macOS and Linux installers, which each system must build independently.
 
-Las decisiones por fase están en [`docs/decisiones.md`](docs/decisiones.md) y el plan completo en [`docs/FASE-0.md`](docs/FASE-0.md).
+## Technical decisions
 
-**Formularios: Reactive Forms tipados en lugar de Signal Forms.** En Angular 21.2 el paquete `@angular/forms/signals` sigue marcado como experimental. Por la regla del proyecto ("si signal forms está estable, úsalos; si no, Reactive Forms tipados") se usan `FormGroup`/`FormControl` tipados, y su valor se expone como signal con `toSignal(form.valueChanges)` para que todo el estado derivado siga siendo `computed()`.
+The decisions for each phase are documented in [`docs/decisiones.md`](docs/decisiones.md), and the complete plan is in [`docs/FASE-0.md`](docs/FASE-0.md).
 
-## Estructura
+**Forms: Typed Reactive Forms instead of Signal Forms.** In Angular 21.2, the `@angular/forms/signals` package is still marked as experimental.
 
-```
-src/app/core       tipos (Money, IsoDate, Result), formato es-ES, errores
-src/app/data       SQLite: apertura, migraciones, repositorios
-src/app/domain     servicios puros (recurrencias, analítica, IA, exportación)
-src/app/infra      adaptadores Tauri (Ollama, ficheros, breakpoints)
-src/app/facades    estado en signals que consumen las pantallas
-src/app/layout     Shell, Sidebar, TabBar, FAB, CabeceraPagina
-src/app/shared     componentes del handoff, directiva [chart], pipes
+Following the project rule ("if Signal Forms are stable, use them; otherwise, use typed Reactive Forms"), the project uses typed `FormGroup`/`FormControl`, with their value exposed as a signal using `toSignal(form.valueChanges)` so that all derived state continues to use `computed()`.
+
+## Structure
+
+```text
+src/app/core       types (Money, IsoDate, Result), es-ES formatting, errors
+src/app/data       SQLite: initialization, migrations, repositories
+src/app/domain     pure services (recurrences, analytics, AI, export)
+src/app/infra      Tauri adapters (Ollama, files, breakpoints)
+src/app/facades    signal-based state consumed by screens
+src/app/layout     Shell, Sidebar, TabBar, FAB, PageHeader
+src/app/shared     handoff components, [chart] directive, pipes
 src/app/features   dashboard, events, analytics, ai, calculator, settings
-src/styles         tokens del handoff como custom properties
-src-tauri          shell de escritorio (Rust)
-design             handoff de diseño
+src/styles         handoff design tokens as custom properties
+src-tauri          desktop shell (Rust)
+design             design handoff
 ```
