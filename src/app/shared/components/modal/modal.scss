@@ -10,6 +10,16 @@
   &::backdrop {
     background: rgba(10, 11, 13, 0.6);
   }
+
+  // Al abrir, el fondo aparece y el panel escala desde el 96 %. El cierre es
+  // inmediato: el <dialog> nativo se oculta al cerrarse.
+  &[open] {
+    animation: ft-pop var(--ft-dur-base) var(--ft-ease-out);
+  }
+
+  &[open]::backdrop {
+    animation: ft-fade var(--ft-dur-base) linear;
+  }
 }
 
 .panel {

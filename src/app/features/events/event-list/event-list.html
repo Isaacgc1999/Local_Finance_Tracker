@@ -34,7 +34,7 @@
     <span class="seleccion__contador num">{{ seleccionLabel() }}</span>
     <div class="seleccion__acciones">
       <button type="button" class="ft-btn ft-btn--primary" [disabled]="facade.selectedCount() === 0 || facade.bulkBusy()" (click)="modalCategoria.set(true)">Cambiar categoría</button>
-      <button type="button" class="ft-btn ft-btn--secondary peligro" [disabled]="facade.selectedCount() === 0 || facade.bulkBusy()" (click)="confirmarBorrado.set(true)">Eliminar</button>
+      <button type="button" class="ft-btn ft-btn--secondary peligro" [disabled]="facade.selectedCount() === 0 || facade.bulkBusy()" (click)="facade.deleteSelected()">Eliminar</button>
       <button type="button" class="ft-link" (click)="facade.stopSelecting()">Cancelar</button>
     </div>
   </div>
@@ -62,9 +62,9 @@
     />
   }
 } @else {
-  <div class="grupos">
+  <div class="grupos" [class.ft-refreshing]="facade.loading()" [attr.aria-busy]="facade.loading()">
     @for (grupo of facade.groupedByDay(); track grupo.date) {
-      <section class="grupo ft-card">
+      <section class="grupo ft-card ft-enter" [style.--i]="$index">
         <header class="grupo__cabecera">
           <span class="grupo__dia">{{ diaLabel(grupo.date) }}</span>
           <span class="grupo__balance num" [class.ft-c-income]="grupo.balance > 0" [class.ft-c-expense]="grupo.balance < 0">{{ balanceLabel(grupo.balance) }}</span>
@@ -80,9 +80,3 @@
 }
 
 <ft-modal-recategorizar [(abierto)]="modalCategoria" />
-
-<ft-modal [(open)]="confirmarBorrado" titulo="Eliminar movimientos" subtitulo="Esta acción no se puede deshacer.">
-  <p class="texto-modal">Se eliminarán {{ seleccionLabel() === '1 seleccionado' ? 'el movimiento seleccionado' : facade.selectedCount() + ' movimientos' }} del fichero local.</p>
-  <button acciones type="button" class="ft-btn ft-btn--elevated" (click)="confirmarBorrado.set(false)">Cancelar</button>
-  <button acciones type="button" class="ft-btn ft-btn--primary peligro" [disabled]="facade.bulkBusy()" (click)="borrarSeleccion()">Eliminar</button>
-</ft-modal>

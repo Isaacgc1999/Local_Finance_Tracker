@@ -39,6 +39,18 @@
   cursor: pointer;
   white-space: nowrap;
   user-select: none;
+  transition:
+    background-color var(--ft-dur-fast) linear,
+    border-color var(--ft-dur-fast) linear,
+    color var(--ft-dur-fast) linear,
+    opacity var(--ft-dur-fast) linear,
+    box-shadow var(--ft-dur-fast) linear,
+    transform var(--ft-dur-instant) var(--ft-ease-out);
+
+  // Respuesta táctil al pulsar: se hunde un 3 % y vuelve al soltar.
+  &:active:not(:disabled) {
+    transform: scale(var(--ft-press-scale));
+  }
 
   &:disabled {
     opacity: var(--ft-opacity-disabled);
@@ -105,6 +117,7 @@
   padding: 0;
   cursor: pointer;
   border-radius: var(--ft-radius-legend);
+  transition: color var(--ft-dur-fast) linear;
   &:hover {
     color: var(--ft-accent-hover);
   }
@@ -148,6 +161,13 @@
   border: var(--ft-border-width) solid var(--ft-border);
   color: var(--ft-text-1);
   color-scheme: dark;
+  transition:
+    border-color var(--ft-dur-fast) linear,
+    box-shadow var(--ft-dur-fast) linear;
+
+  &:hover:not(:disabled):not(:focus-visible) {
+    border-color: var(--ft-border-hover);
+  }
 
   &::placeholder {
     color: var(--ft-text-3);

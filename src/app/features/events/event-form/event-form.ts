@@ -6,7 +6,6 @@ import {
   effect,
   inject,
   input,
-  signal,
   viewChild,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -20,7 +19,6 @@ import { BreakpointService } from '../../../infra/platform/breakpoint.service';
 import { CabeceraPagina } from '../../../layout/cabecera-pagina/cabecera-pagina';
 import { ChipCategoria } from '../../../shared/components/chip-categoria/chip-categoria';
 import { InputImporte } from '../../../shared/components/input-importe/input-importe';
-import { Modal } from '../../../shared/components/modal/modal';
 import { SegmentedControl, type SegmentOption } from '../../../shared/components/segmented-control/segmented-control';
 import { AdjuntarRecibo } from './adjuntar-recibo/adjuntar-recibo';
 import { BarraAcciones } from './barra-acciones/barra-acciones';
@@ -44,7 +42,6 @@ import { SelectorTipo } from './selector-tipo/selector-tipo';
     BloqueRecurrencia,
     AdjuntarRecibo,
     BarraAcciones,
-    Modal,
   ],
   providers: [EventFormFacade],
   templateUrl: './event-form.html',
@@ -68,7 +65,6 @@ export class EventForm {
   private readonly importe = viewChild(InputImporte, { read: ElementRef });
 
   protected readonly form = this.facade.form;
-  protected readonly confirmarBorrado = signal(false);
 
   protected readonly titulo = computed(() => (this.facade.mode() === 'edit' ? 'Editar evento' : 'Nuevo evento'));
   /** Ejemplo del campo Notas del handoff, con el símbolo de la moneda activa. */

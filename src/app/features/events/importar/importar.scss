@@ -1,3 +1,5 @@
+@use 'breakpoints' as bp;
+
 .aviso {
   font: var(--ft-font-meta);
   color: var(--ft-expense);
@@ -195,4 +197,79 @@
 .categoria--regla {
   color: var(--ft-accent);
   font: var(--ft-font-meta-strong);
+}
+
+// Móvil: cada fila de la vista previa es una tarjeta (casilla, fecha e
+// importe arriba, concepto, y categoría con estado debajo) en vez de una
+// tabla de seis columnas que solo se leía con scroll lateral.
+@include bp.ft-media(mobile) {
+  .tabla-scroll {
+    overflow-x: visible;
+  }
+
+  .tabla,
+  .tabla tbody {
+    display: block;
+  }
+
+  .tabla {
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    tbody tr {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      grid-template-areas:
+        'check fecha importe'
+        'check concepto concepto'
+        'check categoria estado';
+      gap: 6px 10px;
+      padding: 12px 0;
+      border-bottom: var(--ft-border-width) solid var(--ft-border);
+    }
+
+    tbody tr:last-child {
+      border-bottom: 0;
+    }
+
+    td {
+      padding: 0;
+      border-bottom: 0;
+      min-width: 0;
+    }
+
+    td:nth-child(1) {
+      grid-area: check;
+    }
+    td:nth-child(2) {
+      grid-area: fecha;
+      color: var(--ft-text-3);
+    }
+    td:nth-child(3) {
+      grid-area: concepto;
+    }
+    td:nth-child(4) {
+      grid-area: importe;
+    }
+    td:nth-child(5) {
+      grid-area: categoria;
+    }
+    td:nth-child(6) {
+      grid-area: estado;
+      justify-self: end;
+    }
+
+    td[colspan] {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .concepto {
+    min-width: 0;
+  }
 }

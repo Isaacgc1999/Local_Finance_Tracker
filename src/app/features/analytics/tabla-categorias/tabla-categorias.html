@@ -14,7 +14,7 @@
           <span class="nombre">{{ fila.label }}</span>
           <span class="total num">{{ fila.total }}</span>
         </div>
-        <div class="minibar minibar--ancha"><div class="minibar__relleno" [style.width.%]="fila.barPct"></div></div>
+        <div class="minibar minibar--ancha"><div class="minibar__relleno ft-fill" [style.width.%]="fila.barPct"></div></div>
         <div class="tarjeta__fila tarjeta__meta">
           <span>{{ fila.count }} mov. · {{ fila.shareOfExpenses }} del gasto</span>
           <span class="num" [class]="'num delta-' + fila.deltaTone">{{ fila.delta }}</span>
@@ -51,7 +51,7 @@
           @if (col.key === 'label') {
             <div class="celda celda--nombre" role="cell">
               <span class="nombre">{{ fila.label }}</span>
-              <div class="minibar"><div class="minibar__relleno" [style.width.%]="fila.barPct"></div></div>
+              <div class="minibar"><div class="minibar__relleno ft-fill" [style.width.%]="fila.barPct"></div></div>
             </div>
           } @else {
             <div class="celda celda--num num" role="cell" [class.celda--fuerte]="col.key === 'total'" [class]="'celda celda--num num' + (col.key === 'total' ? ' celda--fuerte' : '') + (col.key === 'delta' ? ' delta-' + fila.deltaTone : '')">

@@ -28,6 +28,13 @@ nav {
   color: var(--ft-text-3);
   font: var(--ft-font-meta-strong);
   border-radius: var(--ft-radius-control);
+  transition:
+    color var(--ft-dur-fast) linear,
+    transform var(--ft-dur-instant) var(--ft-ease-out);
+
+  &:active {
+    transform: scale(0.94);
+  }
 
   &.activo {
     color: var(--ft-text-1);

@@ -12,6 +12,9 @@ import { EventService } from '../domain/events/event.service';
 import { AppStatusFacade } from './app-status.facade';
 import { CategoryRulesFacade } from './category-rules.facade';
 
+/** Tiempo para pulsar «Deshacer» antes de que el borrado sea real. */
+const UNDO_MS = 6000;
+
 export interface DayGroup {
   readonly date: IsoDate;
   readonly items: readonly Event[];
@@ -37,6 +40,8 @@ export class EventsFacade {
   private readonly selectingSig = signal(false);
   private readonly selectedSig = signal<ReadonlySet<string>>(new Set());
   private readonly bulkBusySig = signal(false);
+  /** Movimientos borrados que aún se pueden recuperar con «Deshacer»: ocultos, pero en la BD. */
+  private readonly pendingDeleteSig = signal<ReadonlySet<string>>(new Set());
 
   readonly events = this.eventsSig.asReadonly();
   /** Modo selección: pulsar una fila la marca en vez de abrirla. */
@@ -49,10 +54,16 @@ export class EventsFacade {
 
   readonly categoryById = computed(() => new Map(this.categoriesSig().map((c) => [c.id, c])));
 
+  /** Los movimientos del mes sin los que están pendientes de borrarse. */
+  private readonly visible = computed(() => {
+    const pending = this.pendingDeleteSig();
+    return pending.size === 0 ? this.eventsSig() : this.eventsSig().filter((e) => !pending.has(e.id));
+  });
+
   readonly filtered = computed(() => {
     const q = this.search().trim().toLocaleLowerCase('es');
-    if (!q) return this.eventsSig();
-    return this.eventsSig().filter((e) => e.concept.toLocaleLowerCase('es').includes(q));
+    if (!q) return this.visible();
+    return this.visible().filter((e) => e.concept.toLocaleLowerCase('es').includes(q));
   });
 
   readonly groupedByDay = computed<readonly DayGroup[]>(() => {
@@ -168,22 +179,60 @@ export class EventsFacade {
     }
   }
 
-  async deleteSelected(): Promise<Result<{ readonly deleted: number }>> {
-    const ids = this.selectedEvents().map((e) => e.id);
-    const repos = this.db.require();
-    if (!repos.ok) return repos;
-    this.bulkBusySig.set(true);
-    const result = await repos.value.events.deleteMany(ids);
-    this.bulkBusySig.set(false);
-    if (!result.ok) {
-      this.status.notify(describeError(result.error), 'expense');
-      return result;
-    }
-    const n = result.value.deleted;
-    this.status.notify(n === 1 ? 'Se eliminó 1 movimiento.' : `Se eliminaron ${n} movimientos.`);
+  /**
+   * Borra la selección con «Deshacer»: las filas desaparecen al momento y el
+   * borrado real se hace cuando caduca el aviso. Si la app se cierra antes,
+   * los movimientos siguen en el fichero (se pierde el borrado, nunca datos).
+   */
+  deleteSelected(): void {
+    const events = this.selectedEvents();
     this.stopSelecting();
+    this.scheduleDelete(events);
+  }
+
+  /**
+   * Oculta `events` y los borra de la BD cuando caduca el aviso con
+   * «Deshacer». `afterCommit` corre solo si el borrado llega a hacerse
+   * (p. ej. quitar el recibo adjunto del disco).
+   */
+  scheduleDelete(events: readonly Event[], afterCommit?: () => Promise<void>): void {
+    const ids = events.map((e) => e.id);
+    if (ids.length === 0) return;
+    this.setPending(ids, true);
+    const n = ids.length;
+    this.status.notify(n === 1 ? 'Movimiento eliminado.' : `Se eliminaron ${n} movimientos.`, 'neutral', {
+      durationMs: UNDO_MS,
+      action: { label: 'Deshacer', run: () => this.setPending(ids, false) },
+      onExpire: () => void this.commitDelete(ids, afterCommit),
+    });
+  }
+
+  private async commitDelete(ids: readonly string[], afterCommit?: () => Promise<void>): Promise<void> {
+    const repos = this.db.require();
+    const result = repos.ok ? await repos.value.events.deleteMany(ids) : repos;
+    if (!result.ok) {
+      this.setPending(ids, false);
+      this.status.notify(describeError(result.error), 'expense');
+      return;
+    }
+    // Se quitan de la lista antes de dejar de ocultarlos, para que no
+    // reaparezcan un instante mientras llega la recarga.
+    const gone = new Set(ids);
+    this.eventsSig.update((list) => list.filter((e) => !gone.has(e.id)));
+    this.setPending(ids, false);
+    await afterCommit?.();
     this.status.touch();
-    return ok(result.value);
+  }
+
+  private setPending(ids: readonly string[], pending: boolean): void {
+    this.pendingDeleteSig.update((s) => {
+      const next = new Set(s);
+      for (const id of ids) {
+        if (pending) next.add(id);
+        else next.delete(id);
+      }
+      return next;
+    });
   }
 
   async remove(id: string): Promise<Result<void>> {

@@ -93,20 +93,33 @@ export class DashboardFacade {
   private readonly budgetSig = signal<Money>(ZERO);
   private readonly loadingSig = signal(true);
   private readonly errorSig = signal<AppError | null>(null);
+  /**
+   * Mes al que pertenecen los datos cargados. Los derivados leen este y no
+   * `month`, para que al cambiar de mes la vista siga mostrando el anterior
+   * (atenuado) hasta que llegan los datos nuevos, en vez de pasar por ceros
+   * o por el skeleton.
+   */
+  private readonly shownMonthSig = signal<IsoDate | null>(null);
+  private loadSeq = 0;
+  private readonly shownMonth = computed(() => this.shownMonthSig() ?? this.month());
 
   readonly loading = this.loadingSig.asReadonly();
+  /** Primera carga: aún no hay nada que enseñar y toca skeleton. */
+  readonly initialLoading = computed(() => this.loadingSig() && this.shownMonthSig() === null);
+  /** Recarga con datos ya en pantalla: se atenúan en vez de desaparecer. */
+  readonly refreshing = computed(() => this.loadingSig() && this.shownMonthSig() !== null);
   readonly error = this.errorSig.asReadonly();
   readonly categoryById = computed(() => new Map(this.categoriesSig().map((c) => [c.id, c])));
 
   readonly monthEvents = computed(() => {
-    const { from, to } = monthRange(this.month());
+    const { from, to } = monthRange(this.shownMonth());
     return this.eventsSig().filter((e) => e.date >= from && e.date <= to);
   });
   readonly count = computed(() => this.monthEvents().length);
-  readonly empty = computed(() => !this.loadingSig() && this.count() === 0);
+  readonly empty = computed(() => this.shownMonthSig() !== null && this.count() === 0);
 
   private readonly prevMonthEvents = computed(() => {
-    const { from, to } = monthRange(addMonthsClamped(this.month(), -1, 1));
+    const { from, to } = monthRange(addMonthsClamped(this.shownMonth(), -1, 1));
     return this.eventsSig().filter((e) => e.date >= from && e.date <= to);
   });
 
@@ -117,10 +130,10 @@ export class DashboardFacade {
   readonly outflow = computed(() => outflowOf(this.totals()));
   readonly delta = computed(() => subMoney(this.balance(), balanceOf(this.prevTotals())));
   readonly prevBalance = computed(() => balanceOf(this.prevTotals()));
-  readonly prevMonthName = computed(() => MESES[month(addMonthsClamped(this.month(), -1, 1)) - 1] ?? '');
+  readonly prevMonthName = computed(() => MESES[month(addMonthsClamped(this.shownMonth(), -1, 1)) - 1] ?? '');
 
   private readonly series6m = computed(() => {
-    const months = lastMonths(this.month(), SPARKLINE_MONTHS);
+    const months = lastMonths(this.shownMonth(), SPARKLINE_MONTHS);
     const byMonth = totalsByMonth(this.eventsSig(), months);
     const pick = (f: (t: TypeTotals) => Money) => months.map((m) => f(byMonth.get(monthKey(m)) ?? EMPTY_TOTALS));
     return {
@@ -136,7 +149,7 @@ export class DashboardFacade {
       outflow: this.outflow(),
       income: this.totals().income,
       budgetTarget: this.budgetSig(),
-      monthStart: this.month(),
+      monthStart: this.shownMonth(),
       today: this.today(),
     }),
   );
@@ -170,7 +183,7 @@ export class DashboardFacade {
   });
 
   readonly weeks = computed<readonly WeekStack[]>(() =>
-    bucketByWeek(this.monthEvents(), this.month()).map((b) => {
+    bucketByWeek(this.monthEvents(), this.shownMonth()).map((b) => {
       const segments = totalsByExpenseKind(b.events);
       return {
         label: b.label,
@@ -249,6 +262,7 @@ export class DashboardFacade {
       this.loadingSig.set(false);
       return;
     }
+    const seq = ++this.loadSeq;
     this.loadingSig.set(true);
     const from = lastMonths(month, SPARKLINE_MONTHS)[0] ?? startOfMonth(month);
     const [events, rules, budgets, categories] = await Promise.all([
@@ -257,6 +271,8 @@ export class DashboardFacade {
       repos.value.budgets.findAll(),
       repos.value.categories.findAll(),
     ]);
+    // Ya se pidió otra carga (cambio rápido de mes, otro guardado): esta llega tarde y se descarta.
+    if (seq !== this.loadSeq) return;
     this.loadingSig.set(false);
     if (!events.ok) {
       this.errorSig.set(events.error);
@@ -267,5 +283,6 @@ export class DashboardFacade {
     if (rules.ok) this.rulesSig.set(rules.value);
     if (budgets.ok) this.budgetSig.set(budgets.value.find((b) => b.scope === 'total')?.amountCents ?? ZERO);
     if (categories.ok) this.categoriesSig.set(categories.value);
+    this.shownMonthSig.set(month);
   }
 }

@@ -51,13 +51,7 @@
   }
 }
 
-@if (status.toasts().length > 0) {
-  <div class="toasts" aria-live="polite">
-    @for (toast of status.toasts(); track toast.id) {
-      <ft-pill-estado [tono]="toast.tone" [punto]="toast.tone !== 'neutral'">{{ toast.text }}</ft-pill-estado>
-    }
-  </div>
-}
+<ft-avisos [class.sobre-tabbar]="bp.isMobile()" />
 
 @if (fabVisible()) {
   <ft-fab />

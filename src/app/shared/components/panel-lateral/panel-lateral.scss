@@ -11,6 +11,22 @@
   border-left: 1px solid var(--ft-border);
   z-index: var(--ft-z-panel);
   outline: none;
+  animation: panel-entra var(--ft-dur-slow) var(--ft-ease-out);
+}
+
+// Entra deslizándose desde su borde: la derecha en escritorio y tablet,
+// abajo en la hoja de móvil.
+@keyframes panel-entra {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes hoja-entra {
+  from {
+    transform: translateY(100%);
+  }
 }
 
 .cabecera {
@@ -65,6 +81,7 @@
   border-top: 1px solid var(--ft-border);
   border-radius: var(--ft-radius-card) var(--ft-radius-card) 0 0;
   padding: 12px 0 0;
+  animation-name: hoja-entra;
 }
 
 :host(.hoja) .asa {

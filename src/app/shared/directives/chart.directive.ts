@@ -1,5 +1,6 @@
 import { DestroyRef, Directive, ElementRef, afterNextRender, effect, inject, input, output, untracked } from '@angular/core';
 
+import { MotionService } from '../../infra/platform/motion.service';
 import { registerChart } from '../charts/chart-registry';
 import { type ECharts, type FtChartOption, initChart } from '../charts/echarts';
 
@@ -8,6 +9,10 @@ import { type ECharts, type FtChartOption, initChart } from '../charts/echarts';
  * aplica la opción cada vez que la signal cambia y se redimensiona con
  * ResizeObserver (nunca con listeners de window). Se destruye con el host.
  * Con `chartId`, la instancia queda disponible para exportarla a PNG.
+ *
+ * La primera pintura se anima (las barras crecen, la línea se dibuja) salvo
+ * con movimiento reducido; las actualizaciones posteriores no, para que
+ * recargar datos no haga que el gráfico vuelva a crecer desde cero.
  */
 @Directive({ selector: '[chart]' })
 export class ChartDirective {
@@ -18,6 +23,7 @@ export class ChartDirective {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly motion = inject(MotionService);
   private instance: ECharts | null = null;
 
   constructor() {
@@ -25,8 +31,10 @@ export class ChartDirective {
       const el = this.host.nativeElement;
       const instance = initChart(el);
       this.instance = instance;
+      const first = untracked(() => this.chart());
+      const animate = !this.motion.reduced();
       instance.setOption(
-        untracked(() => this.chart()),
+        animate ? { ...first, animation: true, animationDuration: 420, animationEasing: 'cubicOut' } : first,
         { notMerge: true },
       );
       this.chartReady.emit(instance);

@@ -21,6 +21,15 @@
   font: var(--ft-font-meta-strong);
   cursor: pointer;
   white-space: nowrap;
+  transition:
+    background-color var(--ft-dur-fast) linear,
+    border-color var(--ft-dur-fast) linear,
+    color var(--ft-dur-fast) linear,
+    transform var(--ft-dur-instant) var(--ft-ease-out);
+
+  &:active:not(:disabled) {
+    transform: scale(var(--ft-press-scale));
+  }
 
   &:hover:not(:disabled):not(.activo) {
     background: var(--ft-border);

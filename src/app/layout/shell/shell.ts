@@ -20,9 +20,9 @@ import { CalculatorFacade } from '../../facades/calculator.facade';
 import { BreakpointService } from '../../infra/platform/breakpoint.service';
 import { Calculadora } from '../../features/calculator/calculadora';
 import { PanelLateral } from '../../shared/components/panel-lateral/panel-lateral';
-import { PillEstado } from '../../shared/components/pill-estado/pill-estado';
 import { Skeleton } from '../../shared/components/skeleton/skeleton';
 import { TarjetaError } from '../../shared/components/tarjeta-error/tarjeta-error';
+import { Avisos } from '../avisos/avisos';
 import { Fab } from '../fab/fab';
 import { Sidebar } from '../sidebar/sidebar';
 import { TabBar } from '../tab-bar/tab-bar';
@@ -34,7 +34,7 @@ import { TabBar } from '../tab-bar/tab-bar';
  */
 @Component({
   selector: 'ft-shell',
-  imports: [RouterOutlet, Sidebar, TabBar, Fab, Skeleton, TarjetaError, PillEstado, PanelLateral, Calculadora],
+  imports: [RouterOutlet, Sidebar, TabBar, Fab, Skeleton, TarjetaError, Avisos, PanelLateral, Calculadora],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   host: {

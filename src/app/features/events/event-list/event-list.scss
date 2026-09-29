@@ -49,6 +49,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  // Un mes con cientos de movimientos: el navegador no pinta ni calcula los
+  // días que quedan fuera de la vista hasta que se acercan al scroll. Es el
+  // ahorro de un scroll virtual sin romper Ctrl+F ni la navegación por Tab.
+  content-visibility: auto;
+  contain-intrinsic-size: auto 180px;
 }
 
 .grupo__cabecera {
@@ -83,6 +88,7 @@
   gap: 14px;
   flex-wrap: wrap;
   padding: 12px 16px;
+  animation: ft-enter var(--ft-dur-base) var(--ft-ease-out);
 }
 
 .seleccion__todos {
@@ -116,11 +122,6 @@
 .peligro {
   color: var(--ft-expense);
   border-color: var(--ft-expense);
-}
-
-.texto-modal {
-  font: var(--ft-font-body);
-  color: var(--ft-text-2);
 }
 
 @include bp.ft-media(mobile) {
