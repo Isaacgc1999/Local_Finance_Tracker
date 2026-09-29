@@ -1,5 +1,5 @@
-// Prueba de extremo a extremo de Cuentas sobre el build demo: alta de dos
-// cuentas, traspaso entre ellas, un gasto cargado a una cuenta y conciliación
+// Prueba de extremo a extremo de Cuentas sobre el build demo: «Cuenta principal»
+// de serie, alta de dos cuentas, traspaso entre ellas, un gasto cargado a una cuenta y conciliación
 // con ajuste. Comprueba que el traspaso no cambia el total.
 // Uso: node tools/accounts-e2e.mjs [salidaPng] [ancho] [alto] [urlBase]
 import { spawn } from 'node:child_process';
@@ -117,6 +117,19 @@ try {
     if (!ok) throw new Error('no existe el botón «' + texto + '»');
   };
 
+  const elegir = async (selector, opcion, indice = 0) => {
+    const js =
+      '(() => { const s = document.querySelectorAll(' +
+      JSON.stringify(selector) +
+      ')[' +
+      indice +
+      ']; const o = s && [...s.options].find(x => x.textContent.trim() === ' +
+      JSON.stringify(opcion) +
+      '); if (!o) return false; s.value = o.value; s.dispatchEvent(new Event("change", { bubbles: true })); return true; })()';
+    const ok = await evaluar(js);
+    if (!ok) throw new Error('no existe la opción «' + opcion + '» en ' + selector);
+  };
+
   const texto = (selector) => evaluar(`document.querySelector(${JSON.stringify(selector)})?.textContent?.trim() ?? ''`);
   const saldoDe = (nombre) =>
     evaluar(
@@ -129,9 +142,10 @@ try {
   };
 
   comprobar('la pantalla carga sin el error de arranque', !(await evaluar('!!document.querySelector("ft-tarjeta-error")')));
-  comprobar('sin cuentas muestra el estado vacío', await evaluar('!!document.querySelector("ft-accounts ft-estado-vacio")'));
+  comprobar('no hay estado vacío', !(await evaluar('!!document.querySelector("ft-accounts ft-estado-vacio")')));
+  comprobar('«Cuenta principal» existe de serie con 0,00', (await saldoDe('Cuenta principal')).startsWith('0,00'), await saldoDe('Cuenta principal'));
 
-  // 1 · Dos cuentas.
+  // 1 · Dos cuentas más.
   const altaCuenta = async (nombre, saldo, tipo) => {
     await pulsarTexto('ft-accounts button', '+ Nueva cuenta');
     await sleep(600);
@@ -143,7 +157,7 @@ try {
   };
   await altaCuenta('BBVA nómina', '1.500,00');
   await altaCuenta('Efectivo', '40', 'Efectivo');
-  comprobar('las dos cuentas aparecen', (await evaluar('document.querySelectorAll("ft-accounts .cuenta").length')) === 2);
+  comprobar('aparecen las tres cuentas', (await evaluar('document.querySelectorAll("ft-accounts .cuenta").length')) === 3);
   comprobar('saldo de apertura de BBVA', (await saldoDe('BBVA nómina')).startsWith('1.500,00'), await saldoDe('BBVA nómina'));
   const totalInicial = await texto('.total__cifra');
   comprobar('total 1.540,00', totalInicial.startsWith('1.540,00'), totalInicial);
@@ -161,6 +175,13 @@ try {
   // 3 · Traspaso de 60 € de BBVA a Efectivo.
   await pulsarTexto('ft-accounts button', 'Nuevo traspaso');
   await sleep(600);
+  comprobar(
+    'el traspaso propone salir de «Cuenta principal»',
+    (await evaluar('document.querySelector("ft-modal-traspaso select")?.selectedOptions[0]?.textContent.trim()')) === 'Cuenta principal',
+  );
+  await elegir('ft-modal-traspaso select', 'BBVA nómina');
+  await sleep(200);
+  await elegir('ft-modal-traspaso select', 'Efectivo', 1);
   await escribir('ft-modal-traspaso input[inputmode="decimal"]', '60');
   await escribir('ft-modal-traspaso input[maxlength="80"]', 'Cajero');
   await pulsarTexto('ft-modal-traspaso button', 'Guardar');
@@ -174,7 +195,8 @@ try {
   await irA('/events');
   await irA('/events/new');
   const cuentaPorDefecto = await evaluar('document.querySelector("#cuenta-id")?.selectedOptions[0]?.textContent.trim()');
-  comprobar('el formulario propone la primera cuenta', cuentaPorDefecto === 'BBVA nómina', cuentaPorDefecto);
+  comprobar('el formulario propone «Cuenta principal»', cuentaPorDefecto === 'Cuenta principal', cuentaPorDefecto);
+  await elegir('#cuenta-id', 'BBVA nómina');
   await escribir('ft-input-importe input', '40,00');
   await escribir('#concepto', 'Mercadona');
   await evaluar('document.querySelectorAll("ft-chip-categoria button")[0].click()');
