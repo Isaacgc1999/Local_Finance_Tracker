@@ -8,9 +8,6 @@ A desktop personal finance application for a single user. **Local and offline**:
 * Charts: ECharts (direct import, `echarts/core`)
 * Design: custom. Inspired by fintech applications such as Trade Republic and Revolut
 
-# ⚽ Playground (run without installing anything)
-[https://stackblitz.com/~/github.com/Isaacgc1999/local_fincance_tracker](https://stackblitz.com/~/github.com/Isaacgc1999/Local_Finance_Tracker)
-
 # Installation
 ## Requirements
 
