@@ -46,6 +46,7 @@ function santanderXlsx(dataRows: (string | number)[][]): Uint8Array {
 
 const OPTIONS = {
   fileName: 'extracto.xlsx',
+  accountId: null,
   expenseCategoryId: DEFAULT_IMPORT_CATEGORIES.expense,
   incomeCategoryId: DEFAULT_IMPORT_CATEGORIES.income,
 };
@@ -62,6 +63,9 @@ describe('parseAmountCell', () => {
     ['+2.500,00', 250000],
     ['1.234', 123400],
     ['0,29', 29],
+    ['\u221212,30\u00a0€', -1230],
+    ['-1 234,56', -123456],
+    ['EUR -5,00', -500],
     ['abc', null],
     ['', null],
   ])('%s → %s', (input, expected) => {
@@ -100,6 +104,26 @@ describe('detectColumns', () => {
     expect(mapping).toMatchObject({ date: 0, concept: 1, amount: null, debit: 2, credit: 3 });
     const parsed = parseRows(rows, mapping!, 'EUR');
     expect(parsed.map((p) => p.signedCents)).toEqual([-4510, 180000]);
+  });
+
+  it('variantes reales: espacios duros, «Importe (€)», mayúsculas y fechas con hora', () => {
+    const rows = parseCsv(
+      [
+        'Banco Santander;;;',
+        'IBAN;ES12 0049 1234 5612 3456 7890;;',
+        'Titular;ISAAC;;',
+        '',
+        'FECHA OPERACIÓN\u00a0;FECHA VALOR;CONCEPTO ;IMPORTE (€);SALDO (€)',
+        '25/09/2026 00:00:00;25/09/2026;COMPRA TARJ. 5417 MERCADONA;"-1.072,41";927,59',
+        'Saldo final;;;;927,59',
+      ].join('\n'),
+    );
+    const mapping = detectColumns(rows);
+    expect(mapping).toMatchObject({ headerRow: 4, date: 0, concept: 2, amount: 3 });
+    const parsed = parseRows(rows, mapping!, 'EUR');
+    expect(parsed).toEqual([
+      { line: 6, date: '2026-09-25', concept: 'COMPRA TARJ. 5417 MERCADONA', signedCents: -107241, error: null },
+    ]);
   });
 
   it('null si no reconoce las columnas (la UI pide el mapeo)', () => {
