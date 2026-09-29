@@ -2,6 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { type AppError, type ValidationError, describeError, messageOf } from '../core/errors/app-error';
 import { activeCurrency } from '../core/format/money-format';
+import type { Account } from '../core/types/account';
 import type { Category } from '../core/types/category';
 import { DbConnection } from '../data/db/db-connection';
 import {
@@ -40,12 +41,15 @@ export class ImportFacade {
   private readonly previewSig = signal<ImportPreview | null>(null);
   private readonly selectedSig = signal<ReadonlySet<number>>(new Set());
   private readonly categoriesSig = signal<readonly Category[]>([]);
+  private readonly accountsSig = signal<readonly Account[]>([]);
   private readonly busySig = signal(false);
   private readonly errorSig = signal<string | null>(null);
   private readonly insertedSig = signal<number | null>(null);
 
   readonly expenseCategoryId = signal<string>(DEFAULT_IMPORT_CATEGORIES.expense);
   readonly incomeCategoryId = signal<string>(DEFAULT_IMPORT_CATEGORIES.income);
+  /** Cuenta del extracto; por defecto «Cuenta principal» o, si no existe, la primera activa. */
+  readonly accountId = signal<string | null>(null);
 
   readonly sheet = this.sheetSig.asReadonly();
   readonly mapping = this.mappingSig.asReadonly();
@@ -65,6 +69,7 @@ export class ImportFacade {
   readonly rowCount = computed(() => this.sheetSig()?.rows.length ?? 0);
 
   readonly expenseCategories = computed(() => this.categoriesSig().filter((c) => c.kind !== 'income'));
+  readonly accounts = computed(() => this.accountsSig().filter((a) => !a.archived));
   readonly incomeCategories = computed(() => this.categoriesSig().filter((c) => c.kind !== 'expense'));
   readonly categoryById = computed(() => new Map(this.categoriesSig().map((c) => [c.id, c])));
 
@@ -97,7 +102,7 @@ export class ImportFacade {
     this.sheetSig.set(sheet.value);
     this.mappingSig.set(detected ?? { ...EMPTY_MAPPING, headerRow: firstNonEmptyRow(sheet.value) });
     this.autoDetectedSig.set(detected !== null);
-    await this.loadCategories();
+    await this.loadLookups();
     await this.refreshPreview();
     this.busySig.set(false);
   }
@@ -133,6 +138,7 @@ export class ImportFacade {
     this.busySig.set(true);
     const result = await new StatementImportService(repos.value).commit(this.selectedRows(), {
       fileName: sheet.fileName,
+      accountId: this.accountId(),
       expenseCategoryId: this.expenseCategoryId(),
       incomeCategoryId: this.incomeCategoryId(),
     });
@@ -156,11 +162,17 @@ export class ImportFacade {
     this.insertedSig.set(null);
   }
 
-  private async loadCategories(): Promise<void> {
+  private async loadLookups(): Promise<void> {
     const repos = this.db.require();
     if (!repos.ok) return;
-    const categories = await repos.value.categories.findAll();
+    const [categories, accounts] = await Promise.all([repos.value.categories.findAll(), repos.value.accounts.findAll()]);
     if (categories.ok) this.categoriesSig.set(categories.value);
+    if (accounts.ok) {
+      this.accountsSig.set(accounts.value);
+      const current = this.accountId();
+      const active = this.accounts();
+      if (!active.some((a) => a.id === current)) this.accountId.set(defaultAccount(active)?.id ?? null);
+    }
   }
 
   private async refreshPreview(): Promise<void> {
@@ -195,4 +207,10 @@ function firstNonEmptyRow(sheet: StatementSheet): number {
 
 function isValidationList(e: AppError | readonly ValidationError[]): e is readonly ValidationError[] {
   return Array.isArray(e);
+}
+
+const MAIN_ACCOUNT_NAMES = ['cuenta principal', 'main account'];
+
+function defaultAccount(accounts: readonly Account[]): Account | null {
+  return accounts.find((a) => MAIN_ACCOUNT_NAMES.includes(a.name.trim().toLocaleLowerCase('es'))) ?? accounts[0] ?? null;
 }

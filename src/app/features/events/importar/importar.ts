@@ -144,6 +144,11 @@ export class Importar {
     void this.facade.setMapping({ headerRow: Number((event.target as HTMLSelectElement).value) });
   }
 
+  protected setCuenta(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.facade.accountId.set(value === '' ? null : value);
+  }
+
   protected setCategoria(kind: 'expense' | 'income', event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     if (kind === 'expense') this.facade.expenseCategoryId.set(value);

@@ -201,7 +201,11 @@ export function detectDateOrder(cells: readonly Cell[]): DateOrder {
 export function parseAmountCell(cell: Cell): number | null {
   if (cell === null) return null;
   if (typeof cell === 'number') return Number.isFinite(cell) ? Math.round(cell * 100) : null;
-  let text = cell.replace(/[\s  ]/g, '').replace(/[€$£]|EUR|USD|GBP/gi, '');
+  // Espacios duros y el signo menos tipográfico (U+2212) o guiones largos que algunos bancos usan como signo.
+  let text = cell
+    .replace(/[\s\u00a0\u202f]/g, '')
+    .replace(/[\u2212\u2013\u2014]/g, '-')
+    .replace(/[€$£]|EUR|USD|GBP/gi, '');
   if (!text) return null;
   let negative = false;
   if (/^\(.*\)$/.test(text)) {
