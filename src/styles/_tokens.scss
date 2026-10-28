@@ -34,16 +34,14 @@
   // fuentes compuestas se derivan en `_themes.scss` a partir de estos colores,
   // para que cambien solos con el tema y con el color de acento elegido.
 
-  // Tono propio de cada tipo de movimiento (avatar y badge del listado): seis
-  // colores distinguibles. Ampliación del sistema semántico, no del handoff:
-  // suscripción en violeta y domiciliación en naranja para no confundirlas
-  // con un gasto puntual.
-  --ft-type-expense: #f45b5b;
-  --ft-type-income: #22c55e;
-  --ft-type-subscription: #a78bfa;
-  --ft-type-direct_debit: #fb923c;
-  --ft-type-saving: #fbbf24;
-  --ft-type-investment: #38bdf8;
+  // Suscripción en violeta y domiciliación en naranja para no confundirlas
+  // con un gasto puntual (tonos de tipo de movimiento: `--ft-type-*`, en
+  // `_themes.scss`). Rosa y turquesa completan las series de huchas e
+  // inversiones.
+  --ft-subscription: #a78bfa;
+  --ft-direct-debit: #fb923c;
+  --ft-series-pink: #f472b6;
+  --ft-series-teal: #2dd4bf;
 
   // Rampa del donut de tipos de gasto (subdivisión del rojo)
   --ft-expense-ramp-1: #f45b5b;

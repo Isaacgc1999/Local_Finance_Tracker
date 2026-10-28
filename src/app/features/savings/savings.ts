@@ -35,7 +35,7 @@ export class Savings {
 
   protected readonly kindLabel = POT_KIND_LABEL;
   protected readonly kindHint = POT_KIND_HINT;
-  protected readonly color = FT_COLORS.savings;
+  protected readonly color = computed(() => FT_COLORS.savings);
 
   protected readonly modalAportar = signal(false);
   protected readonly aportarA = signal<PotView | null>(null);

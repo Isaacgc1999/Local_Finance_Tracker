@@ -5,15 +5,19 @@ import { formatBasisPoints } from '../../../core/format/percent-format';
 import { ALLOCATION_LABEL, type AllocationKey, type IncomeAllocation } from '../../../domain/analytics/income-allocation';
 import { FT_COLORS } from '../../../shared/charts/palette';
 
-const COLOR: Readonly<Record<AllocationKey, string>> = {
-  fixed: FT_COLORS.expenseRamp[0],
-  variable: FT_COLORS.expenseRamp[1],
-  leisure: FT_COLORS.expenseRamp[2],
-  subscriptions: FT_COLORS.subscription,
-  saving: FT_COLORS.savings,
-  investment: FT_COLORS.investment,
-  free: FT_COLORS.income,
-};
+/** Se lee al pintar (no al cargar el módulo) para seguir al tema activo. */
+function colorOf(key: AllocationKey): string {
+  const colors: Readonly<Record<AllocationKey, string>> = {
+    fixed: FT_COLORS.expenseRamp[0],
+    variable: FT_COLORS.expenseRamp[1],
+    leisure: FT_COLORS.expenseRamp[2],
+    subscriptions: FT_COLORS.subscription,
+    saving: FT_COLORS.savings,
+    investment: FT_COLORS.investment,
+    free: FT_COLORS.income,
+  };
+  return colors[key];
+}
 
 /**
  * «¿A dónde va tu nómina?»: barra apilada de los ingresos del mes entre
@@ -65,7 +69,7 @@ export class RepartoIngresos {
     this.data().slices.map((s) => ({
       key: s.key,
       label: ALLOCATION_LABEL[s.key],
-      color: COLOR[s.key],
+      color: colorOf(s.key),
       importe: formatMoney(s.amount),
       pct: formatBasisPoints(s.shareBp, { decimals: 0 }),
       peso: s.amount,

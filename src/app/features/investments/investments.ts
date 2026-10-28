@@ -38,7 +38,7 @@ export class Investments {
   protected readonly facade = inject(InvestmentsFacade);
 
   protected readonly classLabel = HOLDING_CLASS_LABEL;
-  protected readonly color = FT_COLORS.investment;
+  protected readonly color = computed(() => FT_COLORS.investment);
 
   protected readonly modalInversion = signal(false);
   protected readonly enEdicion = signal<Investment | null>(null);

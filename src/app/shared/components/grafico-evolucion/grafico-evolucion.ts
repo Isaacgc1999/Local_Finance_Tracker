@@ -9,7 +9,7 @@ import {
   type EvolutionPoint,
 } from '../../../domain/analytics/evolution';
 import { ChartDirective } from '../../directives/chart.directive';
-import { FT_COLORS, FT_FONT, FT_TOOLTIP, tooltipRow, tooltipTitle } from '../../charts/palette';
+import { FT_COLORS, FT_TOOLTIP, chartFont, tooltipRow, tooltipTitle } from '../../charts/palette';
 import type { FtChartOption } from '../../charts/echarts';
 import { SegmentedControl, type SegmentOption } from '../segmented-control/segmented-control';
 
@@ -107,7 +107,8 @@ export class GraficoEvolucion {
   readonly titulo = input.required<string>();
   readonly points = input.required<readonly EvolutionPoint[]>();
   readonly granularity = model<EvolutionGranularity>('month');
-  readonly color = input<string>(FT_COLORS.investment);
+  /** Color de la serie; sin él, el de inversión del tema activo. */
+  readonly color = input<string | null>(null);
   readonly label = input<string>('Total');
   readonly secondaryLabel = input<string>('');
   readonly textoVacio = input<string>('Todavía no hay datos.');
@@ -133,7 +134,7 @@ export class GraficoEvolucion {
 
   protected readonly option = computed<FtChartOption>(() => {
     const pts = this.points();
-    const color = this.color();
+    const color = this.color() ?? FT_COLORS.investment;
     const n = EVOLUTION_WINDOW[this.granularity()];
     const startValue = Math.max(0, pts.length - n);
     const hasSecondary = !!this.secondaryLabel() && pts.some((p) => p.secondary !== null);
@@ -163,7 +164,7 @@ export class GraficoEvolucion {
         data: pts.map((p) => p.period.label),
         axisLine: { lineStyle: { color: FT_COLORS.border } },
         axisTick: { show: false },
-        axisLabel: { color: FT_COLORS.text3, fontFamily: FT_FONT, fontSize: 12 },
+        axisLabel: { color: FT_COLORS.text3, fontFamily: chartFont(), fontSize: 12 },
       },
       yAxis: {
         type: 'value',
@@ -171,7 +172,7 @@ export class GraficoEvolucion {
         splitLine: { lineStyle: { color: FT_COLORS.border, type: 'dashed' } },
         axisLabel: {
           color: FT_COLORS.text3,
-          fontFamily: FT_FONT,
+          fontFamily: chartFont(),
           fontSize: 12,
           formatter: (v: number) => compacto(v),
         },
