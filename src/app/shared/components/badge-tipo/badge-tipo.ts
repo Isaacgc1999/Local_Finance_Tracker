@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { EVENT_TYPE_COLOR, EVENT_TYPE_LABEL, type EventType } from '../../../core/types/event';
+import { EVENT_TYPE_LABEL, type EventType } from '../../../core/types/event';
 
-/** Badge de tipo: 26px, r999, fondo al 12 % y texto al 100 % del color; Domiciliación neutro con borde. */
+/** Badge de tipo: 26px, r999, fondo al 14 % y texto al 100 % del tono del tipo (uno distinto por tipo). */
 @Component({
   selector: 'ft-badge-tipo',
   template: `{{ label() }}`,
@@ -19,11 +19,17 @@ import { EVENT_TYPE_COLOR, EVENT_TYPE_LABEL, type EventType } from '../../../cor
       border: 1px solid var(--ft-border);
       color: var(--ft-text-2);
     }
-    :host(.tono-income) { background: var(--ft-income-12); border-color: transparent; color: var(--ft-income); }
-    :host(.tono-expense) { background: var(--ft-expense-12); border-color: transparent; color: var(--ft-expense); }
-    :host(.tono-investment) { background: var(--ft-investment-12); border-color: transparent; color: var(--ft-investment); }
-    :host(.tono-savings) { background: var(--ft-savings-12); border-color: transparent; color: var(--ft-savings); }
-    :host(.tono-accent) { background: var(--ft-accent-12); border-color: transparent; color: var(--ft-accent); }
+    :host([class*='tono-']) {
+      border-color: transparent;
+      background: color-mix(in srgb, var(--badge-color) 14%, transparent);
+      color: var(--badge-color);
+    }
+    :host(.tono-expense) { --badge-color: var(--ft-type-expense); }
+    :host(.tono-income) { --badge-color: var(--ft-type-income); }
+    :host(.tono-subscription) { --badge-color: var(--ft-type-subscription); }
+    :host(.tono-direct_debit) { --badge-color: var(--ft-type-direct_debit); }
+    :host(.tono-saving) { --badge-color: var(--ft-type-saving); }
+    :host(.tono-investment) { --badge-color: var(--ft-type-investment); }
   `,
   host: { '[class]': '"tono-" + tone()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,5 +37,5 @@ import { EVENT_TYPE_COLOR, EVENT_TYPE_LABEL, type EventType } from '../../../cor
 export class BadgeTipo {
   readonly type = input.required<EventType>();
   protected readonly label = computed(() => EVENT_TYPE_LABEL[this.type()]);
-  protected readonly tone = computed(() => EVENT_TYPE_COLOR[this.type()]);
+  protected readonly tone = computed(() => this.type());
 }

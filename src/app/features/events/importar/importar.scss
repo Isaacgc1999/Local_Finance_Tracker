@@ -25,6 +25,7 @@
 
   &--activa {
     border-color: var(--ft-accent);
+    background: var(--ft-accent-8);
   }
 }
 
@@ -272,4 +273,199 @@
   .concepto {
     min-width: 0;
   }
+}
+
+// ── Pasos ────────────────────────────────────────────────────────────────
+.pasos {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.paso {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px 0 6px;
+  border-radius: var(--ft-radius-pill);
+  border: 1px solid var(--ft-border);
+  color: var(--ft-text-3);
+  font: var(--ft-font-meta-strong);
+  transition:
+    color var(--ft-dur-fast) linear,
+    border-color var(--ft-dur-fast) linear,
+    background-color var(--ft-dur-fast) linear;
+}
+
+.paso__n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-surface-elevated);
+  font: 600 12px/1 var(--ft-font-family);
+}
+
+.paso--activo {
+  border-color: var(--ft-accent);
+  color: var(--ft-text-1);
+  background: var(--ft-accent-8);
+
+  .paso__n {
+    background: var(--ft-accent);
+    color: var(--ft-on-accent);
+  }
+}
+
+.paso--hecho {
+  color: var(--ft-income);
+  border-color: color-mix(in srgb, var(--ft-income) 40%, transparent);
+
+  .paso__n {
+    background: var(--ft-income-12);
+    color: var(--ft-income);
+    animation: ft-enter var(--ft-dur-base) var(--ft-ease-spring) both;
+  }
+}
+
+// ── Progreso indeterminado ───────────────────────────────────────────────
+.progreso {
+  position: relative;
+  height: 3px;
+  overflow: hidden;
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-surface-elevated);
+
+  span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 35%;
+    border-radius: inherit;
+    background: var(--ft-accent);
+    animation: ft-import-progress 1.1s var(--ft-ease-out) infinite;
+  }
+}
+
+@keyframes ft-import-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progreso span {
+    animation: none;
+    width: 100%;
+    opacity: 0.6;
+  }
+}
+
+.zona__icono {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--ft-accent);
+  transition: transform var(--ft-dur-fast) var(--ft-ease-out);
+}
+
+.zona--activa .zona__icono {
+  transform: translateY(4px) scale(1.1);
+}
+
+.enlazado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.enlazado__ok {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-income-12);
+  color: var(--ft-income);
+  font: 600 12px/1 var(--ft-font-family);
+}
+
+// ── Tarjeta final ────────────────────────────────────────────────────────
+.hecho__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.hecho__icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-income-12);
+  color: var(--ft-income);
+  font: 600 18px/1 var(--ft-font-family);
+  animation: ft-enter var(--ft-dur-base) var(--ft-ease-spring) both;
+}
+
+.hecho--deshecho .hecho__icono {
+  background: var(--ft-surface-elevated);
+  color: var(--ft-text-2);
+}
+
+.resumen-import {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 0;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border-radius: var(--ft-radius-control);
+    background: var(--ft-surface-elevated);
+  }
+
+  dt {
+    font: var(--ft-font-meta);
+    color: var(--ft-text-3);
+  }
+
+  dd {
+    margin: 0;
+    font: var(--ft-font-label);
+    color: var(--ft-text-1);
+  }
+}
+
+.etiqueta-import {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--ft-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--ft-investment) 45%, transparent);
+  color: var(--ft-investment);
+  font: 500 11px/1 var(--ft-font-family);
+}
+
+.peligro {
+  color: var(--ft-expense);
 }

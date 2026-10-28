@@ -24,6 +24,7 @@ import { EventService, validateEventDraft } from '../domain/events/event.service
 import { type AttachmentInfo, attachmentInfo, pickAndStoreAttachment, removeStoredAttachment } from '../infra/fs/attachments';
 import { AppStatusFacade } from './app-status.facade';
 import { EventsFacade } from './events.facade';
+import { SavingsFacade } from './savings.facade';
 
 export interface EventFormControls {
   amount: FormControl<Money | null>;
@@ -92,6 +93,7 @@ export class EventFormFacade {
   private readonly status = inject(AppStatusFacade);
   private readonly router = inject(Router);
   private readonly events = inject(EventsFacade);
+  private readonly savings = inject(SavingsFacade);
 
   readonly form: FormGroup<EventFormControls> = this.fb.group({
     amount: this.fb.control<Money | null>(null),
@@ -167,6 +169,19 @@ export class EventFormFacade {
    * Cuentas que ofrece el selector: las activas y, al editar, también la del
    * movimiento aunque esté archivada, para no perderla al guardar.
    */
+  /**
+   * Huchas para el campo «Hucha» de un ahorro. El control `goal` guarda el
+   * id de la hucha; un objetivo escrito a mano antes de existir las huchas
+   * se ofrece tal cual para no perderlo al editar.
+   */
+  readonly pots = computed(() => {
+    const list = this.savings.activePots().map((p) => ({ value: p.id, label: p.name }));
+    const legacy = this.legacyGoalSig();
+    return legacy && !list.some((p) => p.value === legacy) ? [...list, { value: legacy, label: legacy }] : list;
+  });
+
+  private readonly legacyGoalSig = signal('');
+
   readonly accounts = computed(() => {
     const current = this.editingSig()?.accountId ?? null;
     return this.accountsSig().filter((a) => !a.archived || a.id === current);
@@ -355,6 +370,14 @@ export class EventFormFacade {
     };
   }
 
+  /** `potId` y nombre de la hucha elegida, o el texto libre de antes si no es una hucha. */
+  private potMeta(value: string): { potId?: string; goal?: string } {
+    const v = value.trim();
+    if (!v) return {};
+    const pot = this.savings.activePots().find((p) => p.id === v);
+    return pot ? { potId: pot.id, goal: pot.name } : { goal: v };
+  }
+
   private buildMeta(type: EventType, v: EventFormValue): EventMeta {
     const opt = (s: string) => (s.trim() ? { value: s.trim() } : null);
     switch (type) {
@@ -370,7 +393,7 @@ export class EventFormFacade {
         return {
           type,
           ...(opt(v.account) ? { account: v.account.trim() } : {}),
-          ...(opt(v.goal) ? { goal: v.goal.trim() } : {}),
+          ...this.potMeta(v.goal),
         };
       case 'investment':
         return {
@@ -473,6 +496,7 @@ export class EventFormFacade {
     this.typeSig.set(e.type);
     this.applyStrategy(e.type);
     this.editingSig.set(e);
+    this.legacyGoalSig.set(e.meta?.type === 'saving' && !e.meta.potId ? (e.meta.goal ?? '') : '');
     this.form.patchValue({
       amount: e.amountCents,
       date: e.date,
@@ -485,7 +509,7 @@ export class EventFormFacade {
       issuer: e.meta?.type === 'direct_debit' ? (e.meta.issuer ?? '') : '',
       account: e.meta?.type === 'saving' ? (e.meta.account ?? '') : '',
       accountId: e.accountId,
-      goal: e.meta?.type === 'saving' ? (e.meta.goal ?? '') : '',
+      goal: e.meta?.type === 'saving' ? (e.meta.potId ?? e.meta.goal ?? '') : '',
       ticker: e.meta?.type === 'investment' ? e.meta.ticker : '',
       platform: e.meta?.type === 'investment' ? (e.meta.platform ?? '') : '',
       assetClass: e.meta?.type === 'investment' ? (e.meta.assetClass ?? null) : null,

@@ -84,6 +84,18 @@ export function readChartPalette(): ChartPalette {
     expense: read('--ft-expense', p.expense),
     investment: read('--ft-investment', p.investment),
     savings: read('--ft-savings', p.savings),
+    subscription: read('--ft-subscription', p.subscription),
+    directDebit: read('--ft-direct-debit', p.directDebit),
+    series: [
+      read('--ft-investment', p.investment),
+      read('--ft-subscription', p.subscription),
+      read('--ft-income', p.income),
+      read('--ft-savings', p.savings),
+      read('--ft-direct-debit', p.directDebit),
+      read('--ft-series-pink', '#F472B6'),
+      read('--ft-series-teal', '#2DD4BF'),
+      read('--ft-accent', p.accent),
+    ],
     expenseRamp: [
       read('--ft-expense-ramp-1', p.expenseRamp[0]),
       read('--ft-expense-ramp-2', p.expenseRamp[1]),

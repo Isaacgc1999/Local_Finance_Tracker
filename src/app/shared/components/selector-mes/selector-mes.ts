@@ -12,7 +12,12 @@ import { type IsoDate, addMonthsClamped, startOfMonth, todayIso } from '../../..
   selector: 'ft-selector-mes',
   template: `
     <button type="button" class="ft-btn ft-btn--icon" aria-label="Mes anterior" (click)="mover(-1)">‹</button>
-    <h1 class="mes" [class.mes--compacto]="compacto()">{{ etiqueta() }}</h1>
+    <div class="titulo">
+      <h1 class="mes" [class.mes--compacto]="compacto()">{{ etiqueta() }}</h1>
+      @if (rango()) {
+        <span class="rango num" title="Tu mes empieza con la nómina (Ajustes → Mes y avisos)">{{ rango() }}</span>
+      }
+    </div>
     <button type="button" class="ft-btn ft-btn--icon" aria-label="Mes siguiente" (click)="mover(1)">›</button>
     @if (!compacto()) {
       <button type="button" class="hoy" (click)="irAHoy()" [disabled]="esMesActual()">Hoy · {{ hoyLabel() }}</button>
@@ -26,6 +31,17 @@ import { type IsoDate, addMonthsClamped, startOfMonth, todayIso } from '../../..
     }
     :host(.compacto) {
       gap: 8px;
+    }
+    .titulo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .rango {
+      font: var(--ft-font-meta);
+      color: var(--ft-text-3);
+      white-space: nowrap;
     }
     .mes {
       min-width: 200px;
@@ -64,16 +80,24 @@ export class SelectorMes {
   readonly value = model.required<IsoDate>();
   readonly compacto = input<boolean>(false);
   readonly hoy = input<IsoDate>(todayIso());
+  /**
+   * Mes al que vuelve «Hoy». Con el mes de nómina puede no ser el natural:
+   * el 28 de octubre, con la nómina ya cobrada, el mes en curso es noviembre.
+   */
+  readonly actual = input<IsoDate | null>(null);
+  /** Fechas del mes cuando no es el natural («28 oct – 27 nov»). */
+  readonly rango = input<string>('');
 
   protected readonly etiqueta = computed(() => formatMonthYear(this.value(), this.compacto() ? 'short' : 'long'));
   protected readonly hoyLabel = computed(() => formatDayMonth(this.hoy()));
-  protected readonly esMesActual = computed(() => startOfMonth(this.value()) === startOfMonth(this.hoy()));
+  private readonly mesActual = computed(() => startOfMonth(this.actual() ?? this.hoy()));
+  protected readonly esMesActual = computed(() => startOfMonth(this.value()) === this.mesActual());
 
   protected mover(delta: number): void {
     this.value.set(addMonthsClamped(startOfMonth(this.value()), delta, 1));
   }
 
   protected irAHoy(): void {
-    this.value.set(startOfMonth(this.hoy()));
+    this.value.set(this.mesActual());
   }
 }

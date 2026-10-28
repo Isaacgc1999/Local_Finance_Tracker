@@ -1,0 +1,96 @@
+@use 'breakpoints' as bp;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tasa {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+
+  strong {
+    margin-left: 4px;
+    font: var(--ft-font-label);
+    color: var(--ft-text-1);
+  }
+}
+
+.barra {
+  display: flex;
+  height: 14px;
+  gap: 2px;
+  border-radius: var(--ft-radius-pill);
+  overflow: hidden;
+  background: var(--ft-surface-elevated);
+
+  span {
+    flex-basis: 0;
+    min-width: 3px;
+    transition: flex-grow var(--ft-dur-base) var(--ft-ease-out);
+  }
+}
+
+.leyenda {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font: var(--ft-font-meta);
+  }
+}
+
+.punto {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--ft-radius-pill);
+  flex: none;
+}
+
+.leyenda__label {
+  flex: 1;
+  color: var(--ft-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leyenda__importe {
+  color: var(--ft-text-1);
+}
+
+.leyenda__pct {
+  width: 40px;
+  text-align: right;
+  color: var(--ft-text-3);
+}
+
+.aviso {
+  margin: 0;
+  font: var(--ft-font-meta);
+  color: var(--ft-expense);
+}
+
+.vacio {
+  margin: 0;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}

@@ -55,6 +55,24 @@ export const routes: Routes = [
     loadComponent: () => import('./features/accounts/conciliacion/conciliacion').then((m) => m.Conciliacion),
   },
   {
+    path: 'goals',
+    title: 'Objetivos · Fintrack',
+    data: data('objetivos', false),
+    loadComponent: () => import('./features/goals/goals').then((m) => m.Goals),
+  },
+  {
+    path: 'savings',
+    title: 'Ahorros · Fintrack',
+    data: data('ahorros', false),
+    loadComponent: () => import('./features/savings/savings').then((m) => m.Savings),
+  },
+  {
+    path: 'investments',
+    title: 'Inversiones · Fintrack',
+    data: data('inversiones', false),
+    loadComponent: () => import('./features/investments/investments').then((m) => m.Investments),
+  },
+  {
     path: 'analytics',
     title: 'Analítica · Fintrack',
     data: data('analitica', false),

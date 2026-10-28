@@ -34,6 +34,10 @@ $claves-color: (
   expense,
   investment,
   savings,
+  subscription,
+  direct-debit,
+  series-pink,
+  series-teal,
   on-investment,
   expense-ramp-1,
   expense-ramp-2,
@@ -55,6 +59,14 @@ $claves-color: (
 // Tokens que dependen de otros. Se redeclaran en cada elemento con tema para
 // que se resuelvan con sus colores y no con los heredados del <html>.
 @mixin derivados {
+  // Tono de cada tipo de movimiento (avatar y badge del listado).
+  --ft-type-expense: var(--ft-expense);
+  --ft-type-income: var(--ft-income);
+  --ft-type-subscription: var(--ft-subscription);
+  --ft-type-direct_debit: var(--ft-direct-debit);
+  --ft-type-saving: var(--ft-savings);
+  --ft-type-investment: var(--ft-investment);
+
   --ft-income-12: color-mix(in srgb, var(--ft-income) 12%, transparent);
   --ft-expense-12: color-mix(in srgb, var(--ft-expense) 12%, transparent);
   --ft-investment-12: color-mix(in srgb, var(--ft-investment) 12%, transparent);
@@ -112,6 +124,10 @@ $finance-oscuro: (
   expense: #f45b5b,
   investment: #38bdf8,
   savings: #fbbf24,
+  subscription: #a78bfa,
+  direct-debit: #fb923c,
+  series-pink: #f472b6,
+  series-teal: #2dd4bf,
   on-investment: #0a0b0d,
   expense-ramp-1: #f45b5b,
   expense-ramp-2: #c24b4b,
@@ -139,6 +155,10 @@ $finance-claro: (
   expense: #dc2626,
   investment: #0369a1,
   savings: #b45309,
+  subscription: #7c3aed,
+  direct-debit: #c2410c,
+  series-pink: #db2777,
+  series-teal: #0f766e,
   on-investment: #ffffff,
   expense-ramp-1: #dc2626,
   expense-ramp-2: #e86060,
@@ -167,6 +187,10 @@ $cozy-oscuro: (
   expense: #fb7185,
   investment: #93c5fd,
   savings: #fcd34d,
+  subscription: #c4b5fd,
+  direct-debit: #fdba74,
+  series-pink: #f9a8d4,
+  series-teal: #5eead4,
   on-investment: #1a1117,
   expense-ramp-1: #fb7185,
   expense-ramp-2: #d9617a,
@@ -194,6 +218,10 @@ $cozy-claro: (
   expense: #e11d48,
   investment: #2563eb,
   savings: #b45309,
+  subscription: #7c3aed,
+  direct-debit: #c2410c,
+  series-pink: #be185d,
+  series-teal: #0f766e,
   on-investment: #ffffff,
   expense-ramp-1: #e11d48,
   expense-ramp-2: #ef5679,
@@ -224,6 +252,10 @@ $minimal-oscuro: (
   expense: #f87171,
   investment: #7dd3fc,
   savings: #fcd34d,
+  subscription: #c4b5fd,
+  direct-debit: #fdba74,
+  series-pink: #f9a8d4,
+  series-teal: #5eead4,
   on-investment: #0a0a0a,
   expense-ramp-1: #f87171,
   expense-ramp-2: #c25a5a,
@@ -251,6 +283,10 @@ $minimal-claro: (
   expense: #b91c1c,
   investment: #0369a1,
   savings: #a16207,
+  subscription: #6d28d9,
+  direct-debit: #c2410c,
+  series-pink: #be185d,
+  series-teal: #0f766e,
   on-investment: #ffffff,
   expense-ramp-1: #b91c1c,
   expense-ramp-2: #d75454,
@@ -279,6 +315,10 @@ $gamer-oscuro: (
   expense: #ff3d71,
   investment: #6f8cff,
   savings: #ffd60a,
+  subscription: #b388ff,
+  direct-debit: #ff9f1c,
+  series-pink: #ff4fd8,
+  series-teal: #00ffd5,
   on-investment: #07070d,
   expense-ramp-1: #ff3d71,
   expense-ramp-2: #cc315c,
@@ -306,6 +346,10 @@ $gamer-claro: (
   expense: #e11d48,
   investment: #2563eb,
   savings: #a16207,
+  subscription: #7c3aed,
+  direct-debit: #c2410c,
+  series-pink: #db2777,
+  series-teal: #0d9488,
   on-investment: #ffffff,
   expense-ramp-1: #e11d48,
   expense-ramp-2: #ef5679,

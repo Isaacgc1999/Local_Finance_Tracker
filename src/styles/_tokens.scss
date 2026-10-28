@@ -34,6 +34,15 @@
   // fuentes compuestas se derivan en `_themes.scss` a partir de estos colores,
   // para que cambien solos con el tema y con el color de acento elegido.
 
+  // Suscripción en violeta y domiciliación en naranja para no confundirlas
+  // con un gasto puntual (tonos de tipo de movimiento: `--ft-type-*`, en
+  // `_themes.scss`). Rosa y turquesa completan las series de huchas e
+  // inversiones.
+  --ft-subscription: #a78bfa;
+  --ft-direct-debit: #fb923c;
+  --ft-series-pink: #f472b6;
+  --ft-series-teal: #2dd4bf;
+
   // Rampa del donut de tipos de gasto (subdivisión del rojo)
   --ft-expense-ramp-1: #f45b5b;
   --ft-expense-ramp-2: #c24b4b;

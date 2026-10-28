@@ -2,7 +2,7 @@
 
 <ft-cabecera-pagina>
   <div inicio>
-    <ft-selector-mes [(value)]="facade.month" [compacto]="v !== 'desktop'" [hoy]="facade.today()" />
+    <ft-selector-mes [(value)]="facade.month" [compacto]="v !== 'desktop'" [hoy]="facade.today()" [actual]="facade.currentMonth()" [rango]="facade.rangeLabel()" />
   </div>
   @if (v === 'desktop') {
     <div acciones class="acciones">
@@ -64,6 +64,8 @@
     </div>
 
     <ft-barra-presupuesto class="span-12" [pace]="facade.pace()" [variante]="v" />
+
+    <ft-reparto-ingresos class="span-12" [data]="facade.allocation()" />
 
     <ft-gasto-por-semana class="span-7" [weeks]="facade.weeks()" />
     @if (v === 'desktop') {

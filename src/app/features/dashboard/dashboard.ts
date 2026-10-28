@@ -18,6 +18,7 @@ import { GastoPorSemana } from './gasto-por-semana/gasto-por-semana';
 import { HeroBalance } from './hero-balance/hero-balance';
 import { MovimientosRecientes } from './movimientos-recientes/movimientos-recientes';
 import { ProximosCargos } from './proximos-cargos/proximos-cargos';
+import { RepartoIngresos } from './reparto-ingresos/reparto-ingresos';
 
 /**
  * Dashboard del mes en curso (pantalla 1 del handoff). Todo se deriva de
@@ -37,6 +38,7 @@ import { ProximosCargos } from './proximos-cargos/proximos-cargos';
     DesgloseTipoGasto,
     ProximosCargos,
     MovimientosRecientes,
+    RepartoIngresos,
     EstadoVacio,
     Skeleton,
     TarjetaError,

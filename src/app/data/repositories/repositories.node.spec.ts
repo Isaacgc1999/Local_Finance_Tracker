@@ -219,6 +219,15 @@ describe('SettingsRepository', () => {
     expect(after.ok && after.value.dateFormat).toBe('YYYY-MM-DD');
     expect(after.ok && after.value.lastBackupAt).toBe('2026-09-08T23:14:00.000Z');
   });
+
+  it('guarda el día de la última actualización automática de precios', async () => {
+    const repos = await freshRepos();
+    const initial = await repos.settings.getAll();
+    expect(initial.ok && initial.value.pricesRefreshedOn).toBeNull();
+    await repos.settings.set('pricesRefreshedOn', isoDate(2026, 10, 28));
+    const after = await repos.settings.getAll();
+    expect(after.ok && after.value.pricesRefreshedOn).toBe('2026-10-28');
+  });
 });
 
 describe('BudgetsRepository', () => {

@@ -11,10 +11,8 @@ import {
   addDays,
   addMonthsClamped,
   daysBetween,
-  endOfMonth,
   month,
   monthKey,
-  monthRange,
   startOfMonth,
   todayIso,
 } from '../core/types/iso-date';
@@ -32,8 +30,10 @@ import {
   totalsByType,
 } from '../domain/analytics/aggregation';
 import { EXPENSE_KINDS, EXPENSE_KIND_LABEL, type ExpenseKind, type ExpenseKindTotals, totalsByExpenseKind } from '../domain/analytics/expense-kind';
+import { incomeAllocation } from '../domain/analytics/income-allocation';
 import { type BudgetPace, computeBudgetPace } from '../domain/budget/budget.service';
 import { expand } from '../domain/recurrence/recurrence.service';
+import { FinancialMonthService } from '../infra/platform/financial-month.service';
 import { FT_COLORS } from '../shared/charts/palette';
 import type { KpiEstado } from '../shared/components/tarjeta-kpi/tarjeta-kpi';
 import { AppStatusFacade } from './app-status.facade';
@@ -82,8 +82,12 @@ const SPARKLINE_MONTHS = 6;
 export class DashboardFacade {
   private readonly db = inject(DbConnection);
   private readonly status = inject(AppStatusFacade);
+  private readonly fm = inject(FinancialMonthService);
 
+  /** Mes visible, como día 1 del mes que le da nombre (con mes de nómina, ver `FinancialMonthService`). */
   readonly month = signal<IsoDate>(startOfMonth(todayIso()));
+  /** Último mes que se puso solo (el «en curso»): si el usuario no ha navegado, se sigue al calendario. */
+  private autoMonth: IsoDate = startOfMonth(todayIso());
   readonly today = signal<IsoDate>(todayIso());
 
   private readonly eventsSig = signal<readonly Event[]>([]);
@@ -111,15 +115,22 @@ export class DashboardFacade {
   readonly error = this.errorSig.asReadonly();
   readonly categoryById = computed(() => new Map(this.categoriesSig().map((c) => [c.id, c])));
 
+  /** Fechas reales del mes visible (28 oct – 27 nov con mes de nómina). */
+  readonly range = computed(() => this.fm.rangeOf(this.shownMonth()));
+  /** «28 oct – 27 nov», o vacío si es el mes natural. */
+  readonly rangeLabel = computed(() => this.fm.rangeLabel(this.shownMonth()));
+  /** Mes al que vuelve «Hoy». */
+  readonly currentMonth = computed(() => this.fm.current(this.today()));
+
   readonly monthEvents = computed(() => {
-    const { from, to } = monthRange(this.shownMonth());
+    const { from, to } = this.range();
     return this.eventsSig().filter((e) => e.date >= from && e.date <= to);
   });
   readonly count = computed(() => this.monthEvents().length);
   readonly empty = computed(() => this.shownMonthSig() !== null && this.count() === 0);
 
   private readonly prevMonthEvents = computed(() => {
-    const { from, to } = monthRange(addMonthsClamped(this.shownMonth(), -1, 1));
+    const { from, to } = this.fm.rangeOf(addMonthsClamped(this.shownMonth(), -1, 1));
     return this.eventsSig().filter((e) => e.date >= from && e.date <= to);
   });
 
@@ -134,7 +145,8 @@ export class DashboardFacade {
 
   private readonly series6m = computed(() => {
     const months = lastMonths(this.shownMonth(), SPARKLINE_MONTHS);
-    const byMonth = totalsByMonth(this.eventsSig(), months);
+    const calendar = this.fm.calendar();
+    const byMonth = totalsByMonth(this.eventsSig(), months, (d) => calendar.labelOf(d));
     const pick = (f: (t: TypeTotals) => Money) => months.map((m) => f(byMonth.get(monthKey(m)) ?? EMPTY_TOTALS));
     return {
       income: pick((t) => t.income),
@@ -151,6 +163,7 @@ export class DashboardFacade {
       budgetTarget: this.budgetSig(),
       monthStart: this.shownMonth(),
       today: this.today(),
+      period: this.range(),
     }),
   );
 
@@ -183,7 +196,7 @@ export class DashboardFacade {
   });
 
   readonly weeks = computed<readonly WeekStack[]>(() =>
-    bucketByWeek(this.monthEvents(), this.shownMonth()).map((b) => {
+    bucketByWeek(this.monthEvents(), this.range()).map((b) => {
       const segments = totalsByExpenseKind(b.events);
       return {
         label: b.label,
@@ -196,6 +209,9 @@ export class DashboardFacade {
   );
 
   readonly kinds = computed(() => totalsByExpenseKind(this.monthEvents()));
+
+  /** Ingresos del mes repartidos entre gasto, ahorro, inversión y lo que queda libre. */
+  readonly allocation = computed(() => incomeAllocation(this.totals(), this.kinds()));
 
   readonly donut = computed<readonly DonutSlice[]>(() => {
     const kinds = this.kinds();
@@ -234,8 +250,19 @@ export class DashboardFacade {
   readonly recent = computed(() => this.monthEvents().slice(0, RECENT_LIMIT));
 
   constructor() {
+    // Al cambiar el ajuste del mes o entrar una nómina, el mes en curso puede
+    // ser otro (el 28 de octubre ya es noviembre): se sigue si no se ha navegado.
+    effect(() => {
+      const current = this.fm.current(this.today());
+      untracked(() => {
+        if (this.month() === this.autoMonth && current !== this.autoMonth) this.month.set(current);
+        this.autoMonth = current;
+      });
+    });
     effect(() => {
       const month = this.month();
+      // El rango depende del calendario (nóminas): si cambia, hay que recargar.
+      this.fm.calendar();
       this.status.dataVersion();
       if (!this.db.ready()) return;
       untracked(() => void this.load(month));
@@ -252,7 +279,7 @@ export class DashboardFacade {
 
   goToday(): void {
     this.today.set(todayIso());
-    this.month.set(startOfMonth(this.today()));
+    this.month.set(this.currentMonth());
   }
 
   private async load(month: IsoDate): Promise<void> {
@@ -264,9 +291,11 @@ export class DashboardFacade {
     }
     const seq = ++this.loadSeq;
     this.loadingSig.set(true);
-    const from = lastMonths(month, SPARKLINE_MONTHS)[0] ?? startOfMonth(month);
+    const first = lastMonths(month, SPARKLINE_MONTHS)[0] ?? startOfMonth(month);
+    const from = this.fm.rangeOf(first).from;
+    const to = this.fm.rangeOf(month).to;
     const [events, rules, budgets, categories] = await Promise.all([
-      repos.value.events.findInRange({ from, to: endOfMonth(month) }),
+      repos.value.events.findInRange({ from, to }),
       repos.value.recurrences.findAll({ activeOnly: true }),
       repos.value.budgets.findAll(),
       repos.value.categories.findAll(),

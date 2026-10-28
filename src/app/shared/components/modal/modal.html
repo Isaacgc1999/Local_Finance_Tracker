@@ -1,4 +1,4 @@
-<dialog #dialog class="dialogo" (cancel)="onCancel($event)" (click)="onBackdropClick($event)">
+<dialog #dialog class="dialogo" [style.--ft-modal-w]="ancho() ? ancho() + 'px' : null" (cancel)="onCancel($event)" (click)="onBackdropClick($event)">
   <div class="panel">
     <div class="cabecera">
       <div>
