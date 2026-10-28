@@ -1,13 +1,14 @@
-.fila-2 {
+.fila-2,
+.fila-3 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
+  // Si una etiqueta ocupa dos líneas, los campos siguen alineados abajo.
+  align-items: end;
 }
 
 .fila-3 {
-  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
 }
 
 .pista {

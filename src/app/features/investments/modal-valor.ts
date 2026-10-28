@@ -17,7 +17,7 @@ import { Modal } from '../../shared/components/modal/modal';
   selector: 'ft-modal-valor',
   imports: [Modal],
   template: `
-    <ft-modal [(open)]="abierto" [titulo]="titulo()" subtitulo="Mira el valor en tu bróker o banco y apúntalo aquí." (cerrar)="abierto.set(false)">
+    <ft-modal [(open)]="abierto" [ancho]="600" [titulo]="titulo()" subtitulo="Mira el valor en tu bróker o banco y apúntalo aquí." (cerrar)="abierto.set(false)">
       <div class="fila-3">
         <label class="ft-field">
           <span class="ft-field__label">Valor de mercado</span>

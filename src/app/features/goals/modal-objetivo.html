@@ -1,4 +1,4 @@
-<ft-modal [(open)]="abierto" [titulo]="titulo()" subtitulo="Ponle importe y fecha: el cálculo de abajo te dice cuánto apartar." (cerrar)="cerrar()">
+<ft-modal [(open)]="abierto" [ancho]="640" [titulo]="titulo()" subtitulo="Ponle importe y fecha: el cálculo de abajo te dice cuánto apartar." (cerrar)="cerrar()">
   <div class="ft-field">
     <span class="ft-field__label">¿Para qué es?</span>
     <ft-segmented-control layout="chips" tone="subtle" label="Tipo de objetivo" [options]="tipos" [value]="tipo()" (valueChange)="$event && tipo.set($event)" />

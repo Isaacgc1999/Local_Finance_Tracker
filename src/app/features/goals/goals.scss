@@ -201,6 +201,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  // Con overflow hidden y el interlineado 1 de la fuente se cortaban g, p, y.
+  line-height: 1.35;
 }
 
 .objetivo__acciones {

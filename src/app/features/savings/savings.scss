@@ -130,6 +130,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  // Con overflow hidden y el interlineado 1 de la fuente se cortaban g, p, y.
+  line-height: 1.35;
 }
 
 .hucha__peso,

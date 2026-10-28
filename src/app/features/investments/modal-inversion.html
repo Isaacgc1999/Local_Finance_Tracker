@@ -1,11 +1,11 @@
-<ft-modal [(open)]="abierto" [titulo]="titulo()" subtitulo="Fondos, ETF, acciones, cripto, planes de pensiones… El valor lo actualizas cuando quieras." (cerrar)="abierto.set(false)">
+<ft-modal [(open)]="abierto" [ancho]="640" [titulo]="titulo()" subtitulo="Fondos, ETF, acciones, cripto, planes de pensiones… El valor lo actualizas cuando quieras." (cerrar)="abierto.set(false)">
   <label class="ft-field">
     <span class="ft-field__label">Nombre</span>
     <input class="ft-input" maxlength="80" placeholder="Vanguard Global Stock Index" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
   </label>
   <div class="fila-2">
     <label class="ft-field">
-      <span class="ft-field__label">Gestora, empresa o plataforma</span>
+      <span class="ft-field__label">Gestora o plataforma</span>
       <input class="ft-input" maxlength="60" placeholder="Vanguard · MyInvestor" [value]="emisor()" (input)="emisor.set($any($event.target).value)" />
     </label>
     <label class="ft-field">
