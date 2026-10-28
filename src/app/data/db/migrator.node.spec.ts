@@ -7,7 +7,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
   it('aplica el esquema y la semilla, y es idempotente', async () => {
     const db = NodeSqliteDatabase.open();
     const first = await applyPendingMigrations(db, MIGRATIONS);
-    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(first.ok && first.value.applied).toEqual([1, 2, 3, 4, 5, 6, 7]);
 
     const tables = await db.select<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
@@ -19,8 +19,14 @@ describe('applyPendingMigrations (SQLite real)', () => {
       'categories',
       'category_rules',
       'events',
+      'goals',
+      'investment_valuations',
+      'investments',
+      'notification_log',
+      'pot_entries',
       'reconciliations',
       'recurrences',
+      'savings_pots',
       'schema_migrations',
       'settings',
       'transfers',
@@ -31,7 +37,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
 
     const second = await applyPendingMigrations(db, MIGRATIONS);
     expect(second.ok && second.value.applied).toEqual([]);
-    expect(second.ok && second.value.current).toBe(6);
+    expect(second.ok && second.value.current).toBe(7);
   });
 
   it('la 0003 convierte el presupuesto antiguo solo si el usuario lo había cambiado', async () => {
@@ -84,7 +90,7 @@ describe('applyPendingMigrations (SQLite real)', () => {
       `INSERT INTO recurrences (id, type, amount_cents, concept, frequency, start_date, created_at, updated_at)
        VALUES ('r1', 'subscription', 1399, 'Netflix', 'monthly', '2026-01-14', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,
     );
-    const migrated = await applyPendingMigrations(db, MIGRATIONS);
+    const migrated = await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 6));
     expect(migrated.ok && migrated.value.applied).toEqual([6]);
 
     const accounts = await db.select<{ id: string; name: string; opening_date: string; opening_balance_cents: number; sort_order: number }>(
@@ -120,6 +126,38 @@ describe('applyPendingMigrations (SQLite real)', () => {
     expect(accounts.ok && accounts.value).toEqual([{ id: 'mia' }]);
     const events = await db.select<{ account_id: string }>('SELECT account_id FROM events');
     expect(events.ok && events.value).toEqual([{ account_id: 'mia' }]);
+  });
+
+  it('la 0007 marca el origen de los movimientos existentes y crea las huchas por defecto', async () => {
+    const db = NodeSqliteDatabase.open();
+    await applyPendingMigrations(db, MIGRATIONS.filter((m) => m.version <= 6));
+    await db.executeRaw(movimientoAntiguo('manual', '2026-03-15'));
+    await db.executeRaw(
+      `INSERT INTO events (id, type, amount_cents, date, concept, notes, created_at, updated_at)
+       VALUES ('imp', 'expense', 500, '2026-03-16', 'Mercadona', 'Importado de extracto.xlsx', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,
+    );
+    await db.executeRaw(
+      `INSERT INTO recurrences (id, type, amount_cents, concept, frequency, start_date, created_at, updated_at)
+       VALUES ('r1', 'subscription', 1399, 'Netflix', 'monthly', '2026-01-14', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,
+    );
+    await db.executeRaw(
+      `INSERT INTO events (id, type, amount_cents, date, concept, recurrence_id, created_at, updated_at)
+       VALUES ('rec', 'subscription', 1399, '2026-03-14', 'Netflix', 'r1', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z')`,
+    );
+    const migrated = await applyPendingMigrations(db, MIGRATIONS);
+    expect(migrated.ok && migrated.value.applied).toEqual([7]);
+
+    const events = await db.select<{ id: string; source: string; import_batch: string | null }>('SELECT id, source, import_batch FROM events ORDER BY id');
+    expect(events.ok && events.value).toEqual([
+      { id: 'imp', source: 'import', import_batch: null },
+      { id: 'manual', source: 'manual', import_batch: null },
+      { id: 'rec', source: 'recurrence', import_batch: null },
+    ]);
+    const pots = await db.select<{ id: string; kind: string }>('SELECT id, kind FROM savings_pots ORDER BY sort_order');
+    expect(pots.ok && pots.value).toEqual([
+      { id: 'pot-emergency', kind: 'emergency' },
+      { id: 'pot-general', kind: 'general' },
+    ]);
   });
 
   it('respeta lo que el usuario cambió en la semilla al reaplicar', async () => {

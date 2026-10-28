@@ -23,6 +23,8 @@ const ev = (type: EventType, cents: number, date: string, categoryId: string | n
   recurrenceId: null, accountId: null,
   meta: null,
   createdAt: '',
+  source: 'manual',
+  importBatch: null,
   updatedAt: '',
 });
 

@@ -1,5 +1,5 @@
 import { dbError } from '../../core/errors/app-error';
-import { type Event, type EventDraft, type EventMeta, isEventType } from '../../core/types/event';
+import { type Event, type EventDraft, type EventMeta, isEventSource, isEventType, sourceOfDraft } from '../../core/types/event';
 import { isIsoDate } from '../../core/types/iso-date';
 import { tryMoney } from '../../core/types/money';
 import { type Result, err, ok } from '../../core/types/result';
@@ -20,12 +20,17 @@ export interface EventRow {
   readonly recurrence_id: string | null;
   readonly account_id: string | null;
   readonly meta: string | null;
+  readonly source: string;
+  readonly import_batch: string | null;
   readonly created_at: string;
   readonly updated_at: string;
 }
 
 export const EVENT_COLUMNS =
-  'id, type, amount_cents, date, concept, category_id, nature, payment_method, notes, attachment_path, recurrence_id, account_id, meta, created_at, updated_at';
+  'id, type, amount_cents, date, concept, category_id, nature, payment_method, notes, attachment_path, recurrence_id, account_id, meta, source, import_batch, created_at, updated_at';
+
+/** Nº de columnas de `EVENT_COLUMNS` (placeholders del INSERT). */
+export const EVENT_COLUMN_COUNT = 17;
 
 export function rowToEvent(row: EventRow): Result<Event> {
   if (!isEventType(row.type)) return err(dbError(`Tipo de evento desconocido: ${row.type}`));
@@ -49,6 +54,8 @@ export function rowToEvent(row: EventRow): Result<Event> {
     recurrenceId: row.recurrence_id,
     accountId: row.account_id,
     meta: meta.value,
+    source: isEventSource(row.source) ? row.source : 'manual',
+    importBatch: row.import_batch,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   });
@@ -70,6 +77,8 @@ export function eventInsertParams(id: string, draft: EventDraft, now: string): S
     draft.recurrenceId,
     draft.accountId,
     toJsonColumn(draft.meta),
+    sourceOfDraft(draft),
+    draft.importBatch ?? null,
     now,
     now,
   ];

@@ -132,8 +132,13 @@
         }
         @if (facade.visible('goal')) {
           <div class="ft-field">
-            <label class="ft-field__label" for="objetivo">Objetivo <span class="ft-field__label-hint">· opcional</span></label>
-            <input id="objetivo" class="ft-input" type="text" formControlName="goal" placeholder="Fondo de emergencia" />
+            <label class="ft-field__label" for="objetivo">Hucha <span class="ft-field__label-hint">· sin elegir va a Ahorro general</span></label>
+            <select id="objetivo" class="ft-select" formControlName="goal">
+              <option value="">Ahorro general</option>
+              @for (p of facade.pots(); track p.value) {
+                <option [value]="p.value">{{ p.label }}</option>
+              }
+            </select>
           </div>
         }
       </div>

@@ -9,6 +9,7 @@ import { AjustesOllama } from './ajustes-ollama/ajustes-ollama';
 import { FicheroDatos } from './fichero-datos/fichero-datos';
 import { IngresosRecurrentes } from './ingresos-recurrentes/ingresos-recurrentes';
 import { ListaCategorias } from './lista-categorias/lista-categorias';
+import { MesAvisos } from './mes-avisos/mes-avisos';
 import { MonedaFormato } from './moneda-formato/moneda-formato';
 import { Presupuestos } from './presupuestos/presupuestos';
 import { ReglasCategoria } from './reglas-categoria/reglas-categoria';
@@ -34,6 +35,7 @@ import { ReglasCategoria } from './reglas-categoria/reglas-categoria';
     Presupuestos,
     ReglasCategoria,
     MonedaFormato,
+    MesAvisos,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',

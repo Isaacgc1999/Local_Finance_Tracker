@@ -54,8 +54,13 @@ export function sumOutflow(events: Iterable<Event>): Money {
 
 /** Semanas (lunes a domingo) recortadas al mes, en orden: S1…Sn. */
 export function weeksOfMonth(anyDayOfMonth: IsoDate): readonly DateRange[] {
-  const first = startOfMonth(anyDayOfMonth);
-  const last = endOfMonth(anyDayOfMonth);
+  return weeksOfRange({ from: startOfMonth(anyDayOfMonth), to: endOfMonth(anyDayOfMonth) });
+}
+
+/** Semanas (lunes a domingo) recortadas a un rango cualquiera (mes de nómina incluido). */
+export function weeksOfRange(range: DateRange): readonly DateRange[] {
+  const first = range.from;
+  const last = range.to;
   const weeks: DateRange[] = [];
   let cursor = first;
   while (cursor <= last) {
@@ -72,8 +77,8 @@ export interface WeekBucket {
   readonly events: readonly Event[];
 }
 
-export function bucketByWeek(events: readonly Event[], anyDayOfMonth: IsoDate): readonly WeekBucket[] {
-  const weeks = weeksOfMonth(anyDayOfMonth);
+export function bucketByWeek(events: readonly Event[], month: IsoDate | DateRange): readonly WeekBucket[] {
+  const weeks = typeof month === 'string' ? weeksOfMonth(month) : weeksOfRange(month);
   const buckets: Event[][] = weeks.map(() => []);
   for (const e of events) {
     const idx = weeks.findIndex((w) => e.date >= w.from && e.date <= w.to);
@@ -88,11 +93,19 @@ export function lastMonths(anyDayOfMonth: IsoDate, n: number): readonly IsoDate[
   return Array.from({ length: n }, (_, i) => addMonthsClamped(start, i - (n - 1), 1));
 }
 
-/** Totales por tipo de cada mes de `months` (claves 'YYYY-MM'). */
-export function totalsByMonth(events: readonly Event[], months: readonly IsoDate[]): ReadonlyMap<string, TypeTotals> {
+/**
+ * Totales por tipo de cada mes de `months` (claves 'YYYY-MM'). Con
+ * `labelOf`, un movimiento cuenta en el mes financiero que le corresponde
+ * (mes de nómina) en vez de en su mes natural.
+ */
+export function totalsByMonth(
+  events: readonly Event[],
+  months: readonly IsoDate[],
+  labelOf: (date: IsoDate) => IsoDate = (d) => d,
+): ReadonlyMap<string, TypeTotals> {
   const groups = new Map<string, Event[]>();
   for (const m of months) groups.set(monthKey(m), []);
-  for (const e of events) groups.get(monthKey(e.date))?.push(e);
+  for (const e of events) groups.get(monthKey(labelOf(e.date)))?.push(e);
   return new Map([...groups.entries()].map(([k, list]) => [k, totalsByType(list)]));
 }
 

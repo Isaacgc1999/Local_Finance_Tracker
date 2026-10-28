@@ -37,6 +37,17 @@
   // Anillo de foco = alpha 33 (20 %)
   --ft-accent-ring: #6e56f833;
 
+  // Tono propio de cada tipo de movimiento (avatar y badge del listado): seis
+  // colores distinguibles. Ampliación del sistema semántico, no del handoff:
+  // suscripción en violeta y domiciliación en naranja para no confundirlas
+  // con un gasto puntual.
+  --ft-type-expense: #f45b5b;
+  --ft-type-income: #22c55e;
+  --ft-type-subscription: #a78bfa;
+  --ft-type-direct_debit: #fb923c;
+  --ft-type-saving: #fbbf24;
+  --ft-type-investment: #38bdf8;
+
   // Rampa del donut de tipos de gasto (subdivisión del rojo)
   --ft-expense-ramp-1: #f45b5b;
   --ft-expense-ramp-2: #c24b4b;

@@ -41,6 +41,8 @@ function evento(type: EventType, cents: number, date: IsoDate, concept: string, 
     accountId: null,
     meta: null,
     createdAt: `${date}T10:00:00.000Z`,
+    source: 'manual',
+    importBatch: null,
     updatedAt: `${date}T10:00:00.000Z`,
   };
 }

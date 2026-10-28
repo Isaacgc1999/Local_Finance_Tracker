@@ -91,6 +91,8 @@ describe('buildLedger', () => {
       id,
       createdAt,
       updatedAt: createdAt,
+      source: 'manual',
+      importBatch: null,
     });
     const tr: Transfer = {
       id: 't',

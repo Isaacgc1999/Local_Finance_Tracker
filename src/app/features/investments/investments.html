@@ -1,0 +1,125 @@
+<ft-cabecera-pagina titulo="Inversiones" subtitulo="Apunta el valor de cada inversión cuando lo mires en tu bróker; el gráfico se construye con esa historia.">
+  <button acciones type="button" class="ft-btn ft-btn--primary" (click)="nueva()"><span aria-hidden="true">+</span> Nueva inversión</button>
+</ft-cabecera-pagina>
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudieron cargar las inversiones" [texto]="errorTexto()" />
+} @else if (facade.loading() && facade.investments().length === 0) {
+  <div class="ft-card"><ft-skeleton variant="fila" [rows]="3" /></div>
+} @else {
+  @let p = facade.portfolio();
+  <section class="ft-card total">
+    <div class="total__principal">
+      <span class="total__etiqueta">Valor de la cartera</span>
+      <span class="total__cifra num">{{ money(p.marketValue) }}</span>
+    </div>
+    <dl class="total__datos">
+      <div>
+        <dt>Invertido</dt>
+        <dd class="num">{{ money(p.invested) }}</dd>
+      </div>
+      <div>
+        <dt>Ganancia</dt>
+        <dd class="num" [class.ft-c-income]="p.gain > 0" [class.ft-c-expense]="p.gain < 0">{{ signed(p.gain) }}</dd>
+      </div>
+      <div>
+        <dt>Rentabilidad</dt>
+        <dd class="num" [class.ft-c-income]="p.gain > 0" [class.ft-c-expense]="p.gain < 0">{{ pct(p.gainBp, true) }}</dd>
+      </div>
+    </dl>
+    @if (p.marketValue > 0) {
+      <div class="reparto" aria-hidden="true">
+        @for (r of reparto(); track r.kind) {
+          <span [style.width.%]="r.pct" [style.background]="r.color"></span>
+        }
+      </div>
+      <ul class="leyenda">
+        @for (r of reparto(); track r.kind) {
+          <li><span class="punto" [style.background]="r.color"></span>{{ r.label }} <strong class="num">{{ r.total }}</strong></li>
+        }
+      </ul>
+    }
+    @if (desfasadas() > 0) {
+      <p class="aviso">{{ desfasadas() === 1 ? 'Una inversión lleva' : desfasadas() + ' inversiones llevan' }} más de 30 días sin actualizar.</p>
+    }
+  </section>
+
+  <ft-grafico-evolucion
+    titulo="Evolución de la cartera"
+    label="Valor"
+    secondaryLabel="Invertido"
+    [color]="color"
+    [points]="facade.evolution()"
+    [(granularity)]="facade.granularity"
+    textoVacio="Añade tu primera inversión para ver cómo evoluciona."
+  />
+
+  <section class="posiciones">
+    @for (h of p.holdings; track h.investment.id) {
+      <article class="ft-card posicion" [style.--color]="h.investment.color">
+        <header class="posicion__cabecera">
+          <span class="punto" aria-hidden="true"></span>
+          <div class="posicion__titulo">
+            <span class="posicion__nombre">{{ h.investment.name }}</span>
+            <span class="posicion__meta">
+              {{ classLabel[h.investment.assetClass] }}
+              @if (h.investment.issuer) {
+                · {{ h.investment.issuer }}
+              }
+              @if (h.investment.ticker) {
+                · <span class="num">{{ h.investment.ticker }}</span>
+              }
+            </span>
+          </div>
+          <span class="posicion__peso num">{{ pct(h.weightBp) }}</span>
+        </header>
+        <span class="posicion__valor num">{{ money(h.marketValue) }}</span>
+        <dl class="posicion__datos">
+          <div>
+            <dt>Invertido</dt>
+            <dd class="num">{{ money(h.invested) }}</dd>
+          </div>
+          <div>
+            <dt>Ganancia</dt>
+            <dd class="num" [class.ft-c-income]="h.gain > 0" [class.ft-c-expense]="h.gain < 0">{{ signed(h.gain) }} · {{ pct(h.gainBp, true) }}</dd>
+          </div>
+          @if (desdeAnterior(h); as d) {
+            <div>
+              <dt>Desde el valor anterior</dt>
+              <dd class="num" [class.ft-c-income]="d > 0" [class.ft-c-expense]="d < 0">{{ signed(d) }}</dd>
+            </div>
+          }
+        </dl>
+        <span class="posicion__fecha" [class.posicion__fecha--vieja]="desfasada(h)">{{ actualizado(h) }}</span>
+        <footer class="posicion__acciones">
+          <button type="button" class="ft-btn ft-btn--secondary ft-btn--compact" (click)="actualizar(h)">Actualizar valor</button>
+          <button type="button" class="ft-link" (click)="editar(h.investment)">Editar</button>
+        </footer>
+      </article>
+    } @empty {
+      <div class="ft-card vacio">
+        <p>Aún no tienes inversiones. Añade un fondo, ETF, acción, cripto o plan de pensiones con su valor actual.</p>
+        <button type="button" class="ft-btn ft-btn--primary" (click)="nueva()">Añadir la primera</button>
+      </div>
+    }
+  </section>
+
+  @if (facade.archived().length > 0) {
+    <details class="ft-card archivadas">
+      <summary>Archivadas ({{ facade.archived().length }})</summary>
+      <ul>
+        @for (i of facade.archived(); track i.id) {
+          <li>
+            <span>{{ i.name }}</span>
+            <button type="button" class="ft-link" (click)="editar(i)">Ver</button>
+          </li>
+        }
+      </ul>
+    </details>
+  }
+
+  <p class="nota">Los valores se actualizan a mano. La actualización automática de precios está pendiente de decidir qué fuente usar.</p>
+}
+
+<ft-modal-inversion [(abierto)]="modalInversion" [inversion]="enEdicion()" />
+<ft-modal-valor [(abierto)]="modalValor" [holding]="valorDe()" />

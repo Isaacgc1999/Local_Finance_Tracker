@@ -1,16 +1,19 @@
 :host {
   display: block;
+  // Color del importe: verde lo que entra, rojo lo que sale.
   --fila-color: var(--ft-expense);
+  // Tono del tipo (avatar y pastilla).
+  --fila-tipo: var(--ft-type-expense);
 }
 
 :host(.color-income) {
   --fila-color: var(--ft-income);
 }
-:host(.color-investment) {
-  --fila-color: var(--ft-investment);
-}
-:host(.color-savings) {
-  --fila-color: var(--ft-savings);
+
+@each $tipo in (expense, income, subscription, direct_debit, saving, investment) {
+  :host(.tipo-#{$tipo}) {
+    --fila-tipo: var(--ft-type-#{$tipo});
+  }
 }
 
 .fila {
@@ -76,9 +79,55 @@
   height: var(--ft-avatar);
   flex: none;
   border-radius: var(--ft-radius-pill);
-  background: color-mix(in srgb, var(--fila-color) 12%, transparent);
-  color: var(--fila-color);
+  background: color-mix(in srgb, var(--fila-tipo) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fila-tipo) 35%, transparent);
+  color: var(--fila-tipo);
   font: 600 13px/1 var(--ft-font-family);
+}
+
+.cabeza {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pastilla {
+  flex: none;
+  height: 20px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--ft-radius-pill);
+  font: 500 11px/1 var(--ft-font-family);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.pastilla--tipo {
+  background: color-mix(in srgb, var(--fila-tipo) 14%, transparent);
+  color: var(--fila-tipo);
+}
+
+.pastilla--origen {
+  border: 1px solid var(--ft-border);
+  color: var(--ft-text-3);
+}
+
+.origen-import {
+  border-color: color-mix(in srgb, var(--ft-investment) 45%, transparent);
+  color: var(--ft-investment);
+}
+
+.origen-recurrence {
+  border-color: color-mix(in srgb, var(--ft-accent) 50%, transparent);
+  color: var(--ft-accent-hover);
+}
+
+@media (max-width: 640px) {
+  .pastilla--tipo {
+    display: none;
+  }
 }
 
 .texto {
@@ -90,6 +139,7 @@
 }
 
 .concepto {
+  min-width: 0;
   font: var(--ft-font-label);
   line-height: 1.3;
   color: var(--ft-text-1);

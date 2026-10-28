@@ -49,6 +49,18 @@ export class Importar {
     { key: 'currency', label: 'Divisa', hint: 'opcional' },
   ];
 
+  /** Indicador de pasos: fichero → columnas → revisar → hecho. */
+  protected readonly pasos = computed(() => {
+    const step = this.facade.step();
+    const mapped = this.facade.mappingComplete();
+    const at = step === 'file' ? 1 : step === 'done' ? 4 : mapped ? 3 : 2;
+    return ['Fichero', 'Columnas', 'Revisar', 'Hecho'].map((label, i) => {
+      const n = i + 1;
+      const estado = n < at || (n === 4 && step === 'done') ? 'hecho' : n === at ? 'activo' : 'pendiente';
+      return { n, label, estado };
+    });
+  });
+
   protected readonly mostrarColumnas = computed(() => this.editarColumnas() || !this.facade.autoDetected() || !this.facade.mappingComplete());
 
   protected readonly resumenColumnas = computed(() => {

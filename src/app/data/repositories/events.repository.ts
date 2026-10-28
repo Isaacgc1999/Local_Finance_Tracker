@@ -1,10 +1,10 @@
 import { notFound } from '../../core/errors/app-error';
 import { uuidV7 } from '../../core/ids/uuid-v7';
-import type { Event, EventDraft, EventPatch, EventType } from '../../core/types/event';
+import { type Event, type EventDraft, type EventPatch, type EventSource, type EventType, sourceOfDraft } from '../../core/types/event';
 import { type DateRange, type IsoDate, nowIsoTimestamp } from '../../core/types/iso-date';
 import { type Result, err, ok } from '../../core/types/result';
 import { type DatabaseHandle, type SqlStatement, type SqlValue, placeholders, stmt } from '../db/database';
-import { EVENT_COLUMNS, type EventRow, eventInsertParams, rowToEvent } from '../mappers/event.mapper';
+import { EVENT_COLUMNS, EVENT_COLUMN_COUNT, type EventRow, eventInsertParams, rowToEvent } from '../mappers/event.mapper';
 import { mapRows, toJsonColumn } from '../mappers/json';
 
 /** Un concepto ya usado, con la categoría de su uso más reciente. */
@@ -19,11 +19,12 @@ export interface EventQueryFilters {
   readonly types?: readonly EventType[];
   readonly categoryIds?: readonly string[];
   readonly accountIds?: readonly string[];
+  readonly sources?: readonly EventSource[];
   /** Búsqueda en concepto (sin distinguir mayúsculas). */
   readonly search?: string;
 }
 
-const INSERT_SQL = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(15)})`;
+const INSERT_SQL = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(EVENT_COLUMN_COUNT)})`;
 
 /** Columnas editables y su nombre en SQL, para construir el UPDATE dinámico. */
 const PATCH_COLUMNS: Readonly<Record<keyof EventPatch, string>> = {
@@ -65,6 +66,10 @@ export class EventsRepository {
     if (filters.accountIds && filters.accountIds.length > 0) {
       where.push(`account_id IN (${placeholders(filters.accountIds.length)})`);
       params.push(...filters.accountIds);
+    }
+    if (filters.sources && filters.sources.length > 0) {
+      where.push(`source IN (${placeholders(filters.sources.length)})`);
+      params.push(...filters.sources);
     }
     const search = filters.search?.trim();
     if (search) {
@@ -127,7 +132,7 @@ export class EventsRepository {
     const now = nowIsoTimestamp();
     const result = await this.db.transaction([stmt(INSERT_SQL, ...eventInsertParams(id, draft, now))]);
     if (!result.ok) return result;
-    return ok({ ...draft, id, createdAt: now, updatedAt: now });
+    return ok({ ...draft, id, source: sourceOfDraft(draft), importBatch: draft.importBatch ?? null, createdAt: now, updatedAt: now });
   }
 
   /** Alta en bloque (importación de extractos) en una sola transacción. */
@@ -150,7 +155,7 @@ export class EventsRepository {
     const now = nowIsoTimestamp();
     const statements: SqlStatement[] = drafts.map((draft) =>
       stmt(
-        `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(15)})
+        `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(EVENT_COLUMN_COUNT)})
          ON CONFLICT(recurrence_id, date) WHERE recurrence_id IS NOT NULL DO NOTHING`,
         ...eventInsertParams(uuidV7(), draft, now),
       ),
@@ -240,6 +245,29 @@ export class EventsRepository {
       `SELECT ${EVENT_COLUMNS} FROM events WHERE type IN ('expense','income','subscription','direct_debit') AND (category_id IS NULL ${ids}) ORDER BY date DESC`,
       [...fallbackCategoryIds],
     );
+    if (!rows.ok) return rows;
+    return mapRows(rows.value, rowToEvent);
+  }
+
+  /** Ingresos (fecha, concepto, categoría) de todo el historial: de aquí salen los días de nómina. */
+  async incomeHeads(): Promise<Result<readonly { readonly date: IsoDate; readonly concept: string; readonly categoryId: string | null }[]>> {
+    const rows = await this.db.select<{ date: string; concept: string; category_id: string | null }>(
+      `SELECT date, concept, category_id FROM events WHERE type = 'income' ORDER BY date`,
+    );
+    if (!rows.ok) return rows;
+    return ok(rows.value.map((r) => ({ date: r.date as IsoDate, concept: r.concept, categoryId: r.category_id })));
+  }
+
+  /** Borra todos los movimientos de una importación (deshacer). */
+  async deleteImportBatch(batch: string): Promise<Result<{ readonly deleted: number }>> {
+    const result = await this.db.transaction([stmt('DELETE FROM events WHERE import_batch = ?', batch)]);
+    if (!result.ok) return result;
+    return ok({ deleted: result.value.rowsAffected });
+  }
+
+  /** Movimientos de ahorro (todo el historial): alimentan los saldos de las huchas. */
+  async findSavings(): Promise<Result<readonly Event[]>> {
+    const rows = await this.db.select<EventRow>(`SELECT ${EVENT_COLUMNS} FROM events WHERE type = 'saving' ORDER BY date`);
     if (!rows.ok) return rows;
     return mapRows(rows.value, rowToEvent);
   }
