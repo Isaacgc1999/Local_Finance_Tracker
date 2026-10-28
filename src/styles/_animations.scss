@@ -118,6 +118,16 @@
   animation: ft-enter var(--ft-dur-base) var(--ft-ease-out) backwards;
 }
 
+// Cambio de tema (Ajustes → Apariencia): fundido de la ventana entera, sin
+// desplazamiento. `ThemeService` pone la clase solo mientras dura.
+html.ft-cambio-tema::view-transition-old(*) {
+  animation: ft-fade var(--ft-dur-slow) linear reverse both;
+}
+
+html.ft-cambio-tema::view-transition-new(*) {
+  animation: ft-fade var(--ft-dur-slow) linear both;
+}
+
 // ── Movimiento reducido ──────────────────────────────────────────────────
 // Un único interruptor para toda la app: nada se desplaza ni escala, y los
 // cambios de estado son inmediatos. Los componentes no necesitan su propia

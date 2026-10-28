@@ -21,7 +21,7 @@ import {
   defaultFileName,
 } from '../domain/export';
 import { saveBinaryFile } from '../infra/fs/save-file';
-import { CHART_EXPORT_BG, CHART_IDS, chartToPng } from '../shared/charts/chart-registry';
+import { CHART_IDS, chartExportBg, chartToPng } from '../shared/charts/chart-registry';
 import { type AnalyticsSnapshot, type CategoryBreakdown, VARIANCE_PERIODS, computeSnapshot } from '../domain/analytics/analytics.service';
 import { type Granularity, historyStart, previousRange } from '../domain/analytics/periods';
 import { AppStatusFacade } from './app-status.facade';
@@ -245,9 +245,9 @@ export class AnalyticsFacade {
     try {
       const charts: ChartImage[] = [];
       if (options.includeCharts) {
-        const comparativa = await chartToPng(CHART_IDS.comparativa, CHART_EXPORT_BG);
+        const comparativa = await chartToPng(CHART_IDS.comparativa, chartExportBg());
         if (comparativa) charts.push({ title: 'Ingresos, gastos e inversión por periodo', ...comparativa });
-        const saldo = await chartToPng(CHART_IDS.saldo, CHART_EXPORT_BG);
+        const saldo = await chartToPng(CHART_IDS.saldo, chartExportBg());
         if (saldo) charts.push({ title: 'Saldo acumulado', ...saldo });
       }
       const model = buildExportModel({

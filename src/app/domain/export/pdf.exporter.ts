@@ -2,7 +2,7 @@ import { messageOf } from '../../core/errors/app-error';
 import { formatMoney } from '../../core/format/money-format';
 import { money } from '../../core/types/money';
 import { type Result, tryCatch } from '../../core/types/result';
-import { FT_COLORS } from '../../shared/charts/palette';
+import { FT_PRINT_COLORS as FT_COLORS } from '../../shared/charts/palette';
 import { CATEGORY_HEADERS, type ExportModel, MOVEMENT_HEADERS, categoryTotalsRow } from './export-model';
 
 const MARGIN = 40;

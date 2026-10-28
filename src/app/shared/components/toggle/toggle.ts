@@ -53,7 +53,7 @@ import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
         background-color var(--ft-dur-base) linear;
     }
     .activo .pastilla {
-      background: #ffffff;
+      background: var(--ft-on-accent);
       transform: translateX(calc(var(--ft-toggle-w) - var(--ft-toggle-knob) - 2 * var(--ft-toggle-pad)));
     }
     .pista:active:not(:disabled) .pastilla {

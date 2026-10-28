@@ -1,0 +1,219 @@
+@use 'typography' as t;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ft-field {
+  gap: 8px;
+}
+
+.nota {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+.aviso {
+  color: var(--ft-savings);
+}
+
+// ── Estilos: 2×2 con miniatura ───────────────────────────────────────────
+.estilos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.estilo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 8px 10px;
+  text-align: left;
+  border: var(--ft-border-width) solid var(--ft-border);
+  border-radius: var(--ft-radius-card);
+  background: var(--ft-surface-elevated);
+  cursor: pointer;
+  min-width: 0;
+  transition:
+    border-color var(--ft-dur-fast) linear,
+    box-shadow var(--ft-dur-fast) linear,
+    transform var(--ft-dur-instant) var(--ft-ease-out);
+
+  &:hover {
+    border-color: var(--ft-border-hover);
+  }
+
+  &:active {
+    transform: scale(var(--ft-press-scale));
+  }
+
+  &.activo {
+    border-color: var(--ft-accent);
+    box-shadow: var(--ft-focus-ring);
+  }
+}
+
+.estilo__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 4px;
+  min-width: 0;
+}
+
+.estilo__nombre {
+  font: var(--ft-font-meta-strong);
+  color: var(--ft-text-1);
+}
+
+.estilo__pista {
+  @include t.ft-meta(1.35);
+  color: var(--ft-text-3);
+}
+
+// La miniatura lleva `data-estilo` y `data-modo`: todo lo de dentro usa los
+// tokens de ese tema, no los de la app.
+.muestra {
+  display: block;
+  padding: 10px;
+  border-radius: calc(var(--ft-radius-card) - 4px);
+  background: var(--ft-bg);
+}
+
+.muestra__tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 10px;
+  background: var(--ft-surface);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--ft-radius-control);
+  box-shadow: var(--ft-card-shadow);
+}
+
+.muestra__titulo {
+  font: var(--ft-font-key);
+  font-size: 14px;
+  color: var(--ft-text-1);
+  @include t.ft-num;
+}
+
+.muestra__fila {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.punto {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--ft-radius-pill);
+  flex: none;
+
+  &.ingreso {
+    background: var(--ft-income);
+  }
+
+  &.gasto {
+    background: var(--ft-expense);
+  }
+}
+
+.linea {
+  height: 4px;
+  width: 70%;
+  border-radius: var(--ft-radius-bar);
+  background: var(--ft-surface-elevated);
+
+  &.corta {
+    width: 45%;
+  }
+}
+
+.muestra__boton {
+  display: block;
+  height: 10px;
+  width: 52%;
+  margin-top: 2px;
+  border-radius: var(--ft-radius-segment);
+  background: var(--ft-accent);
+}
+
+// ── Acentos ──────────────────────────────────────────────────────────────
+.acentos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.acento {
+  position: relative;
+  width: var(--ft-swatch);
+  height: var(--ft-swatch);
+  border-radius: var(--ft-radius-pill);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    box-shadow var(--ft-dur-fast) linear,
+    transform var(--ft-dur-instant) var(--ft-ease-out);
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  // Anillo doble (fondo + acento) para que se vea con cualquier color.
+  &.activo {
+    box-shadow:
+      0 0 0 2px var(--ft-surface),
+      0 0 0 4px var(--ft-text-1);
+  }
+}
+
+// «El del estilo»: medio acento del estilo, medio fondo, como un «auto».
+.acento--estilo {
+  background: linear-gradient(135deg, var(--ft-accent) 50%, var(--ft-surface-elevated) 50%);
+  border-color: var(--ft-border);
+}
+
+.acento--propio {
+  display: block;
+  overflow: hidden;
+  background: conic-gradient(#f43f5e, #f59e0b, #84cc16, #06b6d4, #6366f1, #d946ef, #f43f5e);
+
+  input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &:focus-within {
+    box-shadow: var(--ft-focus-ring);
+  }
+}
+
+.acento__relleno {
+  position: absolute;
+  inset: 4px;
+  border-radius: var(--ft-radius-pill);
+  pointer-events: none;
+}
+
+:host(.compacta) {
+  padding: 16px;
+  gap: 12px;
+}

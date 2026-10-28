@@ -6,6 +6,7 @@ import { BreakpointService } from '../../infra/platform/breakpoint.service';
 import { CabeceraPagina } from '../../layout/cabecera-pagina/cabecera-pagina';
 import { TarjetaError } from '../../shared/components/tarjeta-error/tarjeta-error';
 import { AjustesOllama } from './ajustes-ollama/ajustes-ollama';
+import { Apariencia } from './apariencia/apariencia';
 import { FicheroDatos } from './fichero-datos/fichero-datos';
 import { IngresosRecurrentes } from './ingresos-recurrentes/ingresos-recurrentes';
 import { ListaCategorias } from './lista-categorias/lista-categorias';
@@ -28,6 +29,7 @@ import { ReglasCategoria } from './reglas-categoria/reglas-categoria';
     CabeceraPagina,
     TarjetaError,
     FicheroDatos,
+    Apariencia,
     AjustesOllama,
     ListaCategorias,
     IngresosRecurrentes,

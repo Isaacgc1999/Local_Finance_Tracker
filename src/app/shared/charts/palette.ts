@@ -1,9 +1,36 @@
+import { signal } from '@angular/core';
+
 /**
- * Espejo en TypeScript de los tokens de color de `src/styles/_tokens.scss`
- * para ECharts (que no lee custom properties) y para los exportadores.
- * Si cambia un token, cambia aquí también.
+ * Colores de los tokens de `src/styles/_tokens.scss` / `_themes.scss` para
+ * ECharts, que no lee custom properties.
+ *
+ * Desde que hay temas (2026-10-28) no son constantes: `ThemeService` los lee
+ * del CSS ya aplicado y los publica con `setChartPalette`. Cada propiedad de
+ * `FT_COLORS` lee una signal, así que un `computed` que monta la opción de un
+ * gráfico se recalcula solo al cambiar de tema o de acento.
+ *
+ * `FT_PRINT_COLORS` son los de finance oscuro, fijos: los exportadores (PDF,
+ * Word) imprimen sobre papel blanco y no deben heredar un acento neón o blanco.
  */
-export const FT_COLORS = {
+export interface ChartPalette {
+  readonly bg: string;
+  readonly surface: string;
+  readonly surfaceElevated: string;
+  readonly border: string;
+  readonly text1: string;
+  readonly text2: string;
+  readonly text3: string;
+  readonly accent: string;
+  readonly income: string;
+  readonly expense: string;
+  readonly investment: string;
+  readonly savings: string;
+  /** Rampa del donut de tipos de gasto (fijo, variable, ocio, suscripciones). */
+  readonly expenseRamp: readonly [string, string, string, string];
+  readonly font: string;
+}
+
+export const FT_PRINT_COLORS: ChartPalette = {
   bg: '#0A0B0D',
   surface: '#131519',
   surfaceElevated: '#1B1E24',
@@ -16,22 +43,80 @@ export const FT_COLORS = {
   expense: '#F45B5B',
   investment: '#38BDF8',
   savings: '#FBBF24',
-  /** Rampa del donut de tipos de gasto (fijo, variable, ocio, suscripciones). */
-  expenseRamp: ['#F45B5B', '#C24B4B', '#8F3A3A', '#5C2A2A'] as const,
-} as const;
+  expenseRamp: ['#F45B5B', '#C24B4B', '#8F3A3A', '#5C2A2A'],
+  font: "'Inter', system-ui, sans-serif",
+};
 
-export const FT_FONT = "'Inter', system-ui, sans-serif";
+const paletteSig = signal<ChartPalette>(FT_PRINT_COLORS);
+
+export function setChartPalette(palette: ChartPalette): void {
+  paletteSig.set(palette);
+}
+
+/** Paleta del tema activo. Leerla dentro de un `computed` lo suscribe al tema. */
+export const FT_COLORS: Omit<ChartPalette, 'font'> = {
+  get bg() {
+    return paletteSig().bg;
+  },
+  get surface() {
+    return paletteSig().surface;
+  },
+  get surfaceElevated() {
+    return paletteSig().surfaceElevated;
+  },
+  get border() {
+    return paletteSig().border;
+  },
+  get text1() {
+    return paletteSig().text1;
+  },
+  get text2() {
+    return paletteSig().text2;
+  },
+  get text3() {
+    return paletteSig().text3;
+  },
+  get accent() {
+    return paletteSig().accent;
+  },
+  get income() {
+    return paletteSig().income;
+  },
+  get expense() {
+    return paletteSig().expense;
+  },
+  get investment() {
+    return paletteSig().investment;
+  },
+  get savings() {
+    return paletteSig().savings;
+  },
+  get expenseRamp() {
+    return paletteSig().expenseRamp;
+  },
+};
+
+/** Familia de los textos de los gráficos (la del cuerpo del tema activo). */
+export function chartFont(): string {
+  return paletteSig().font;
+}
 
 /** Tooltip de gráfico del handoff: caja 196px `#1B1E24` + borde, título 13/500 y filas punto + etiqueta + importe. */
 export const FT_TOOLTIP = {
-  backgroundColor: FT_COLORS.surfaceElevated,
-  borderColor: FT_COLORS.border,
+  get backgroundColor() {
+    return FT_COLORS.surfaceElevated;
+  },
+  get borderColor() {
+    return FT_COLORS.border;
+  },
   borderWidth: 1,
   borderRadius: 8,
   padding: [12, 14] as [number, number],
-  textStyle: { color: FT_COLORS.text1, fontFamily: FT_FONT, fontSize: 13 },
+  get textStyle() {
+    return { color: FT_COLORS.text1, fontFamily: chartFont(), fontSize: 13 };
+  },
   extraCssText: 'width:196px;box-shadow:none;',
-} as const;
+};
 
 export function tooltipRow(color: string, label: string, value: string): string {
   return `<div style="display:flex;align-items:center;gap:8px;margin-top:7px">

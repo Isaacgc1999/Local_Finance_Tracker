@@ -1,0 +1,111 @@
+<div class="cabecera">
+  <h2 class="ft-card__title">Apariencia</h2>
+  @if (!porDefecto()) {
+    <button type="button" class="ft-link" (click)="theme.reset()">Restablecer</button>
+  }
+</div>
+
+<div class="ft-field">
+  <span class="ft-field__label">Tema</span>
+  <ft-segmented-control
+    layout="stretch"
+    tone="subtle"
+    label="Tema"
+    [options]="modos"
+    [value]="theme.mode()"
+    (valueChange)="onModo($event)"
+  />
+</div>
+
+<div class="ft-field">
+  <span class="ft-field__label">Estilo</span>
+  <div class="estilos" role="radiogroup" aria-label="Estilo de la app">
+    @for (e of estilos; track e.value) {
+      @let activo = e.value === theme.style();
+      <button
+        type="button"
+        role="radio"
+        class="estilo"
+        [class.activo]="activo"
+        [attr.aria-checked]="activo"
+        [attr.tabindex]="activo ? 0 : -1"
+        [attr.data-valor]="e.value"
+        (click)="onEstilo(e.value)"
+        (keydown)="onTeclaEstilo($event, e.value)"
+      >
+        <span
+          class="muestra"
+          aria-hidden="true"
+          [attr.data-estilo]="e.value"
+          [attr.data-modo]="modoVisto()"
+        >
+          <span class="muestra__tarjeta">
+            <span class="muestra__titulo">1.248,50</span>
+            <span class="muestra__fila"
+              ><span class="punto ingreso"></span><span class="linea"></span
+            ></span>
+            <span class="muestra__fila"
+              ><span class="punto gasto"></span><span class="linea corta"></span
+            ></span>
+            <span class="muestra__boton"></span>
+          </span>
+        </span>
+        <span class="estilo__texto">
+          <span class="estilo__nombre">{{ e.label }}</span>
+          <span class="estilo__pista">{{ e.hint }}</span>
+        </span>
+      </button>
+    }
+  </div>
+</div>
+
+<div class="ft-field">
+  <span class="ft-field__label">Color de acento</span>
+  <div class="acentos" role="radiogroup" aria-label="Color de acento">
+    <button
+      type="button"
+      role="radio"
+      class="acento acento--estilo"
+      title="El del estilo"
+      [class.activo]="acento() === null"
+      [attr.aria-checked]="acento() === null"
+      aria-label="Color del estilo"
+      [attr.data-estilo]="theme.style()"
+      [attr.data-modo]="modoVisto()"
+      (click)="onAcento(null)"
+    ></button>
+    @for (p of acentos; track p.hex) {
+      <button
+        type="button"
+        role="radio"
+        class="acento"
+        [title]="p.name"
+        [class.activo]="acento() === p.hex"
+        [attr.aria-checked]="acento() === p.hex"
+        [attr.aria-label]="p.name"
+        [style.background]="p.hex"
+        (click)="onAcento(p.hex)"
+      ></button>
+    }
+    <label class="acento acento--propio" title="Personalizado" [class.activo]="personalizado()">
+      <input
+        type="color"
+        aria-label="Color personalizado"
+        [value]="valorSelector()"
+        (change)="onAcento($any($event.target).value)"
+      />
+      @if (personalizado()) {
+        <span class="acento__relleno" [style.background]="acento()"></span>
+      }
+    </label>
+  </div>
+  @if (avisoContraste()) {
+    <span class="nota aviso">{{ avisoContraste() }}</span>
+  } @else {
+    <span class="nota">El primero sigue el color propio de cada estilo.</span>
+  }
+</div>
+
+<p class="nota">
+  Se guarda en este equipo. La copia de seguridad del fichero de datos no incluye el tema.
+</p>

@@ -188,8 +188,6 @@ export interface ImportCommitOptions {
   readonly accountId: string | null;
   readonly expenseCategoryId: string;
   readonly incomeCategoryId: string;
-  /** Cuenta a la que van todos los movimientos, o `null` para dejarlos sin cuenta. */
-  readonly accountId?: string | null;
 }
 
 export const DEFAULT_IMPORT_CATEGORIES = {

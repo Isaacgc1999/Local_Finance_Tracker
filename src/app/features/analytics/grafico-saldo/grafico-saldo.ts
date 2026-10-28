@@ -6,7 +6,7 @@ import { formatMoney } from '../../../core/format/money-format';
 import type { AnalyticsSnapshot } from '../../../domain/analytics/analytics.service';
 import type { Granularity } from '../../../domain/analytics/periods';
 import type { FtChartOption } from '../../../shared/charts/echarts';
-import { FT_COLORS, FT_FONT, FT_TOOLTIP, tooltipRow, tooltipTitle } from '../../../shared/charts/palette';
+import { FT_COLORS, FT_TOOLTIP, chartFont, tooltipRow, tooltipTitle } from '../../../shared/charts/palette';
 import { ChartDirective } from '../../../shared/directives/chart.directive';
 import { ScrollEndDirective } from '../../../shared/directives/scroll-end.directive';
 import { VISIBLE_PERIODS, chartWidthPercent } from '../chart-window';
@@ -106,7 +106,7 @@ export class GraficoSaldo {
         data: labels,
         axisLine: { show: false },
         axisTick: { show: false },
-        axisLabel: { color: FT_COLORS.text3, fontFamily: FT_FONT, fontSize: 13, margin: 12, interval: 'auto', showMinLabel: true, showMaxLabel: true },
+        axisLabel: { color: FT_COLORS.text3, fontFamily: chartFont(), fontSize: 13, margin: 12, interval: 'auto', showMinLabel: true, showMaxLabel: true },
       },
       yAxis: {
         type: 'value',

@@ -16,6 +16,7 @@
   border: var(--ft-border-width) solid var(--ft-border);
   border-radius: var(--ft-radius-card);
   padding: var(--ft-card-padding);
+  box-shadow: var(--ft-card-shadow);
 }
 
 .ft-card__title {
