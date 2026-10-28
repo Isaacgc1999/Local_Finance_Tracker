@@ -1,0 +1,203 @@
+@use 'breakpoints' as bp;
+
+.acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.total {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.total__etiqueta {
+  font: var(--ft-font-label);
+  color: var(--ft-text-2);
+}
+
+.total__cifra {
+  font: var(--ft-font-display);
+  letter-spacing: var(--ft-tracking-display);
+  color: var(--ft-text-1);
+}
+
+.total__meta {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.reparto {
+  display: flex;
+  height: 10px;
+  margin-top: 8px;
+  border-radius: var(--ft-radius-pill);
+  overflow: hidden;
+  background: var(--ft-surface-elevated);
+  gap: 2px;
+
+  span {
+    height: 100%;
+    transition: width var(--ft-dur-base) var(--ft-ease-out);
+  }
+}
+
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-2);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  strong {
+    color: var(--ft-text-1);
+    font-weight: 500;
+  }
+}
+
+.punto {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--ft-radius-pill);
+  flex: none;
+  background: var(--color);
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grupo__cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.grupo__titulo {
+  margin: 0;
+  font: var(--ft-font-label);
+  font-weight: 600;
+  color: var(--ft-text-1);
+}
+
+.grupo__hint {
+  margin-top: 4px;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.grupo__total {
+  font: var(--ft-font-key);
+  color: var(--ft-text-1);
+  white-space: nowrap;
+}
+
+.huchas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--ft-grid-gap);
+}
+
+.hucha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  border-left: 3px solid var(--color);
+}
+
+.hucha__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hucha__nombre {
+  flex: 1;
+  min-width: 0;
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  // Con overflow hidden y el interlineado 1 de la fuente se cortaban g, p, y.
+  line-height: 1.35;
+}
+
+.hucha__peso,
+.hucha__meta {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.hucha__saldo {
+  font: var(--ft-font-key);
+  color: var(--ft-text-1);
+}
+
+.barra {
+  height: var(--ft-progress-thin);
+  border-radius: var(--ft-radius-pill);
+  background: var(--ft-surface-elevated);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--color);
+    border-radius: inherit;
+  }
+}
+
+.flujos {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--ft-border-subtle);
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    font: var(--ft-font-meta);
+    color: var(--ft-text-2);
+    border-bottom: 1px solid var(--ft-border-subtle);
+  }
+}
+
+.flujos__texto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hucha__acciones {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.vacio {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+@include bp.ft-media(mobile) {
+  .huchas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

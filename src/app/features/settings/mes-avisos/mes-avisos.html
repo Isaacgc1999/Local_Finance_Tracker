@@ -1,0 +1,41 @@
+<h2 class="ft-card__title">Mes y avisos</h2>
+
+<div class="ft-field">
+  <span class="ft-field__label">Cómo cuenta el mes</span>
+  <ft-segmented-control layout="stretch" tone="subtle" label="Cómo cuenta el mes" [options]="modos" [value]="modo()" (valueChange)="onModo($event)" />
+  <span class="nota">
+    @if (modo() === 'payday') {
+      El mes empieza el día de referencia o el día que entra la nómina si llega a ±7 días: cobrar el 28 de octubre ya cuenta como noviembre.
+    } @else {
+      Del día 1 al último día de cada mes.
+    }
+  </span>
+</div>
+
+@if (modo() === 'payday') {
+  <div class="ft-field">
+    <label class="ft-field__label" for="dia-mes">Día de referencia</label>
+    <select id="dia-mes" class="ft-select" (change)="onDia($any($event.target).value)">
+      @for (d of dias; track d) {
+        <option [value]="d" [selected]="d === dia()">Día {{ d }}</option>
+      }
+    </select>
+    @if (ejemplo()) {
+      <span class="nota">{{ ejemplo() }}</span>
+    }
+  </div>
+}
+
+<div class="ft-field">
+  <label class="interruptor">
+    <input type="checkbox" role="switch" [checked]="avisos()" (change)="onAvisos($any($event.target).checked)" />
+    <span>Avisos en el centro de notificaciones</span>
+  </label>
+  <span class="nota">Cargos de mañana, nómina recibida, presupuesto al 80 % o superado, objetivos a punto de vencer, inversiones sin actualizar y copia de seguridad pendiente. Solo mientras la app está abierta.</span>
+  <div>
+    <button type="button" class="ft-btn ft-btn--secondary ft-btn--compact" [disabled]="!avisos()" (click)="probar()">Enviar un aviso de prueba</button>
+  </div>
+  @if (pruebaTexto()) {
+    <span class="nota" role="status">{{ pruebaTexto() }}</span>
+  }
+</div>

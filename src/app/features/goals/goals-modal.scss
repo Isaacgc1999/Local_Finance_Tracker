@@ -1,0 +1,94 @@
+.fila-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.pista {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-text-3);
+}
+
+.confirmar {
+  font: var(--ft-font-meta);
+  line-height: 1.6;
+  color: var(--ft-expense);
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.borrar {
+  margin-right: auto;
+  color: var(--ft-expense);
+  border-color: var(--ft-expense);
+}
+
+.calculo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--ft-radius-control);
+  background: var(--ft-surface-elevated);
+  border: 1px solid var(--ft-border);
+}
+
+.calculo__tiempo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+
+  strong {
+    font: var(--ft-font-label);
+    color: var(--ft-text-1);
+  }
+}
+
+.calculo__rejilla {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calculo__celda {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border-radius: var(--ft-radius-segment);
+  border: 1px solid transparent;
+
+  &.activa {
+    border-color: var(--ft-accent);
+    background: var(--ft-accent-8);
+  }
+}
+
+.calculo__label {
+  font: var(--ft-font-meta);
+  color: var(--ft-text-3);
+}
+
+.calculo__valor {
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+}
+
+.signo {
+  align-self: flex-start;
+}
+
+@media (max-width: 640px) {
+  .calculo__rejilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

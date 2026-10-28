@@ -24,6 +24,8 @@ export class Modal {
   readonly open = model<boolean>(false);
   readonly titulo = input.required<string>();
   readonly subtitulo = input<string>('');
+  /** Ancho en px para formularios con más campos; sin él, los 480 del handoff. */
+  readonly ancho = input<number | null>(null);
   readonly cerrar = output<void>();
 
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');

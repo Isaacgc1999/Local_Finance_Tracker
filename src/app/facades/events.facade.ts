@@ -2,13 +2,14 @@ import { Injectable, computed, effect, inject, signal, untracked } from '@angula
 
 import { type AppError, describeError } from '../core/errors/app-error';
 import type { Category } from '../core/types/category';
-import { type Event, type EventType, balanceSign } from '../core/types/event';
-import { type IsoDate, monthRange, startOfMonth, todayIso } from '../core/types/iso-date';
+import { type Event, type EventSource, type EventType, balanceSign } from '../core/types/event';
+import { type IsoDate, startOfMonth, todayIso } from '../core/types/iso-date';
 import { type Money, addMoney, money, ZERO } from '../core/types/money';
 import { type Result, err, ok } from '../core/types/result';
 import { DbConnection } from '../data/db/db-connection';
 import { proposePattern } from '../domain/categorization/category-rules';
 import { EventService } from '../domain/events/event.service';
+import { FinancialMonthService } from '../infra/platform/financial-month.service';
 import { AppStatusFacade } from './app-status.facade';
 import { CategoryRulesFacade } from './category-rules.facade';
 
@@ -28,9 +29,16 @@ export class EventsFacade {
   private readonly db = inject(DbConnection);
   private readonly status = inject(AppStatusFacade);
   private readonly rules = inject(CategoryRulesFacade);
+  private readonly fm = inject(FinancialMonthService);
 
   readonly month = signal<IsoDate>(startOfMonth(todayIso()));
+  /** Último mes en curso puesto solo; mientras no se navegue, se sigue al calendario. */
+  private autoMonth: IsoDate = startOfMonth(todayIso());
   readonly types = signal<readonly EventType[]>([]);
+  readonly sources = signal<readonly EventSource[]>([]);
+  readonly range = computed(() => this.fm.rangeOf(this.month()));
+  readonly rangeLabel = computed(() => this.fm.rangeLabel(this.month()));
+  readonly currentMonth = computed(() => this.fm.current(todayIso()));
   readonly search = signal('');
 
   private readonly eventsSig = signal<readonly Event[]>([]);
@@ -62,8 +70,22 @@ export class EventsFacade {
 
   readonly filtered = computed(() => {
     const q = this.search().trim().toLocaleLowerCase('es');
-    if (!q) return this.visible();
-    return this.visible().filter((e) => e.concept.toLocaleLowerCase('es').includes(q));
+    const sources = new Set(this.sources());
+    let list = this.visible();
+    if (sources.size > 0) list = list.filter((e) => sources.has(e.source));
+    if (!q) return list;
+    return list.filter((e) => e.concept.toLocaleLowerCase('es').includes(q));
+  });
+
+  /** Totales con signo de lo filtrado: entra (+), sale (−) y neto. */
+  readonly flow = computed(() => {
+    let inflow = 0;
+    let outflow = 0;
+    for (const e of this.filtered()) {
+      if (e.type === 'income') inflow += e.amountCents;
+      else outflow += e.amountCents;
+    }
+    return { inflow: money(inflow), outflow: money(outflow), net: money(inflow - outflow) };
   });
 
   readonly groupedByDay = computed<readonly DayGroup[]>(() => {
@@ -83,7 +105,7 @@ export class EventsFacade {
   });
 
   readonly total = computed(() => this.filtered().length);
-  readonly hasFilters = computed(() => this.types().length > 0 || this.search().trim() !== '');
+  readonly hasFilters = computed(() => this.types().length > 0 || this.sources().length > 0 || this.search().trim() !== '');
 
   /** Los movimientos marcados que siguen a la vista (un filtro puede ocultar alguno). */
   readonly selectedEvents = computed(() => {
@@ -112,8 +134,16 @@ export class EventsFacade {
   constructor() {
     // Recarga cuando cambian mes, tipos o los datos (guardar, borrar, materializar).
     effect(() => {
+      const current = this.currentMonth();
+      untracked(() => {
+        if (this.month() === this.autoMonth && current !== this.autoMonth) this.month.set(current);
+        this.autoMonth = current;
+      });
+    });
+    effect(() => {
       const month = this.month();
       const types = this.types();
+      this.fm.calendar();
       this.status.dataVersion();
       if (!this.db.ready()) return;
       untracked(() => void this.load(month, types));
@@ -122,6 +152,7 @@ export class EventsFacade {
 
   clearFilters(): void {
     this.types.set([]);
+    this.sources.set([]);
     this.search.set('');
   }
 
@@ -251,7 +282,7 @@ export class EventsFacade {
     }
     this.loadingSig.set(true);
     const [events, categories] = await Promise.all([
-      repos.value.events.findInRange(monthRange(month), { types }),
+      repos.value.events.findInRange(this.fm.rangeOf(month), { types }),
       repos.value.categories.findAll(),
     ]);
     this.loadingSig.set(false);

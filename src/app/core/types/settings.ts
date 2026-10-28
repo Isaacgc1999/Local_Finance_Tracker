@@ -16,6 +16,12 @@ export interface Settings {
   readonly lastBackupAt: string | null;
   /** Siempre lunes (ISO 8601). */
   readonly weekStartsOn: 1;
+  /** Mes natural o «mes de nómina» (ver `domain/period/financial-month.ts`). */
+  readonly monthMode: 'calendar' | 'payday';
+  /** Día de referencia del mes de nómina, de 1 a 28. */
+  readonly monthStartDay: number;
+  /** Avisos del sistema operativo (cargos de mañana, presupuesto, objetivos…). */
+  readonly notificationsEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -25,6 +31,9 @@ export const DEFAULT_SETTINGS: Settings = {
   ollamaModel: 'llama3.1:8b',
   lastBackupAt: null,
   weekStartsOn: 1,
+  monthMode: 'calendar',
+  monthStartDay: 28,
+  notificationsEnabled: true,
 };
 
 /** Clave de la tabla `settings` por cada campo tipado. */
@@ -35,4 +44,7 @@ export const SETTINGS_KEYS: Readonly<Record<keyof Settings, string>> = {
   ollamaModel: 'ollama_model',
   lastBackupAt: 'last_backup_at',
   weekStartsOn: 'week_starts_on',
+  monthMode: 'month_mode',
+  monthStartDay: 'month_start_day',
+  notificationsEnabled: 'notifications_enabled',
 };

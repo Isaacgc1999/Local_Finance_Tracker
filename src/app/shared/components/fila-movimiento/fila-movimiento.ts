@@ -5,27 +5,29 @@ import { formatMoney } from '../../../core/format/money-format';
 import type { Category } from '../../../core/types/category';
 import {
   EVENT_AMOUNT_COLOR,
+  EVENT_SOURCE_LABEL,
   EVENT_TYPE_LABEL,
   type Event,
   NATURE_LABEL,
   initialsOf,
-  isOutflow,
 } from '../../../core/types/event';
 
 export type FilaEstado = 'normal' | 'activo' | 'deshabilitada' | 'error';
 
 /**
  * Fila de movimiento (hoja de componentes): avatar de 32px con iniciales
- * sobre el color semántico al 12 %, concepto 15/500, meta 13/400 y importe
- * tabular a la derecha coloreado por tipo. Estados normal / hover / activo /
- * foco / deshabilitada / error.
+ * sobre el tono de su tipo al 12 % (seis colores, uno por tipo), concepto
+ * 15/500 con las pastillas de tipo y origen (Manual / Importado /
+ * Recurrente), meta 13/400 e importe tabular a la derecha: verde con «+» lo
+ * que entra, rojo con «−» todo lo que sale. Estados normal / hover / activo
+ * / foco / deshabilitada / error.
  */
 @Component({
   selector: 'ft-fila-movimiento',
   templateUrl: './fila-movimiento.html',
   styleUrl: './fila-movimiento.scss',
   host: {
-    '[class]': '"estado-" + estado() + " color-" + color()',
+    '[class]': '"estado-" + estado() + " color-" + color() + " tipo-" + event().type',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -39,6 +41,8 @@ export class FilaMovimiento {
 
   protected readonly iniciales = computed(() => initialsOf(this.event().concept));
   protected readonly color = computed(() => EVENT_AMOUNT_COLOR[this.event().type]);
+  protected readonly tipo = computed(() => EVENT_TYPE_LABEL[this.event().type]);
+  protected readonly origen = computed(() => EVENT_SOURCE_LABEL[this.event().source]);
 
   protected readonly meta = computed(() => {
     if (this.estado() === 'error' && this.errorTexto()) return this.errorTexto();
@@ -61,8 +65,7 @@ export class FilaMovimiento {
   protected readonly importe = computed(() => {
     const e = this.event();
     if (e.type === 'income') return formatMoney(e.amountCents, { sign: 'always' });
-    if (isOutflow(e.type)) return formatMoney((-e.amountCents) as typeof e.amountCents);
-    return formatMoney(e.amountCents);
+    return formatMoney((-e.amountCents) as typeof e.amountCents);
   });
 
   protected onClick(): void {

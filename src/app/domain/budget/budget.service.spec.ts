@@ -21,6 +21,8 @@ function ev(type: EventType, cents: number, date: string, categoryId: string | n
     recurrenceId: null, accountId: null,
     meta: null,
     createdAt: '2026-01-01T00:00:00Z',
+    source: 'manual',
+    importBatch: null,
     updatedAt: '2026-01-01T00:00:00Z',
   };
 }

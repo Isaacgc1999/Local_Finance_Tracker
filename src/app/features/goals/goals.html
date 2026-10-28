@@ -1,0 +1,108 @@
+<ft-cabecera-pagina titulo="Objetivos" subtitulo="Ahorrar, comprar algo sin financiar, invertir: un importe, una fecha y cuánto apartar cada vez.">
+  <div acciones>
+    <button type="button" class="ft-btn ft-btn--primary" (click)="nuevo()"><span aria-hidden="true">+</span> Nuevo objetivo</button>
+  </div>
+</ft-cabecera-pagina>
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudieron cargar los objetivos" [texto]="errorTexto()" />
+} @else if (facade.loading() && facade.views().length === 0) {
+  <div class="ft-card"><ft-skeleton variant="fila" [rows]="3" /></div>
+} @else if (facade.views().length === 0) {
+  <ft-estado-vacio
+    titulo="Todavía no tienes objetivos"
+    texto="Un coche sin pagar intereses, el móvil nuevo, un colchón para el piso… Pon el importe y la fecha y Fintrack te dirá cuánto apartar al día, a la semana, al mes y al año."
+    accionLabel="Nuevo objetivo"
+    (accion)="nuevo()"
+  />
+} @else {
+  @let r = resumen();
+  @if (facade.active().length > 0) {
+    <section class="ft-card resumen" [class]="'ft-card resumen fit-' + r.fit">
+      <div class="resumen__cifras">
+        <div>
+          <span class="etiqueta">Ahorrado para tus objetivos</span>
+          <span class="cifra num">{{ r.ahorrado }} <span class="de">de {{ r.objetivo }}</span></span>
+        </div>
+        <div>
+          <span class="etiqueta">Necesitas al mes</span>
+          <span class="cifra num">{{ r.necesidad }}</span>
+        </div>
+        <div>
+          <span class="etiqueta">Ahorras de media</span>
+          <span class="cifra num">{{ r.capacidad }}</span>
+        </div>
+      </div>
+      <div class="barra" role="progressbar" [attr.aria-valuenow]="r.progreso" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="r.progreso"></span></div>
+      <p class="resumen__texto"><span class="semaforo" aria-hidden="true"></span>{{ r.texto }}</p>
+    </section>
+  }
+
+  <div class="objetivos">
+    @for (v of facade.active(); track v.goal.id) {
+      <article class="ft-card objetivo ft-enter" [style.--i]="$index" [style.--color]="v.goal.color">
+        <header class="objetivo__cabecera">
+          <span class="tipo">{{ kindLabel[v.goal.kind] }}</span>
+          <span class="salud" [class]="'salud salud--' + v.plan.health">{{ healthLabel[v.plan.health] }}</span>
+        </header>
+        <h2 class="objetivo__nombre">{{ v.goal.name }}</h2>
+        <div class="objetivo__importe num">
+          <strong>{{ money(v.plan.saved) }}</strong> de {{ money(v.goal.targetCents) }} · {{ pct(v) }}
+        </div>
+        <div class="barra" role="progressbar" [attr.aria-valuenow]="v.plan.progressBp / 100" aria-valuemin="0" aria-valuemax="100">
+          <span [style.width.%]="v.plan.progressBp / 100"></span>
+        </div>
+        <p class="objetivo__salud">{{ salud(v) }}</p>
+
+        <dl class="objetivo__tiempo">
+          <div><dt>Fecha objetivo</dt><dd class="num">{{ fecha(v) }}</dd></div>
+          <div><dt>Quedan</dt><dd class="num" [attr.title]="tiempoLargo(v)">{{ tiempo(v) }}</dd></div>
+          <div><dt>Faltan</dt><dd class="num">{{ money(v.plan.remaining) }}</dd></div>
+        </dl>
+
+        <div class="aportes" role="list" aria-label="Aporte necesario">
+          @for (f of frecuencias; track f) {
+            <div class="aporte" role="listitem" [class.aporte--ref]="f === v.goal.frequency">
+              <span class="aporte__label">{{ freqLabel[f] }}</span>
+              <span class="aporte__valor num">{{ money(v.plan.per[f]) }}</span>
+            </div>
+          }
+        </div>
+
+        <footer class="objetivo__acciones">
+          <button type="button" class="ft-btn ft-btn--primary ft-btn--compact" (click)="aportar(v)">Aportar</button>
+          <button type="button" class="ft-link" (click)="editar(v)">Editar</button>
+          @if (v.plan.health === 'achieved') {
+            <button type="button" class="ft-link" (click)="conseguido(v)">Marcar conseguido</button>
+          } @else {
+            <button type="button" class="ft-link apagado" (click)="archivar(v)">Archivar</button>
+          }
+        </footer>
+      </article>
+    }
+  </div>
+
+  @if (facade.closed().length > 0) {
+    <details class="ft-card cerrados">
+      <summary class="ft-card__title">Conseguidos y archivados ({{ facade.closed().length }})</summary>
+      <ul class="lista">
+        @for (v of facade.closed(); track v.goal.id) {
+          <li>
+            <span class="lista__nombre">{{ v.goal.status === 'achieved' ? '✓ ' : '' }}{{ v.goal.name }}</span>
+            <span class="lista__meta num">{{ money(v.plan.saved) }} de {{ money(v.goal.targetCents) }}</span>
+            <button type="button" class="ft-link" (click)="reactivar(v)">Reactivar</button>
+            <button type="button" class="ft-link" (click)="editar(v)">Editar</button>
+          </li>
+        }
+      </ul>
+    </details>
+  }
+}
+
+<ft-modal-objetivo [(abierto)]="modalObjetivo" [objetivo]="enEdicion()" [ahorrado]="ahorradoEdicion()" />
+<ft-modal-aportar
+  [(abierto)]="modalAportar"
+  [nombre]="aportarA()?.goal?.name ?? ''"
+  [sugerido]="aportarA() ? aportarA()!.plan.per[aportarA()!.goal.frequency] : null"
+  (guardar)="guardarAportacion($event)"
+/>

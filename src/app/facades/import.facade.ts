@@ -1,7 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { type AppError, type ValidationError, describeError, messageOf } from '../core/errors/app-error';
-import { activeCurrency } from '../core/format/money-format';
+import { activeCurrency, formatMoney } from '../core/format/money-format';
+import { uuidV7 } from '../core/ids/uuid-v7';
+import type { IsoDate } from '../core/types/iso-date';
+import { type Money, money } from '../core/types/money';
 import type { Account } from '../core/types/account';
 import type { Category } from '../core/types/category';
 import { DbConnection } from '../data/db/db-connection';
@@ -25,6 +28,23 @@ import { AppStatusFacade } from './app-status.facade';
 
 export type ImportStep = 'file' | 'review' | 'done';
 
+/** Resumen de una importación terminada (tarjeta final y aviso con «Deshacer»). */
+export interface ImportSummary {
+  readonly batchId: string;
+  readonly inserted: number;
+  readonly incomeCents: Money;
+  readonly outflowCents: Money;
+  readonly from: IsoDate | null;
+  readonly to: IsoDate | null;
+  readonly ruled: number;
+  readonly accountName: string | null;
+  /** `true` cuando se ha deshecho desde el aviso o la tarjeta. */
+  readonly undone: boolean;
+}
+
+/** Tiempo para «Deshacer» la importación desde el aviso. */
+const UNDO_IMPORT_MS = 10_000;
+
 /**
  * Importación de extractos: fichero → columnas (detectadas o a mano) →
  * vista previa con duplicados → guardado en bloque. Nada toca la base de
@@ -45,6 +65,7 @@ export class ImportFacade {
   private readonly busySig = signal(false);
   private readonly errorSig = signal<string | null>(null);
   private readonly insertedSig = signal<number | null>(null);
+  private readonly summarySig = signal<ImportSummary | null>(null);
 
   readonly expenseCategoryId = signal<string>(DEFAULT_IMPORT_CATEGORIES.expense);
   readonly incomeCategoryId = signal<string>(DEFAULT_IMPORT_CATEGORIES.income);
@@ -59,6 +80,7 @@ export class ImportFacade {
   readonly busy = this.busySig.asReadonly();
   readonly error = this.errorSig.asReadonly();
   readonly inserted = this.insertedSig.asReadonly();
+  readonly summary = this.summarySig.asReadonly();
 
   readonly step = computed<ImportStep>(() => (this.insertedSig() !== null ? 'done' : this.sheetSig() ? 'review' : 'file'));
   readonly mappingComplete = computed(() => isMappingComplete(this.mappingSig()));
@@ -105,11 +127,24 @@ export class ImportFacade {
     await this.loadLookups();
     await this.refreshPreview();
     this.busySig.set(false);
+    const rows = sheet.value.rows.filter((r) => r.length > 0).length;
+    if (detected) {
+      const counts = this.previewSig()?.counts;
+      const nuevos = counts ? ` · ${counts.new} nuevos` : '';
+      this.status.notify(`«${file.name}» leído y enlazado: columnas reconocidas${nuevos}.`, 'income');
+    } else {
+      this.status.notify(`«${file.name}» leído (${rows} filas). Indica qué columna es cada cosa.`);
+    }
   }
 
   async setMapping(patch: Partial<ColumnMapping>): Promise<void> {
+    const wasComplete = this.mappingComplete();
     this.mappingSig.update((m) => ({ ...m, ...patch }));
     await this.refreshPreview();
+    if (!wasComplete && this.mappingComplete() && this.previewSig()) {
+      const n = this.previewSig()?.rows.filter((r) => r.status !== 'invalid').length ?? 0;
+      this.status.notify(`Columnas enlazadas correctamente: ${n === 1 ? '1 fila válida' : `${n} filas válidas`}.`, 'income');
+    }
   }
 
   toggle(line: number): void {
@@ -136,20 +171,53 @@ export class ImportFacade {
       return;
     }
     this.busySig.set(true);
-    const result = await new StatementImportService(repos.value).commit(this.selectedRows(), {
+    const batchId = uuidV7();
+    const rows = this.selectedRows();
+    const result = await new StatementImportService(repos.value).commit(rows, {
       fileName: sheet.fileName,
       accountId: this.accountId(),
       expenseCategoryId: this.expenseCategoryId(),
       incomeCategoryId: this.incomeCategoryId(),
+      batchId,
     });
     this.busySig.set(false);
     if (!result.ok) {
       const e = result.error;
-      this.errorSig.set(isValidationList(e) ? e.map((v) => v.message).join(' ') : describeError(e));
+      const message = isValidationList(e) ? e.map((v) => v.message).join(' ') : describeError(e);
+      this.errorSig.set(message);
+      this.status.notify(`No se importó nada: ${message}`, 'expense');
       return;
     }
-    this.insertedSig.set(result.value.inserted);
-    if (result.value.inserted > 0) this.status.touch();
+    const inserted = result.value.inserted;
+    const summary = summarize(rows, batchId, inserted, this.accounts().find((a) => a.id === this.accountId())?.name ?? null);
+    this.summarySig.set(summary);
+    this.insertedSig.set(inserted);
+    if (inserted === 0) return;
+    this.status.touch();
+    const where = summary.accountName ? ` en «${summary.accountName}»` : '';
+    this.status.notify(
+      `${inserted === 1 ? 'Se importó 1 movimiento' : `Se importaron ${inserted} movimientos`}${where}: ${formatMoney(summary.incomeCents, { sign: 'always' })} / ${formatMoney(money(-summary.outflowCents))}.`,
+      'income',
+      { durationMs: UNDO_IMPORT_MS, action: { label: 'Deshacer', run: () => void this.undo() } },
+    );
+  }
+
+  /** Borra todo lo que entró con la última importación. */
+  async undo(): Promise<void> {
+    const summary = this.summarySig();
+    if (!summary || summary.undone) return;
+    const repos = this.db.require();
+    if (!repos.ok) return;
+    const deleted = await repos.value.events.deleteImportBatch(summary.batchId);
+    if (!deleted.ok) {
+      this.status.notify(describeError(deleted.error), 'expense');
+      return;
+    }
+    this.summarySig.set({ ...summary, undone: true });
+    this.status.touch();
+    this.status.notify(
+      deleted.value.deleted === 1 ? 'Importación deshecha: se quitó 1 movimiento.' : `Importación deshecha: se quitaron ${deleted.value.deleted} movimientos.`,
+    );
   }
 
   reset(): void {
@@ -160,6 +228,7 @@ export class ImportFacade {
     this.selectedSig.set(new Set());
     this.errorSig.set(null);
     this.insertedSig.set(null);
+    this.summarySig.set(null);
   }
 
   private async loadLookups(): Promise<void> {
@@ -198,6 +267,23 @@ export class ImportFacade {
     this.previewSig.set(preview.value);
     this.selectedSig.set(new Set(preview.value.rows.filter(selectedByDefault).map((r) => r.line)));
   }
+}
+
+function summarize(rows: readonly ImportRow[], batchId: string, inserted: number, accountName: string | null): ImportSummary {
+  let income = 0;
+  let outflow = 0;
+  let from: IsoDate | null = null;
+  let to: IsoDate | null = null;
+  let ruled = 0;
+  for (const r of rows) {
+    if (r.status === 'invalid' || r.signedCents === null || !r.date) continue;
+    if (r.signedCents > 0) income += r.signedCents;
+    else outflow -= r.signedCents;
+    if (!from || r.date < from) from = r.date;
+    if (!to || r.date > to) to = r.date;
+    if (r.categoryId) ruled++;
+  }
+  return { batchId, inserted, incomeCents: money(income), outflowCents: money(outflow), from, to, ruled, accountName, undone: false };
 }
 
 function firstNonEmptyRow(sheet: StatementSheet): number {

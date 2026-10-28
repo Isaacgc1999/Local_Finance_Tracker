@@ -25,6 +25,8 @@ function evento(id: string, concept: string): Event {
     accountId: null,
     meta: null,
     createdAt: '',
+    source: 'manual',
+    importBatch: null,
     updatedAt: '',
   };
 }
