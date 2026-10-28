@@ -44,7 +44,10 @@ export class NotificationsService {
     effect(() => {
       const ready = this.db.ready();
       const enabled = this.prefs.settings().notificationsEnabled;
-      untracked(() => (ready && enabled && !this.status.demo() ? this.schedule() : this.stop()));
+      untracked(() => {
+        if (ready && enabled && !this.status.demo()) this.schedule();
+        else this.stop();
+      });
     });
   }
 

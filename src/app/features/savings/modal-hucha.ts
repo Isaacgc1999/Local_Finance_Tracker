@@ -109,12 +109,18 @@ export class ModalHucha {
   }
 
   protected async guardar(): Promise<void> {
-    if (!this.nombre().trim()) return this.error.set('Ponle un nombre.');
+    if (!this.nombre().trim()) {
+      this.error.set('Ponle un nombre.');
+      return;
+    }
     const texto = this.metaTexto().trim();
     let meta = null;
     if (texto) {
       const parsed = parseMoney(texto);
-      if (!parsed.ok || parsed.value <= 0) return this.error.set('La meta no es un importe válido.');
+      if (!parsed.ok || parsed.value <= 0) {
+        this.error.set('La meta no es un importe válido.');
+        return;
+      }
       meta = money(parsed.value);
     }
     const actual = this.hucha();
@@ -127,7 +133,10 @@ export class ModalHucha {
   protected async borrar(): Promise<void> {
     const actual = this.hucha();
     if (!actual) return;
-    if (!this.confirmando()) return this.confirmando.set(true);
+    if (!this.confirmando()) {
+      this.confirmando.set(true);
+      return;
+    }
     const result = await this.facade.deletePot(actual.id);
     if (result.ok) this.abierto.set(false);
   }

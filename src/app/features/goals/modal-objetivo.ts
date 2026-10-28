@@ -109,12 +109,21 @@ export class ModalObjetivo {
 
   protected async guardar(): Promise<void> {
     const target = this.importe();
-    if (!target || target <= 0) return this.errorTexto.set('Escribe el importe del objetivo.');
+    if (!target || target <= 0) {
+      this.errorTexto.set('Escribe el importe del objetivo.');
+      return;
+    }
     const inicio = this.inicio();
     const fin = this.fin();
-    if (!isIsoDate(inicio) || !isIsoDate(fin)) return this.errorTexto.set('Revisa las fechas.');
+    if (!isIsoDate(inicio) || !isIsoDate(fin)) {
+      this.errorTexto.set('Revisa las fechas.');
+      return;
+    }
     const ya = this.edicion() ? ZERO : parseOptional(this.yaTexto());
-    if (!this.edicion() && this.yaTexto().trim() && ya === null) return this.errorTexto.set('Lo ya ahorrado no es un importe válido.');
+    if (!this.edicion() && this.yaTexto().trim() && ya === null) {
+      this.errorTexto.set('Lo ya ahorrado no es un importe válido.');
+      return;
+    }
     this.guardando.set(true);
     const datos = {
       name: this.nombre(),

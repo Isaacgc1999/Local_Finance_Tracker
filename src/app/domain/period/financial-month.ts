@@ -60,7 +60,7 @@ export class FinancialCalendar {
 
   constructor(config: MonthConfig = CALENDAR_MONTH, paydays: Iterable<IsoDate> = []) {
     this.config = config.mode === 'payday' ? { mode: 'payday', startDay: clampStartDay(config.startDay) } : CALENDAR_MONTH;
-    this.paydays = [...new Set(paydays)].sort();
+    this.paydays = [...new Set(paydays)].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
   }
 
   get isCalendar(): boolean {

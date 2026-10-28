@@ -65,10 +65,16 @@ export class ModalInversion {
   }
 
   protected async guardar(): Promise<void> {
-    if (!this.nombre().trim()) return this.error.set('Ponle un nombre.');
+    if (!this.nombre().trim()) {
+      this.error.set('Ponle un nombre.');
+      return;
+    }
     const unidadesTexto = this.unidades().trim().replace(/\./g, '').replace(',', '.');
     const units = unidadesTexto ? Number(unidadesTexto) : null;
-    if (units !== null && (!Number.isFinite(units) || units < 0)) return this.error.set('Las participaciones no son un número válido.');
+    if (units !== null && (!Number.isFinite(units) || units < 0)) {
+      this.error.set('Las participaciones no son un número válido.');
+      return;
+    }
     const datos = {
       name: this.nombre(),
       issuer: this.emisor().trim() || null,
@@ -85,12 +91,21 @@ export class ModalInversion {
         return;
       }
       const valor = parseMoney(this.valorTexto());
-      if (!valor.ok || valor.value < 0) return this.error.set('Escribe el valor de mercado actual.');
+      if (!valor.ok || valor.value < 0) {
+        this.error.set('Escribe el valor de mercado actual.');
+        return;
+      }
       const aportadoTxt = this.aportadoTexto().trim();
       const aportado = aportadoTxt ? parseMoney(aportadoTxt) : valor;
-      if (!aportado.ok || aportado.value < 0) return this.error.set('La cantidad invertida no es un importe válido.');
+      if (!aportado.ok || aportado.value < 0) {
+        this.error.set('La cantidad invertida no es un importe válido.');
+        return;
+      }
       const fecha = this.fecha();
-      if (!isIsoDate(fecha)) return this.error.set('Fecha no válida.');
+      if (!isIsoDate(fecha)) {
+        this.error.set('Fecha no válida.');
+        return;
+      }
       const color = FT_COLORS.series[this.facade.investments().length % FT_COLORS.series.length] ?? FT_COLORS.investment;
       const r = await this.facade.create({ ...datos, color, archived: false, sortOrder: this.facade.investments().length }, money(valor.value), money(aportado.value), fecha);
       if (r.ok) this.abierto.set(false);
@@ -109,7 +124,10 @@ export class ModalInversion {
   protected async borrar(): Promise<void> {
     const actual = this.inversion();
     if (!actual) return;
-    if (!this.confirmando()) return this.confirmando.set(true);
+    if (!this.confirmando()) {
+      this.confirmando.set(true);
+      return;
+    }
     const r = await this.facade.remove(actual.id);
     if (r.ok) this.abierto.set(false);
   }

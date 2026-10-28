@@ -25,6 +25,7 @@
 
   &--activa {
     border-color: var(--ft-accent);
+    background: var(--ft-accent-8);
   }
 }
 
@@ -377,10 +378,6 @@
 
 .zona--activa .zona__icono {
   transform: translateY(4px) scale(1.1);
-}
-
-.zona--activa {
-  background: var(--ft-accent-8);
 }
 
 .enlazado {

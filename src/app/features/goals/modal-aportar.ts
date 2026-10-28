@@ -87,9 +87,15 @@ export class ModalAportar {
 
   protected confirmar(): void {
     const parsed = parseMoney(this.texto());
-    if (!parsed.ok || parsed.value === 0) return this.error.set('Escribe un importe.');
+    if (!parsed.ok || parsed.value === 0) {
+      this.error.set('Escribe un importe.');
+      return;
+    }
     const fecha = this.fecha();
-    if (!isIsoDate(fecha)) return this.error.set('Fecha no válida.');
+    if (!isIsoDate(fecha)) {
+      this.error.set('Fecha no válida.');
+      return;
+    }
     const abs = Math.abs(parsed.value);
     this.guardar.emit({ amount: money(this.sentido() === 'in' ? abs : -abs), date: fecha, note: this.nota().trim() || null });
     this.abierto.set(false);

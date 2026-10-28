@@ -49,7 +49,7 @@ export class InvestmentsFacade {
     return this.valuationsSig()
       .filter((v) => v.investmentId === id)
       .slice()
-      .sort((a, b) => (a.date < b.date ? 1 : -1));
+      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   }
 
   constructor() {

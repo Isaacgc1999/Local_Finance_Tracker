@@ -49,7 +49,7 @@ export function buildPortfolio(investments: readonly Investment[], valuations: r
   const holdings: Holding[] = partial
     .map((h) => ({ ...h, weightBp: ratioBasisPoints(h.marketValue, marketValue) }))
     .sort((a, b) => b.marketValue - a.marketValue);
-  const stalest = holdings.filter((h) => h.lastUpdate).sort((a, b) => ((a.lastUpdate ?? '') < (b.lastUpdate ?? '') ? -1 : 1))[0] ?? null;
+  const stalest = holdings.filter((h) => h.lastUpdate).sort((a, b) => ((a.lastUpdate ?? '') < (b.lastUpdate ?? '') ? -1 : (a.lastUpdate ?? '') > (b.lastUpdate ?? '') ? 1 : 0))[0] ?? null;
   return {
     holdings,
     marketValue,

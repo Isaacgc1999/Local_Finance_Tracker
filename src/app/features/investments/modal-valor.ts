@@ -129,16 +129,28 @@ export class ModalValor {
     if (!h) return;
     const v = parseMoney(this.valorTexto());
     const a = parseMoney(this.aportadoTexto());
-    if (!v.ok || v.value < 0) return this.error.set('Escribe el valor de mercado.');
-    if (!a.ok || a.value < 0) return this.error.set('Escribe el dinero invertido.');
+    if (!v.ok || v.value < 0) {
+      this.error.set('Escribe el valor de mercado.');
+      return;
+    }
+    if (!a.ok || a.value < 0) {
+      this.error.set('Escribe el dinero invertido.');
+      return;
+    }
     const fecha = this.fecha();
-    if (!isIsoDate(fecha)) return this.error.set('Fecha no válida.');
+    if (!isIsoDate(fecha)) {
+      this.error.set('Fecha no válida.');
+      return;
+    }
     const r = await this.facade.updateValue(h.investment.id, money(v.value), money(a.value), fecha);
     if (r.ok) this.abierto.set(false);
   }
 
   protected async borrarValor(id: string): Promise<void> {
-    if (this.historial().length <= 1) return this.error.set('Es el único valor: para quitarla, borra la inversión.');
+    if (this.historial().length <= 1) {
+      this.error.set('Es el único valor: para quitarla, borra la inversión.');
+      return;
+    }
     await this.facade.deleteValuation(id);
   }
 }
