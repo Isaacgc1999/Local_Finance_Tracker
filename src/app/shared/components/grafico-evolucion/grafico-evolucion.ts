@@ -165,6 +165,7 @@ export class GraficoEvolucion {
         axisLine: { lineStyle: { color: FT_COLORS.border } },
         axisTick: { show: false },
         axisLabel: { color: FT_COLORS.text3, fontFamily: chartFont(), fontSize: 12 },
+        axisLabel: { color: FT_COLORS.text3, fontFamily: chartFont(), fontSize: 12 },
       },
       yAxis: {
         type: 'value',
@@ -172,6 +173,7 @@ export class GraficoEvolucion {
         splitLine: { lineStyle: { color: FT_COLORS.border, type: 'dashed' } },
         axisLabel: {
           color: FT_COLORS.text3,
+          fontFamily: chartFont(),
           fontFamily: chartFont(),
           fontSize: 12,
           formatter: (v: number) => compacto(v),

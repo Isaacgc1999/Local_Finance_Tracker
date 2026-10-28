@@ -29,6 +29,10 @@ export interface ChartPalette {
   readonly directDebit: string;
   /** Colores para series de varias huchas o inversiones, en orden. */
   readonly series: readonly string[];
+  readonly subscription: string;
+  readonly directDebit: string;
+  /** Colores para series de varias huchas o inversiones, en orden. */
+  readonly series: readonly string[];
   /** Rampa del donut de tipos de gasto (fijo, variable, ocio, suscripciones). */
   readonly expenseRamp: readonly [string, string, string, string];
   readonly font: string;
@@ -97,6 +101,15 @@ export const FT_COLORS: Omit<ChartPalette, 'font'> = {
   },
   get savings() {
     return paletteSig().savings;
+  },
+  get subscription() {
+    return paletteSig().subscription;
+  },
+  get directDebit() {
+    return paletteSig().directDebit;
+  },
+  get series() {
+    return paletteSig().series;
   },
   get subscription() {
     return paletteSig().subscription;

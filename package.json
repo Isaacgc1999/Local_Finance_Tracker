@@ -1,6 +1,6 @@
 {
   "name": "fintrack",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Fintrack — finanzas personales de escritorio, local y offline (Tauri v2 + Angular 21)",
   "private": true,
   "packageManager": "npm@10.9.8",
