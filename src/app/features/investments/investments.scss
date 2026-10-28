@@ -98,6 +98,22 @@
   color: var(--ft-savings);
 }
 
+.aviso--precios {
+  p {
+    margin: 0;
+  }
+
+  ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    color: var(--ft-text-2);
+  }
+}
+
+.posicion__fuente {
+  color: var(--ft-investment);
+}
+
 .posiciones {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

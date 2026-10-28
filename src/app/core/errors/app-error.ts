@@ -12,6 +12,7 @@ export type AppError =
       readonly message: string;
     }
   | { readonly kind: 'export'; readonly message: string }
+  | { readonly kind: 'prices'; readonly reason: 'not_found' | 'network' | 'http' | 'invalid'; readonly message: string }
   | { readonly kind: 'fs'; readonly message: string; readonly cause?: unknown }
   | { readonly kind: 'not_ready'; readonly message: string };
 
@@ -60,6 +61,7 @@ export function describeError(error: AppError): string {
     case 'fs':
     case 'export':
     case 'ollama':
+    case 'prices':
     case 'not_ready':
       return error.message;
     case 'not_found':

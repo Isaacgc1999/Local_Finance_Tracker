@@ -1,4 +1,9 @@
-<ft-cabecera-pagina titulo="Inversiones" subtitulo="Apunta el valor de cada inversión cuando lo mires en tu bróker; el gráfico se construye con esa historia.">
+<ft-cabecera-pagina titulo="Inversiones" subtitulo="Con ticker o ISIN y participaciones el valor se actualiza solo; lo demás lo apuntas a mano. El gráfico se construye con esa historia.">
+  @if (facade.canRefreshPrices()) {
+    <button acciones type="button" class="ft-btn ft-btn--secondary" [disabled]="facade.refreshing()" (click)="actualizarPrecios()">
+      {{ facade.refreshing() ? 'Actualizando…' : 'Actualizar precios' }}
+    </button>
+  }
   <button acciones type="button" class="ft-btn ft-btn--primary" (click)="nueva()"><span aria-hidden="true">+</span> Nueva inversión</button>
 </ft-cabecera-pagina>
 
@@ -39,6 +44,18 @@
         }
       </ul>
     }
+    @if (facade.refreshReport(); as r) {
+      @if (r.failed.length > 0) {
+        <div class="aviso aviso--precios" role="status">
+          <p>{{ r.failed.length === 1 ? 'Un precio no se pudo actualizar' : r.failed.length + ' precios no se pudieron actualizar' }}; se mantiene su último valor y puedes apuntarlo a mano.</p>
+          <ul>
+            @for (f of r.failed; track f.name) {
+              <li><strong>{{ f.name }}</strong>: {{ f.message }}</li>
+            }
+          </ul>
+        </div>
+      }
+    }
     @if (desfasadas() > 0) {
       <p class="aviso">{{ desfasadas() === 1 ? 'Una inversión lleva' : desfasadas() + ' inversiones llevan' }} más de 30 días sin actualizar.</p>
     }
@@ -68,6 +85,9 @@
               }
               @if (h.investment.ticker) {
                 · <span class="num">{{ h.investment.ticker }}</span>
+              }
+              @if (fuente(h.investment); as f) {
+                · <span class="posicion__fuente" [title]="'Precio de ' + f">Precio auto</span>
               }
             </span>
           </div>
@@ -118,7 +138,10 @@
     </details>
   }
 
-  <p class="nota">Los valores se actualizan a mano. La actualización automática de precios está pendiente de decidir qué fuente usar.</p>
+  <p class="nota">
+    Precios: CoinGecko para cripto y Yahoo Finance (beta, no oficial: puede fallar sin aviso) para fondos, ETF y acciones. Se actualizan una vez al
+    día al abrir la app y solo se envía el ticker o ISIN, nunca tus importes. Planes de pensiones y depósitos siguen siendo manuales.
+  </p>
 }
 
 <ft-modal-inversion [(abierto)]="modalInversion" [inversion]="enEdicion()" />

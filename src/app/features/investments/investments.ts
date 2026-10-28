@@ -8,6 +8,7 @@ import { HOLDING_CLASS_LABEL, type HoldingClass, type Investment } from '../../c
 import { daysBetween } from '../../core/types/iso-date';
 import type { Money } from '../../core/types/money';
 import type { Holding } from '../../domain/investments/portfolio';
+import { PRICE_SOURCE_LABEL, pricePlanOf } from '../../domain/investments/price-refresh';
 import { InvestmentsFacade } from '../../facades/investments.facade';
 import { CabeceraPagina } from '../../layout/cabecera-pagina/cabecera-pagina';
 import { FT_COLORS } from '../../shared/charts/palette';
@@ -21,7 +22,7 @@ import { ModalValor } from './modal-valor';
 const STALE_DAYS = 30;
 
 /**
- * Inversiones con valor actualizado a mano: total, rentabilidad, reparto
+ * Inversiones con valor a mano o por precio de mercado: total, rentabilidad, reparto
  * por tipo, evolución del valor frente a lo invertido y cada posición con
  * su peso y la fecha de su último valor.
  */
@@ -97,6 +98,16 @@ export class Investments {
     if (!h.latest || !h.previous) return null;
     const ganancia = h.latest.marketValueCents - h.latest.investedCents - (h.previous.marketValueCents - h.previous.investedCents);
     return ganancia as Money;
+  }
+
+  /** Fuente del precio automático de la posición, o `null` si va a mano. */
+  protected fuente(i: Investment): string | null {
+    const plan = pricePlanOf(i);
+    return plan.ok ? PRICE_SOURCE_LABEL[plan.target.source] : null;
+  }
+
+  protected actualizarPrecios(): void {
+    void this.facade.refreshPrices();
   }
 
   protected nueva(): void {
