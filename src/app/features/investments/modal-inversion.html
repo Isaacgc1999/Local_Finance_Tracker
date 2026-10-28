@@ -1,4 +1,4 @@
-<ft-modal [(open)]="abierto" [ancho]="640" [titulo]="titulo()" subtitulo="Fondos, ETF, acciones, cripto, planes de pensiones… El valor lo actualizas cuando quieras." (cerrar)="abierto.set(false)">
+<ft-modal [(open)]="abierto" [ancho]="640" [titulo]="titulo()" subtitulo="Fondos, ETF, acciones, cripto, planes de pensiones… El valor se actualiza solo con su precio o a mano." (cerrar)="abierto.set(false)">
   <label class="ft-field">
     <span class="ft-field__label">Nombre</span>
     <input class="ft-input" maxlength="80" placeholder="Vanguard Global Stock Index" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
@@ -20,13 +20,14 @@
   <div class="fila-2">
     <label class="ft-field">
       <span class="ft-field__label">Ticker o ISIN<span class="ft-field__label-hint"> · opcional</span></span>
-      <input class="ft-input" maxlength="20" placeholder="IE00B03HD191 · IWDA.AS" [value]="ticker()" (input)="ticker.set($any($event.target).value)" />
+      <input class="ft-input" maxlength="20" placeholder="IWDA.AS · IE00B4L5Y983 · BTC" [value]="ticker()" (input)="ticker.set($any($event.target).value)" />
     </label>
     <label class="ft-field">
       <span class="ft-field__label">Participaciones<span class="ft-field__label-hint"> · opcional</span></span>
       <input class="ft-input num" inputmode="decimal" placeholder="12,4532" [value]="unidades()" (input)="unidades.set($any($event.target).value)" />
     </label>
   </div>
+  <p class="pista">Con ticker o ISIN y participaciones, el valor se calcula solo con el precio de mercado (cripto: símbolo como «BTC»). Planes de pensiones y depósitos van siempre a mano.</p>
 
   @if (!edicion()) {
     <div class="fila-3">

@@ -1,5 +1,6 @@
 import type { DateFormat } from '../format/date-format';
 import type { Currency } from '../format/money-format';
+import type { IsoDate } from './iso-date';
 
 /**
  * Ajustes simples del usuario (tabla clave-valor `settings`). Los
@@ -22,6 +23,8 @@ export interface Settings {
   readonly monthStartDay: number;
   /** Avisos del sistema operativo (cargos de mañana, presupuesto, objetivos…). */
   readonly notificationsEnabled: boolean;
+  /** Último día en que se actualizaron los precios de las inversiones solo (una vez al día al abrir). */
+  readonly pricesRefreshedOn: IsoDate | null;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -34,6 +37,7 @@ export const DEFAULT_SETTINGS: Settings = {
   monthMode: 'calendar',
   monthStartDay: 28,
   notificationsEnabled: true,
+  pricesRefreshedOn: null,
 };
 
 /** Clave de la tabla `settings` por cada campo tipado. */
@@ -47,4 +51,5 @@ export const SETTINGS_KEYS: Readonly<Record<keyof Settings, string>> = {
   monthMode: 'month_mode',
   monthStartDay: 'month_start_day',
   notificationsEnabled: 'notifications_enabled',
+  pricesRefreshedOn: 'prices_refreshed_on',
 };

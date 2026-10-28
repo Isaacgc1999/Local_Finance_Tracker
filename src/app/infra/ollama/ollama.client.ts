@@ -8,7 +8,8 @@ import { isTauri } from '../fs/db-location';
  * sin CORS y con el scope limitado a localhost:11434 en las capabilities);
  * fuera, el `fetch` del navegador para poder probar en el modo demo.
  *
- * Es la ÚNICA salida de red de toda la aplicación.
+ * Junto con `infra/prices` (precios de Inversiones), es la única salida de
+ * red de la aplicación.
  */
 
 export interface OllamaStats {
