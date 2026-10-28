@@ -188,6 +188,8 @@ export interface ImportCommitOptions {
   readonly accountId: string | null;
   readonly expenseCategoryId: string;
   readonly incomeCategoryId: string;
+  /** Identificador de esta importación, para poder deshacerla entera. */
+  readonly batchId?: string;
 }
 
 export const DEFAULT_IMPORT_CATEGORIES = {
@@ -211,6 +213,8 @@ export function toDraft(row: ImportRow, options: ImportCommitOptions): EventDraf
     recurrenceId: null,
     accountId: options.accountId ?? null,
     meta: expense ? { type: 'expense' } : { type: 'income' },
+    source: 'import',
+    importBatch: options.batchId ?? null,
   };
 }
 

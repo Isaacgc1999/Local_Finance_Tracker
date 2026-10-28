@@ -1,0 +1,101 @@
+<ft-cabecera-pagina titulo="Ahorros" subtitulo="Lo que tienes apartado, por tipo. Los movimientos de tipo ahorro suman solos en su hucha.">
+  <div acciones class="acciones">
+    <a routerLink="/goals" class="ft-btn ft-btn--secondary">Objetivos</a>
+    <button type="button" class="ft-btn ft-btn--primary" (click)="nueva()"><span aria-hidden="true">+</span> Nueva hucha</button>
+  </div>
+</ft-cabecera-pagina>
+
+@if (facade.error()) {
+  <ft-tarjeta-error titulo="No se pudieron cargar los ahorros" [texto]="errorTexto()" />
+} @else if (facade.loading() && facade.views().length === 0) {
+  <div class="ft-card"><ft-skeleton variant="fila" [rows]="3" /></div>
+} @else {
+  <section class="ft-card total">
+    <span class="total__etiqueta">Total ahorrado</span>
+    <span class="total__cifra num">{{ total() }}</span>
+    <span class="total__meta num" [class.ft-c-income]="variacion() > 0" [class.ft-c-expense]="variacion() < 0">{{ signed(variacion()) }} en los últimos 30 días</span>
+    @if (facade.total() > 0) {
+      <div class="reparto" aria-hidden="true">
+        @for (r of reparto(); track r.kind) {
+          @if (r.pct > 0) {
+            <span [style.width.%]="r.pct" [style.background]="r.color"></span>
+          }
+        }
+      </div>
+      <ul class="leyenda">
+        @for (r of reparto(); track r.kind) {
+          <li><span class="punto" [style.background]="r.color"></span>{{ r.label }} <strong class="num">{{ r.total }}</strong></li>
+        }
+      </ul>
+    }
+  </section>
+
+  <ft-grafico-evolucion
+    titulo="Evolución de tus ahorros"
+    label="Ahorrado"
+    [color]="color"
+    [points]="facade.evolution()"
+    [(granularity)]="facade.granularity"
+    textoVacio="Cuando apuntes tu primer ahorro verás aquí cómo crece."
+  />
+
+  @for (g of facade.groups(); track g.kind) {
+    <section class="grupo">
+      <header class="grupo__cabecera">
+        <div>
+          <h2 class="grupo__titulo">{{ kindLabel[g.kind] }}</h2>
+          <p class="grupo__hint">{{ kindHint[g.kind] }}</p>
+        </div>
+        <span class="grupo__total num">{{ money(g.total) }}</span>
+      </header>
+      <div class="huchas">
+        @for (v of g.pots; track v.pot.id) {
+          <article class="ft-card hucha" [style.--color]="v.pot.color">
+            <header class="hucha__cabecera">
+              <span class="punto" aria-hidden="true"></span>
+              <span class="hucha__nombre">{{ v.pot.name }}</span>
+              <span class="hucha__peso num">{{ pct(v.shareBp) }}</span>
+            </header>
+            <span class="hucha__saldo num" [class.ft-c-expense]="v.balance < 0">{{ money(v.balance) }}</span>
+            @if (v.pot.targetCents) {
+              <div class="barra"><span [style.width.%]="(v.progressBp ?? 0) / 100"></span></div>
+              <span class="hucha__meta num">{{ pct(v.progressBp) }} de {{ money(v.pot.targetCents) }}</span>
+            }
+            @if (cobertura(v); as c) {
+              <span class="hucha__meta">{{ c }}</span>
+            }
+            @if (v.flows.length > 0) {
+              <ul class="flujos">
+                @for (f of v.flows; track f.refId) {
+                  <li>
+                    <span class="flujos__texto">{{ flujo(f) }}</span>
+                    <span class="num" [class.ft-c-income]="f.amount > 0" [class.ft-c-expense]="f.amount < 0">{{ signed(f.amount) }}</span>
+                  </li>
+                }
+              </ul>
+            }
+            <footer class="hucha__acciones">
+              <button type="button" class="ft-btn ft-btn--secondary ft-btn--compact" (click)="aportar(v)">Aportar / retirar</button>
+              @if (v.goal) {
+                <a routerLink="/goals" class="ft-link">Ver objetivo</a>
+              } @else {
+                <button type="button" class="ft-link" (click)="editar(v)">Editar</button>
+              }
+            </footer>
+          </article>
+        } @empty {
+          <p class="vacio">
+            @if (g.kind === 'goal') {
+              Cada objetivo que crees en <a routerLink="/goals" class="ft-link">Objetivos</a> tendrá aquí su hucha.
+            } @else {
+              Sin huchas de este tipo.
+            }
+          </p>
+        }
+      </div>
+    </section>
+  }
+}
+
+<ft-modal-aportar [(abierto)]="modalAportar" [nombre]="aportarA()?.pot?.name ?? ''" (guardar)="guardarAportacion($event)" />
+<ft-modal-hucha [(abierto)]="modalHucha" [hucha]="enEdicion()" />

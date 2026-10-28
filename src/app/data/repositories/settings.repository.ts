@@ -1,3 +1,4 @@
+import { isIsoDate } from '../../core/types/iso-date';
 import { type Result, ok } from '../../core/types/result';
 import { DEFAULT_SETTINGS, SETTINGS_KEYS, type Settings } from '../../core/types/settings';
 import { type DatabaseHandle, stmt } from '../db/database';
@@ -18,6 +19,16 @@ const CODECS: { readonly [K in keyof Settings]: { decode(raw: string): Settings[
   ollamaModel: { decode: (raw) => (raw.trim() ? raw.trim() : undefined), encode: (v) => v },
   lastBackupAt: { decode: (raw) => (raw === '' ? null : raw), encode: (v) => v ?? '' },
   weekStartsOn: { decode: (raw) => (raw === '1' ? 1 : undefined), encode: (v) => String(v) },
+  monthMode: { decode: (raw) => (raw === 'calendar' || raw === 'payday' ? raw : undefined), encode: (v) => v },
+  monthStartDay: {
+    decode: (raw) => {
+      const n = Number(raw);
+      return Number.isInteger(n) && n >= 1 && n <= 28 ? n : undefined;
+    },
+    encode: (v) => String(v),
+  },
+  notificationsEnabled: { decode: (raw) => (raw === '1' ? true : raw === '0' ? false : undefined), encode: (v) => (v ? '1' : '0') },
+  pricesRefreshedOn: { decode: (raw) => (raw === '' ? null : isIsoDate(raw) ? raw : undefined), encode: (v) => v ?? '' },
 };
 
 export class SettingsRepository {

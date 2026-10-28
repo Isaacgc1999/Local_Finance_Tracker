@@ -1,6 +1,6 @@
 # Fintrack
 
-A desktop personal finance application for a single user. **Local and offline**: no accounts, no cloud, no telemetry. Data is stored in a SQLite file on your computer. The only network request the app can make is to Ollama at `localhost:11434` for the weekly report.
+A desktop personal finance application for a single user. **Local and offline**: no accounts, no cloud, no telemetry. Data is stored in a SQLite file on your computer. The app makes only two kinds of network requests: to Ollama at `localhost:11434` for the weekly report, and, for the Investments section, to CoinGecko (crypto) and Yahoo Finance (stocks, ETFs and funds; unofficial, beta) to fetch prices. Only tickers or ISINs are sent, never amounts. Positions without a ticker, or with no units, stay manual.
 
 * Shell: [Tauri v2](https://v2.tauri.app) (system webview, binary only a few MB)
 * UI: Angular 21 LTS, standalone, zoneless, signals

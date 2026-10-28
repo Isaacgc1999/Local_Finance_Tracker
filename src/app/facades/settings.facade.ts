@@ -371,6 +371,20 @@ export class SettingsFacade {
     return this.write('currency', currency);
   }
 
+  // ── Mes y avisos ─────────────────────────────────────────────────────
+
+  async setMonthMode(mode: Settings['monthMode']): Promise<Result<void>> {
+    return this.write('monthMode', mode);
+  }
+
+  async setMonthStartDay(day: number): Promise<Result<void>> {
+    return this.write('monthStartDay', Math.min(28, Math.max(1, Math.round(day))));
+  }
+
+  async setNotificationsEnabled(enabled: boolean): Promise<Result<void>> {
+    return this.write('notificationsEnabled', enabled);
+  }
+
   // ── Interno ──────────────────────────────────────────────────────────
 
   private async write<K extends keyof Settings>(field: K, value: Settings[K]): Promise<Result<void>> {

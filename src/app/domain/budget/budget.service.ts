@@ -12,11 +12,10 @@ import { type Event, isOutflow } from '../../core/types/event';
 import {
   type DateRange,
   type IsoDate,
-  day,
-  daysInMonth,
+  daysBetween,
+  endOfMonth,
   isBetween,
   month,
-  monthKey,
   startOfMonth,
   year,
 } from '../../core/types/iso-date';
@@ -29,6 +28,11 @@ export interface BudgetPaceInput {
   readonly budgetTarget: Money;
   readonly monthStart: IsoDate;
   readonly today: IsoDate;
+  /**
+   * Fechas reales del mes cuando no es el natural (mes de nómina: 28 oct –
+   * 27 nov). Sin él, el mes natural de `monthStart`.
+   */
+  readonly period?: DateRange;
 }
 
 export interface BudgetPace {
@@ -56,11 +60,12 @@ export interface BudgetPace {
 export function computeBudgetPace(input: BudgetPaceInput): BudgetPace {
   const { outflow, income, budgetTarget, today } = input;
   const monthStart = startOfMonth(input.monthStart);
-  const dim = daysInMonth(year(monthStart), month(monthStart));
+  const period = input.period ?? { from: monthStart, to: endOfMonth(monthStart) };
+  const dim = daysBetween(period.from, period.to) + 1;
 
-  const sameMonth = monthKey(today) === monthKey(monthStart);
-  const isPast = monthStart < startOfMonth(today);
-  const dayOfMonth = sameMonth ? day(today) : isPast ? dim : 0;
+  const sameMonth = isBetween(today, period.from, period.to);
+  const isPast = period.to < today;
+  const dayOfMonth = sameMonth ? daysBetween(period.from, today) + 1 : isPast ? dim : 0;
 
   const base: BudgetPace['base'] = income > 0 ? 'income' : 'budget';
   const baseAmount = base === 'income' ? income : budgetTarget;

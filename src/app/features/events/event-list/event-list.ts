@@ -4,7 +4,8 @@ import { Router, RouterLink } from '@angular/router';
 import { describeError } from '../../../core/errors/app-error';
 import { formatMonthYear, formatWeekdayDayMonth } from '../../../core/format/date-format';
 import { formatMoney } from '../../../core/format/money-format';
-import { EVENT_TYPES, EVENT_TYPE_LABEL, type Event as FtEvent, type EventType } from '../../../core/types/event';
+import { EVENT_SOURCES, EVENT_SOURCE_LABEL, EVENT_TYPES, EVENT_TYPE_LABEL, type EventSource, type Event as FtEvent, type EventType } from '../../../core/types/event';
+import { type Money, negate } from '../../../core/types/money';
 import { type IsoDate, month, year } from '../../../core/types/iso-date';
 import { EventsFacade } from '../../../facades/events.facade';
 import { BreakpointService } from '../../../infra/platform/breakpoint.service';
@@ -37,7 +38,10 @@ export class EventList {
   private readonly router = inject(Router);
 
   protected readonly tipos: readonly MultiOption[] = EVENT_TYPES.map((t) => ({ value: t, label: EVENT_TYPE_LABEL[t] }));
+  protected readonly origenes: readonly MultiOption[] = EVENT_SOURCES.map((s) => ({ value: s, label: EVENT_SOURCE_LABEL[s] }));
   protected readonly modalCategoria = signal(false);
+  protected readonly entradas = computed(() => formatMoney(this.facade.flow().inflow, { sign: 'always' }));
+  protected readonly salidas = computed(() => formatMoney(negate(this.facade.flow().outflow) as Money));
 
   protected readonly seleccionLabel = computed(() => {
     const n = this.facade.selectedCount();
@@ -64,6 +68,10 @@ export class EventList {
 
   protected setTipos(values: readonly string[]): void {
     this.facade.types.set(values.filter((v): v is EventType => (EVENT_TYPES as readonly string[]).includes(v)));
+  }
+
+  protected setOrigenes(values: readonly string[]): void {
+    this.facade.sources.set(values.filter((v): v is EventSource => (EVENT_SOURCES as readonly string[]).includes(v)));
   }
 
   protected onSearch(event: Event): void {

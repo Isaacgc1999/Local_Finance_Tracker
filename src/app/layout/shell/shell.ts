@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  Injector,
   ElementRef,
   afterNextRender,
   computed,
@@ -90,6 +91,15 @@ export class Shell {
       )
       .subscribe(() => this.rutaData.set(this.leerRutaData()));
 
+    // Avisos del sistema en su propio chunk (arrastran objetivos e
+    // inversiones): no pesan en el arranque y se activan solos cuando la base
+    // de datos está lista.
+    const injector = inject(Injector);
+    let destroyed = false;
+    this.destroyRef.onDestroy(() => (destroyed = true));
+    void import('../../infra/platform/notifications.service').then((m) => {
+      if (!destroyed) injector.get(m.NotificationsService);
+    });
     void this.status.start();
   }
 

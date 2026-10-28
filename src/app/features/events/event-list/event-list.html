@@ -1,6 +1,6 @@
 <ft-cabecera-pagina>
   <div inicio class="inicio">
-    <ft-selector-mes [(value)]="facade.month" [compacto]="!bp.isDesktop()" />
+    <ft-selector-mes [(value)]="facade.month" [compacto]="!bp.isDesktop()" [actual]="facade.currentMonth()" [rango]="facade.rangeLabel()" />
   </div>
   <div acciones class="acciones">
     <a routerLink="/events/import" class="ft-btn ft-btn--secondary">{{ bp.isMobile() ? 'Importar' : 'Importar extracto' }}</a>
@@ -16,10 +16,16 @@
     <input class="ft-input" type="search" placeholder="Buscar por concepto…" [value]="facade.search()" (input)="onSearch($event)" />
   </label>
   <ft-popover-multiseleccion label="Tipos" [options]="tipos" [selected]="facade.types()" (selectedChange)="setTipos($event)" />
+  <ft-popover-multiseleccion label="Origen" [options]="origenes" [selected]="facade.sources()" (selectedChange)="setOrigenes($event)" />
   @if (facade.hasFilters()) {
     <button type="button" class="ft-link" (click)="facade.clearFilters()">Limpiar</button>
   }
-  <span class="resumen num">{{ resumen() }}</span>
+  <span class="resumen num">
+    {{ resumen() }}
+    @if (facade.total() > 0) {
+      · <span class="ft-c-income">{{ entradas() }}</span> · <span class="ft-c-expense">{{ salidas() }}</span>
+    }
+  </span>
   @if (!facade.selecting() && facade.total() > 0) {
     <button type="button" class="ft-link" (click)="facade.startSelecting()">Seleccionar</button>
   }

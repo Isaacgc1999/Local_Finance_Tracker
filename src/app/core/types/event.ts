@@ -34,7 +34,7 @@ export const EVENT_TYPE_LABEL_SHORT: Readonly<Record<EventType, string>> = {
 
 export type SemanticColor = 'income' | 'expense' | 'investment' | 'savings' | 'accent' | 'neutral';
 
-/** Color semántico cerrado del handoff por tipo (badge, importe, avatar). */
+/** Color semántico del handoff por tipo (formulario, KPI). */
 export const EVENT_TYPE_COLOR: Readonly<Record<EventType, SemanticColor>> = {
   expense: 'expense',
   income: 'income',
@@ -44,14 +44,17 @@ export const EVENT_TYPE_COLOR: Readonly<Record<EventType, SemanticColor>> = {
   investment: 'investment',
 };
 
-/** Color con el que se pinta el importe (las salidas siempre en rojo). */
+/**
+ * Color con el que se pinta el importe: verde lo que entra, rojo todo lo que
+ * sale de la cuenta (gasto, suscripción, domiciliación, ahorro e inversión).
+ */
 export const EVENT_AMOUNT_COLOR: Readonly<Record<EventType, SemanticColor>> = {
   expense: 'expense',
   income: 'income',
   subscription: 'expense',
   direct_debit: 'expense',
-  saving: 'savings',
-  investment: 'investment',
+  saving: 'expense',
+  investment: 'expense',
 };
 
 /** Tipos que restan del balance como gasto (excluye ahorro e inversión, que son traspasos). */
@@ -86,7 +89,13 @@ export type EventMeta =
   | { readonly type: 'income'; readonly source?: string }
   | { readonly type: 'subscription'; readonly service?: string }
   | { readonly type: 'direct_debit'; readonly issuer?: string }
-  | { readonly type: 'saving'; readonly account?: string; readonly goal?: string }
+  | {
+      readonly type: 'saving';
+      readonly account?: string;
+      readonly goal?: string;
+      /** Hucha de la sección Ahorros a la que va; sin ella cuenta como «Ahorro general». */
+      readonly potId?: string;
+    }
   | {
       readonly type: 'investment';
       readonly ticker: string;
@@ -112,13 +121,43 @@ export interface Event {
   /** Cuenta de la que sale o a la que entra el dinero; `null` = sin cuenta asignada. */
   readonly accountId: string | null;
   readonly meta: EventMeta | null;
+  /** De dónde viene: apuntado a mano, importado de un extracto o generado por una regla. */
+  readonly source: EventSource;
+  /** Importación a la que pertenece (para deshacerla entera); `null` si no es importado. */
+  readonly importBatch: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
 }
 
-export type EventDraft = Omit<Event, 'id' | 'createdAt' | 'updatedAt'>;
+/**
+ * Al crear, el origen es opcional: sin él, una fila con regla es
+ * «recurrence» y el resto «manual». Solo el importador lo pone a mano.
+ */
+export type EventDraft = Omit<Event, 'id' | 'createdAt' | 'updatedAt' | 'source' | 'importBatch'> & {
+  readonly source?: EventSource;
+  readonly importBatch?: string | null;
+};
 
-export type EventPatch = Partial<Omit<EventDraft, 'type'>>;
+export type EventPatch = Partial<Omit<EventDraft, 'type' | 'source' | 'importBatch'>>;
+
+export const EVENT_SOURCES = ['manual', 'import', 'recurrence'] as const;
+
+export type EventSource = (typeof EVENT_SOURCES)[number];
+
+export function isEventSource(value: unknown): value is EventSource {
+  return typeof value === 'string' && (EVENT_SOURCES as readonly string[]).includes(value);
+}
+
+export const EVENT_SOURCE_LABEL: Readonly<Record<EventSource, string>> = {
+  manual: 'Manual',
+  import: 'Importado',
+  recurrence: 'Recurrente',
+};
+
+/** Origen efectivo de un borrador que no lo indica. */
+export function sourceOfDraft(draft: EventDraft): EventSource {
+  return draft.source ?? (draft.recurrenceId ? 'recurrence' : 'manual');
+}
 
 /** Dos letras para el avatar de la fila («ME» de Mercadona, «NÓ» de Nómina). */
 export function initialsOf(concept: string): string {

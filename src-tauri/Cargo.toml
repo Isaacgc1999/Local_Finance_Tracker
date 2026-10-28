@@ -19,6 +19,7 @@ tauri = { version = "2", features = [] }
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
+tauri-plugin-notification = "2"
 # `unsafe-headers` permite quitar la cabecera Origin: Ollama responde 403 a
 # `Origin: http://tauri.localhost`, que es el origen de la webview en Windows.
 tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
@@ -33,3 +34,6 @@ lto = true
 opt-level = "s"
 panic = "abort"
 strip = true
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-single-instance = "2"

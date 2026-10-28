@@ -9,16 +9,28 @@
   z-index: var(--ft-z-sticky);
 }
 
+// Con nueve destinos no caben todos en 390px: la barra se desplaza en
+// horizontal (sin barra de scroll visible) y cada pestaña mantiene 64px.
 nav {
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
+  gap: 2px;
   padding: 0 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .tab {
-  min-width: var(--ft-touch-min);
+  flex: 0 0 auto;
+  min-width: 64px;
+  scroll-snap-align: start;
   min-height: var(--ft-touch-min);
   display: flex;
   flex-direction: column;

@@ -1,0 +1,64 @@
+<ft-modal [(open)]="abierto" [ancho]="640" [titulo]="titulo()" subtitulo="Fondos, ETF, acciones, cripto, planes de pensiones… El valor se actualiza solo con su precio o a mano." (cerrar)="abierto.set(false)">
+  <label class="ft-field">
+    <span class="ft-field__label">Nombre</span>
+    <input class="ft-input" maxlength="80" placeholder="Vanguard Global Stock Index" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
+  </label>
+  <div class="fila-2">
+    <label class="ft-field">
+      <span class="ft-field__label">Gestora o plataforma</span>
+      <input class="ft-input" maxlength="60" placeholder="Vanguard · MyInvestor" [value]="emisor()" (input)="emisor.set($any($event.target).value)" />
+    </label>
+    <label class="ft-field">
+      <span class="ft-field__label">Tipo</span>
+      <select class="ft-select" (change)="setClase($event)">
+        @for (c of clases; track c.value) {
+          <option [value]="c.value" [selected]="c.value === clase()">{{ c.label }}</option>
+        }
+      </select>
+    </label>
+  </div>
+  <div class="fila-2">
+    <label class="ft-field">
+      <span class="ft-field__label">Ticker o ISIN<span class="ft-field__label-hint"> · opcional</span></span>
+      <input class="ft-input" maxlength="20" placeholder="IWDA.AS · IE00B4L5Y983 · BTC" [value]="ticker()" (input)="ticker.set($any($event.target).value)" />
+    </label>
+    <label class="ft-field">
+      <span class="ft-field__label">Participaciones<span class="ft-field__label-hint"> · opcional</span></span>
+      <input class="ft-input num" inputmode="decimal" placeholder="12,4532" [value]="unidades()" (input)="unidades.set($any($event.target).value)" />
+    </label>
+  </div>
+  <p class="pista">Con ticker o ISIN y participaciones, el valor se calcula solo con el precio de mercado (cripto: símbolo como «BTC»). Planes de pensiones y depósitos van siempre a mano.</p>
+
+  @if (!edicion()) {
+    <div class="fila-3">
+      <label class="ft-field">
+        <span class="ft-field__label">Valor de mercado</span>
+        <input class="ft-input num" inputmode="decimal" placeholder="0,00" [value]="valorTexto()" (input)="valorTexto.set($any($event.target).value)" />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">Dinero invertido</span>
+        <input class="ft-input num" inputmode="decimal" placeholder="igual al valor" [value]="aportadoTexto()" (input)="aportadoTexto.set($any($event.target).value)" />
+      </label>
+      <label class="ft-field">
+        <span class="ft-field__label">A fecha de</span>
+        <input class="ft-input num" type="date" [value]="fecha()" (input)="fecha.set($any($event.target).value)" />
+      </label>
+    </div>
+    <p class="pista">«Dinero invertido» es lo que has puesto de tu bolsillo; la diferencia con el valor de mercado es lo que ganas o pierdes.</p>
+  }
+
+  @if (error()) {
+    <p class="confirmar">{{ error() }}</p>
+  } @else if (confirmando()) {
+    <p class="confirmar">Se borrará la inversión con toda su historia de valores. Si solo la has vendido, mejor archívala. Pulsa «Borrar» otra vez para confirmarlo.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" (click)="borrar()">Borrar</button>
+      <button type="button" class="ft-btn ft-btn--secondary" (click)="archivar()">{{ inversion()?.archived ? 'Recuperar' : 'Archivar' }}</button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="abierto.set(false)">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>

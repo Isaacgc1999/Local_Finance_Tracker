@@ -2,6 +2,19 @@
   <a acciones routerLink="/events" class="ft-btn ft-btn--secondary">Volver</a>
 </ft-cabecera-pagina>
 
+<ol class="pasos" aria-label="Pasos de la importación">
+  @for (paso of pasos(); track paso.n) {
+    <li class="paso" [class]="'paso paso--' + paso.estado" [attr.aria-current]="paso.estado === 'activo' ? 'step' : null">
+      <span class="paso__n num" aria-hidden="true">{{ paso.estado === 'hecho' ? '✓' : paso.n }}</span>
+      <span class="paso__label">{{ paso.label }}</span>
+    </li>
+  }
+</ol>
+
+@if (facade.busy()) {
+  <div class="progreso" role="progressbar" aria-label="Procesando el extracto"><span></span></div>
+}
+
 @if (facade.error(); as error) {
   <p class="aviso ft-card" role="alert">{{ error }}</p>
 }
@@ -16,7 +29,8 @@
       (drop)="onDrop($event)"
     >
       <input class="ft-sr-only" type="file" [accept]="accept" [disabled]="facade.busy()" (change)="onFile($event)" />
-      <span class="zona__titulo">{{ facade.busy() ? 'Leyendo…' : 'Arrastra el extracto o pulsa para buscarlo' }}</span>
+      <span class="zona__icono" aria-hidden="true">{{ arrastrando() ? '⤓' : '⇪' }}</span>
+      <span class="zona__titulo">{{ facade.busy() ? 'Leyendo el extracto…' : arrastrando() ? 'Suelta el fichero aquí' : 'Arrastra el extracto o pulsa para buscarlo' }}</span>
       <span class="zona__hint">CSV, XLSX, XLS u ODS · máx. 10 MB · Santander se reconoce solo</span>
     </label>
   }
@@ -57,8 +71,9 @@
           <p class="ft-field__error">Falta la fecha, el concepto o el importe (con signo, o cargo y abono).</p>
         }
       } @else {
-        <p class="nota">
-          {{ resumenColumnas() }}
+        <p class="nota enlazado">
+          <span class="enlazado__ok" aria-hidden="true">✓</span>
+          <span>Columnas enlazadas. {{ resumenColumnas() }}</span>
           <button type="button" class="ft-link" (click)="editarColumnas.set(true)">Cambiar</button>
         </p>
       }
@@ -170,14 +185,36 @@
   }
 
   @case ('done') {
-    <section class="ft-card bloque hecho">
-      <h2 class="ft-card__title">
-        {{ facade.inserted() === 1 ? 'Se importó 1 movimiento' : 'Se importaron ' + facade.inserted() + ' movimientos' }}
-      </h2>
-      <p class="nota">Llevan la categoría de tus reglas o la elegida por defecto, y la nota «Importado de {{ facade.sheet()?.fileName }}». En Movimientos puedes seleccionar varios y cambiarles la categoría de golpe.</p>
+    @let r = facade.summary();
+    <section class="ft-card bloque hecho" [class.hecho--deshecho]="r?.undone">
+      <div class="hecho__cabecera">
+        <span class="hecho__icono" aria-hidden="true">{{ r?.undone ? '↺' : '✓' }}</span>
+        <h2 class="ft-card__title">
+          @if (r?.undone) {
+            Importación deshecha
+          } @else {
+            {{ facade.inserted() === 1 ? 'Se importó 1 movimiento' : 'Se importaron ' + facade.inserted() + ' movimientos' }}
+          }
+        </h2>
+      </div>
+      @if (r && !r.undone && r.inserted > 0) {
+        <dl class="resumen-import">
+          <div><dt>Cuenta</dt><dd>{{ r.accountName ?? 'Sin cuenta' }}</dd></div>
+          <div><dt>Fechas</dt><dd class="num">{{ fecha(r.from) }} – {{ fecha(r.to) }}</dd></div>
+          <div><dt>Entradas</dt><dd class="num ft-c-income">{{ importe(r.incomeCents) }}</dd></div>
+          <div><dt>Salidas</dt><dd class="num ft-c-expense">{{ importe(-r.outflowCents) }}</dd></div>
+          <div><dt>Con categoría por regla</dt><dd class="num">{{ r.ruled }}</dd></div>
+        </dl>
+        <p class="nota">En Movimientos llevan la etiqueta <span class="etiqueta-import">Importado</span> y puedes filtrarlos por origen, seleccionar varios y cambiarles la categoría de golpe.</p>
+      } @else if (r?.undone) {
+        <p class="nota">Se han quitado todos los movimientos de este extracto. Puedes volver a importarlo cuando quieras.</p>
+      }
       <div class="hecho__acciones">
         <a routerLink="/events" class="ft-btn ft-btn--primary">Ver movimientos</a>
         <button type="button" class="ft-btn ft-btn--elevated" (click)="otroFichero()">Importar otro</button>
+        @if (r && !r.undone && r.inserted > 0) {
+          <button type="button" class="ft-link peligro" (click)="facade.undo()">Deshacer importación</button>
+        }
       </div>
     </section>
   }

@@ -3,7 +3,7 @@ import type { Event, EventDraft, EventType, Nature } from '../src/app/core/types
 import { type IsoDate, addDays, daysBetween, isoDate } from '../src/app/core/types/iso-date';
 import { money } from '../src/app/core/types/money';
 import { placeholders, stmt, type DatabaseHandle } from '../src/app/data/db/database';
-import { EVENT_COLUMNS, eventInsertParams } from '../src/app/data/mappers/event.mapper';
+import { EVENT_COLUMN_COUNT, EVENT_COLUMNS, eventInsertParams } from '../src/app/data/mappers/event.mapper';
 
 /** Generador pseudoaleatorio determinista (mulberry32). */
 export function rng(seed: number): () => number {
@@ -79,6 +79,8 @@ export function generateRandomEvents(n: number, seed = 1, from: IsoDate = isoDat
       accountId: null,
       meta: null,
       createdAt: '2026-01-01T00:00:00.000Z',
+      source: 'manual',
+      importBatch: null,
       updatedAt: '2026-01-01T00:00:00.000Z',
     });
   }
@@ -87,7 +89,7 @@ export function generateRandomEvents(n: number, seed = 1, from: IsoDate = isoDat
 
 /** Inserta los movimientos en lotes de 500 por transacción. */
 export async function seedEvents(db: DatabaseHandle, events: readonly Event[]): Promise<number> {
-  const sql = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(15)})`;
+  const sql = `INSERT INTO events (${EVENT_COLUMNS}) VALUES (${placeholders(EVENT_COLUMN_COUNT)})`;
   let inserted = 0;
   for (let i = 0; i < events.length; i += 500) {
     const batch = events.slice(i, i + 500);

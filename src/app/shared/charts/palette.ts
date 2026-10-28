@@ -43,9 +43,13 @@ export const FT_PRINT_COLORS: ChartPalette = {
   expense: '#F45B5B',
   investment: '#38BDF8',
   savings: '#FBBF24',
-  expenseRamp: ['#F45B5B', '#C24B4B', '#8F3A3A', '#5C2A2A'],
-  font: "'Inter', system-ui, sans-serif",
-};
+  subscription: '#A78BFA',
+  directDebit: '#FB923C',
+  /** Colores para series de varias huchas o inversiones, en orden. */
+  series: ['#38BDF8', '#A78BFA', '#22C55E', '#FBBF24', '#FB923C', '#F472B6', '#2DD4BF', '#6E56F8'] as const,
+  /** Rampa del donut de tipos de gasto (fijo, variable, ocio, suscripciones). */
+  expenseRamp: ['#F45B5B', '#C24B4B', '#8F3A3A', '#5C2A2A'] as const,
+} as const;
 
 const paletteSig = signal<ChartPalette>(FT_PRINT_COLORS);
 

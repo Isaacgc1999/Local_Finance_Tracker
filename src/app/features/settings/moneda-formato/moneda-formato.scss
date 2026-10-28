@@ -23,3 +23,18 @@
     height: var(--ft-control-h-mobile);
   }
 }
+
+.interruptor {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: var(--ft-font-label);
+  color: var(--ft-text-1);
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ft-accent);
+  }
+}

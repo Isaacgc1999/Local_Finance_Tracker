@@ -1,0 +1,75 @@
+<ft-modal [(open)]="abierto" [ancho]="640" [titulo]="titulo()" subtitulo="Ponle importe y fecha: el cálculo de abajo te dice cuánto apartar." (cerrar)="cerrar()">
+  <div class="ft-field">
+    <span class="ft-field__label">¿Para qué es?</span>
+    <ft-segmented-control layout="chips" tone="subtle" label="Tipo de objetivo" [options]="tipos" [value]="tipo()" (valueChange)="$event && tipo.set($event)" />
+  </div>
+
+  <label class="ft-field">
+    <span class="ft-field__label">Nombre</span>
+    <input class="ft-input" maxlength="60" [placeholder]="placeholder()" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
+  </label>
+
+  <div class="fila-2">
+    <label class="ft-field">
+      <span class="ft-field__label">Importe objetivo</span>
+      <input class="ft-input num" inputmode="decimal" placeholder="0,00" [value]="importeTexto()" (input)="importeTexto.set($any($event.target).value)" />
+    </label>
+    @if (!edicion()) {
+      <label class="ft-field">
+        <span class="ft-field__label">Ya ahorrado<span class="ft-field__label-hint"> · opcional</span></span>
+        <input class="ft-input num" inputmode="decimal" placeholder="0,00" [value]="yaTexto()" (input)="yaTexto.set($any($event.target).value)" />
+      </label>
+    }
+  </div>
+
+  <div class="fila-2">
+    <label class="ft-field">
+      <span class="ft-field__label">Desde</span>
+      <input class="ft-input num" type="date" [value]="inicio()" (input)="inicio.set($any($event.target).value)" />
+    </label>
+    <label class="ft-field">
+      <span class="ft-field__label">Fecha objetivo</span>
+      <input class="ft-input num" type="date" [value]="fin()" (input)="fin.set($any($event.target).value)" />
+    </label>
+  </div>
+
+  <div class="ft-field">
+    <span class="ft-field__label">Aporte de referencia</span>
+    <ft-segmented-control layout="stretch" tone="subtle" label="Frecuencia del aporte" [options]="frecuencias" [value]="frecuencia()" (valueChange)="$event && frecuencia.set($event)" />
+  </div>
+
+  @if (vista(); as v) {
+    <section class="calculo" aria-live="polite">
+      <p class="calculo__tiempo"><strong class="num">{{ v.tiempo }}</strong><span>{{ v.tiempoLargo }} · faltan {{ v.falta }}</span></p>
+      <div class="calculo__rejilla">
+        @for (fila of v.filas; track fila.f) {
+          <div class="calculo__celda" [class.activa]="fila.f === frecuencia()">
+            <span class="calculo__label">{{ fila.label }}</span>
+            <span class="calculo__valor num">{{ fila.valor }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  } @else {
+    <p class="pista">Escribe el importe y una fecha objetivo posterior al inicio para ver el cálculo.</p>
+  }
+
+  <label class="ft-field">
+    <span class="ft-field__label">Notas<span class="ft-field__label-hint"> · opcional</span></span>
+    <input class="ft-input" maxlength="200" placeholder="Precio al contado sin financiar, modelo…" [value]="notas()" (input)="notas.set($any($event.target).value)" />
+  </label>
+
+  @if (errorTexto()) {
+    <p class="confirmar">{{ errorTexto() }}</p>
+  } @else if (confirmandoBorrado()) {
+    <p class="confirmar">Se borrarán el objetivo y su hucha con todo lo apuntado. Pulsa «Borrar» otra vez para confirmarlo.</p>
+  }
+
+  <div acciones class="acciones">
+    @if (edicion()) {
+      <button type="button" class="ft-btn ft-btn--secondary borrar" [disabled]="guardando()" (click)="borrar()">Borrar</button>
+    }
+    <button type="button" class="ft-btn ft-btn--secondary" (click)="cerrar()">Cancelar</button>
+    <button type="button" class="ft-btn ft-btn--primary" [disabled]="guardando()" (click)="guardar()">Guardar</button>
+  </div>
+</ft-modal>
