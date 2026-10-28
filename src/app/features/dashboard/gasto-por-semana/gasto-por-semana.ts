@@ -8,7 +8,7 @@ import { BreakpointService } from '../../../infra/platform/breakpoint.service';
 import type { BarSeriesOption } from 'echarts/charts';
 
 import type { FtChartOption } from '../../../shared/charts/echarts';
-import { FT_COLORS, FT_FONT, FT_TOOLTIP, tooltipRow, tooltipTitle } from '../../../shared/charts/palette';
+import { FT_COLORS, FT_TOOLTIP, chartFont, tooltipRow, tooltipTitle } from '../../../shared/charts/palette';
 import { ChartDirective } from '../../../shared/directives/chart.directive';
 
 const RADIUS = 6;
@@ -30,7 +30,9 @@ export class GastoPorSemana {
   readonly weeks = input.required<readonly WeekStack[]>();
   private readonly bp = inject(BreakpointService);
 
-  protected readonly leyenda = EXPENSE_KINDS.map((k, i) => ({ label: EXPENSE_KIND_LABEL[k], color: FT_COLORS.expenseRamp[i] ?? FT_COLORS.expense }));
+  protected readonly leyenda = computed(() =>
+    EXPENSE_KINDS.map((k, i) => ({ label: EXPENSE_KIND_LABEL[k], color: FT_COLORS.expenseRamp[i] ?? FT_COLORS.expense })),
+  );
   protected readonly movil = this.bp.isMobile;
   protected readonly anchoMovil = computed(() => `${this.weeks().length * 88}px`);
 
@@ -64,7 +66,7 @@ export class GastoPorSemana {
                 distance: 8,
                 formatter: () => (this.bp.isDesktop() ? formatMoney(w.total) : formatAmount(w.total)),
                 color: FT_COLORS.text2,
-                fontFamily: FT_FONT,
+                fontFamily: chartFont(),
                 fontSize: 13,
               }
             : { show: false },
@@ -80,7 +82,7 @@ export class GastoPorSemana {
         data: weeks.map((w) => w.label),
         axisLine: { show: false },
         axisTick: { show: false },
-        axisLabel: { color: FT_COLORS.text3, fontFamily: FT_FONT, fontSize: 13, margin: 12 },
+        axisLabel: { color: FT_COLORS.text3, fontFamily: chartFont(), fontSize: 13, margin: 12 },
       },
       yAxis: { type: 'value', show: false, max: maxTotal * 1.12 },
       tooltip: {

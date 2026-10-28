@@ -4,7 +4,7 @@
     <span class="pista">desliza →</span>
   } @else {
     <div class="leyenda">
-      @for (item of leyenda; track item.label) {
+      @for (item of leyenda(); track item.label) {
         <span class="leyenda__item"><span class="leyenda__cuadro" [style.background]="item.color"></span>{{ item.label }}</span>
       }
     </div>

@@ -90,7 +90,7 @@ ft-avisos.sobre-tabbar {
 .velo {
   position: fixed;
   inset: 0;
-  background: rgba(10, 11, 13, 0.55);
+  background: var(--ft-scrim);
   z-index: calc(var(--ft-z-panel) - 1);
   animation: ft-fade var(--ft-dur-slow) linear;
 }

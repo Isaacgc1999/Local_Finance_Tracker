@@ -1,0 +1,397 @@
+// Temas de Fintrack (Ajustes → Apariencia, desde 2026-10-28).
+//
+// Dos ejes que se combinan: el modo (`data-modo`: oscuro / claro) y el estilo
+// (`data-estilo`: finance / cozy / minimal / gamer). `ThemeService` los pone en
+// <html>; el color de acento elegido a mano llega como `--ft-accent` en línea.
+//
+// Los selectores no van atados a :root a propósito: cualquier elemento con
+// ambos atributos se pinta con ese tema. Así funcionan las miniaturas de
+// vista previa de Ajustes sin duplicar valores.
+//
+// `:root` sin atributos sigue siendo finance oscuro (`_tokens.scss`), que es lo
+// que ve la app antes de leer la preferencia y lo que ven los tests.
+
+@use 'sass:map';
+
+// Colores que cada combinación estilo × modo tiene que definir. El mixin
+// `paleta` falla al compilar si falta alguno, para que ningún tema herede a
+// medias los colores de otro.
+$claves-color: (
+  bg,
+  surface,
+  surface-elevated,
+  border,
+  border-subtle,
+  border-hover,
+  text-1,
+  text-2,
+  text-3,
+  text-disabled,
+  accent,
+  accent-hover,
+  on-accent,
+  income,
+  expense,
+  investment,
+  savings,
+  on-investment,
+  expense-ramp-1,
+  expense-ramp-2,
+  expense-ramp-3,
+  expense-ramp-4,
+  scrim,
+  color-scheme
+);
+
+@mixin paleta($p) {
+  @each $clave in $claves-color {
+    @if not map.has-key($p, $clave) {
+      @error 'Falta el color «#{$clave}» en una paleta de _themes.scss';
+    }
+    --ft-#{$clave}: #{map.get($p, $clave)};
+  }
+}
+
+// Tokens que dependen de otros. Se redeclaran en cada elemento con tema para
+// que se resuelvan con sus colores y no con los heredados del <html>.
+@mixin derivados {
+  --ft-income-12: color-mix(in srgb, var(--ft-income) 12%, transparent);
+  --ft-expense-12: color-mix(in srgb, var(--ft-expense) 12%, transparent);
+  --ft-investment-12: color-mix(in srgb, var(--ft-investment) 12%, transparent);
+  --ft-savings-12: color-mix(in srgb, var(--ft-savings) 12%, transparent);
+  --ft-accent-12: color-mix(in srgb, var(--ft-accent) 12%, transparent);
+  --ft-accent-8: color-mix(in srgb, var(--ft-accent) 8%, transparent);
+  --ft-expense-8: color-mix(in srgb, var(--ft-expense) 8%, transparent);
+  --ft-accent-ring: color-mix(in srgb, var(--ft-accent) 20%, transparent);
+  --ft-focus-ring: 0 0 0 3px var(--ft-accent-ring);
+  --ft-skeleton-gradient: linear-gradient(
+    90deg,
+    var(--ft-surface-elevated) 25%,
+    var(--ft-border) 50%,
+    var(--ft-surface-elevated) 75%
+  );
+
+  --ft-font-display: 700 40px/1.1 var(--ft-font-heading-family);
+  --ft-font-title: 600 24px/1 var(--ft-font-heading-family);
+  --ft-font-label: 500 15px/1 var(--ft-font-family);
+  --ft-font-body: 400 15px/1.5 var(--ft-font-family);
+  --ft-font-meta: 400 13px/1 var(--ft-font-family);
+  --ft-font-meta-strong: 500 13px/1 var(--ft-font-family);
+  --ft-font-eyebrow: 500 13px/1 var(--ft-font-family);
+  --ft-font-key: 500 24px/1 var(--ft-font-heading-family);
+  --ft-font-logo: 700 16px/1 var(--ft-font-heading-family);
+}
+
+:root,
+[data-estilo] {
+  @include derivados;
+}
+
+[data-estilo] {
+  color-scheme: var(--ft-color-scheme);
+}
+
+// ── Finance (por defecto) ────────────────────────────────────────────────
+// Oscuro = valores del handoff. Claro = la misma estructura sobre blanco, con
+// los semánticos un punto más oscuros para que el texto pase contraste AA.
+$finance-oscuro: (
+  bg: #0a0b0d,
+  surface: #131519,
+  surface-elevated: #1b1e24,
+  border: #262a31,
+  border-subtle: #1b1e24,
+  border-hover: #2f343d,
+  text-1: #f2f4f7,
+  text-2: #9ba3af,
+  text-3: #6b7280,
+  text-disabled: #4b5563,
+  accent: #6e56f8,
+  accent-hover: #8b78fa,
+  on-accent: #ffffff,
+  income: #22c55e,
+  expense: #f45b5b,
+  investment: #38bdf8,
+  savings: #fbbf24,
+  on-investment: #0a0b0d,
+  expense-ramp-1: #f45b5b,
+  expense-ramp-2: #c24b4b,
+  expense-ramp-3: #8f3a3a,
+  expense-ramp-4: #5c2a2a,
+  scrim: rgb(10 11 13 / 0.6),
+  color-scheme: dark,
+);
+
+$finance-claro: (
+  bg: #f4f5f7,
+  surface: #ffffff,
+  surface-elevated: #eef0f3,
+  border: #e1e4e9,
+  border-subtle: #eceef1,
+  border-hover: #c9ced6,
+  text-1: #111418,
+  text-2: #4b5563,
+  text-3: #6b7280,
+  text-disabled: #a1a7b0,
+  accent: #6e56f8,
+  accent-hover: #5a42e6,
+  on-accent: #ffffff,
+  income: #15803d,
+  expense: #dc2626,
+  investment: #0369a1,
+  savings: #b45309,
+  on-investment: #ffffff,
+  expense-ramp-1: #dc2626,
+  expense-ramp-2: #e86060,
+  expense-ramp-3: #f09595,
+  expense-ramp-4: #f6c4c4,
+  scrim: rgb(17 20 24 / 0.32),
+  color-scheme: light,
+);
+
+// ── Cozy: rosa, cálido y redondeado ──────────────────────────────────────
+$cozy-oscuro: (
+  bg: #1a1117,
+  surface: #23171f,
+  surface-elevated: #2e1f29,
+  border: #3e2a36,
+  border-subtle: #2e1f29,
+  border-hover: #533847,
+  text-1: #fcf0f5,
+  text-2: #d0aec0,
+  text-3: #9a7b8d,
+  text-disabled: #6b5462,
+  accent: #f472b6,
+  accent-hover: #f9a8d4,
+  on-accent: #3b0a24,
+  income: #6ee7b7,
+  expense: #fb7185,
+  investment: #93c5fd,
+  savings: #fcd34d,
+  on-investment: #1a1117,
+  expense-ramp-1: #fb7185,
+  expense-ramp-2: #d9617a,
+  expense-ramp-3: #a94b61,
+  expense-ramp-4: #74374a,
+  scrim: rgb(26 17 23 / 0.6),
+  color-scheme: dark,
+);
+
+$cozy-claro: (
+  bg: #fff6f9,
+  surface: #ffffff,
+  surface-elevated: #fff0f5,
+  border: #f7d9e5,
+  border-subtle: #fce8ef,
+  border-hover: #efbcd0,
+  text-1: #4a2236,
+  text-2: #85546d,
+  text-3: #a37b90,
+  text-disabled: #d4b3c3,
+  accent: #db2777,
+  accent-hover: #be185d,
+  on-accent: #ffffff,
+  income: #047857,
+  expense: #e11d48,
+  investment: #2563eb,
+  savings: #b45309,
+  on-investment: #ffffff,
+  expense-ramp-1: #e11d48,
+  expense-ramp-2: #ef5679,
+  expense-ramp-3: #f78ea6,
+  expense-ramp-4: #fbc2cf,
+  scrim: rgb(74 34 54 / 0.28),
+  color-scheme: light,
+);
+
+// ── Minimalista: monocromo, plano, sin adornos ───────────────────────────
+// El acento es el propio texto; los semánticos se quedan para que ingresos y
+// gastos sigan leyéndose en verde y rojo.
+$minimal-oscuro: (
+  bg: #0a0a0a,
+  surface: #0a0a0a,
+  surface-elevated: #171717,
+  border: #262626,
+  border-subtle: #1a1a1a,
+  border-hover: #3a3a3a,
+  text-1: #ededed,
+  text-2: #a3a3a3,
+  text-3: #737373,
+  text-disabled: #525252,
+  accent: #ededed,
+  accent-hover: #ffffff,
+  on-accent: #0a0a0a,
+  income: #4ade80,
+  expense: #f87171,
+  investment: #7dd3fc,
+  savings: #fcd34d,
+  on-investment: #0a0a0a,
+  expense-ramp-1: #f87171,
+  expense-ramp-2: #c25a5a,
+  expense-ramp-3: #8c4444,
+  expense-ramp-4: #5a2f2f,
+  scrim: rgb(0 0 0 / 0.6),
+  color-scheme: dark,
+);
+
+$minimal-claro: (
+  bg: #ffffff,
+  surface: #ffffff,
+  surface-elevated: #f5f5f5,
+  border: #e5e5e5,
+  border-subtle: #f0f0f0,
+  border-hover: #d4d4d4,
+  text-1: #0a0a0a,
+  text-2: #525252,
+  text-3: #737373,
+  text-disabled: #a3a3a3,
+  accent: #0a0a0a,
+  accent-hover: #333333,
+  on-accent: #ffffff,
+  income: #15803d,
+  expense: #b91c1c,
+  investment: #0369a1,
+  savings: #a16207,
+  on-investment: #ffffff,
+  expense-ramp-1: #b91c1c,
+  expense-ramp-2: #d75454,
+  expense-ramp-3: #e99090,
+  expense-ramp-4: #f4c6c6,
+  scrim: rgb(0 0 0 / 0.25),
+  color-scheme: light,
+);
+
+// ── Gamer: neón sobre casi negro, esquinas vivas ─────────────────────────
+$gamer-oscuro: (
+  bg: #07070d,
+  surface: #0e0d1a,
+  surface-elevated: #171530,
+  border: #2a2552,
+  border-subtle: #1a1734,
+  border-hover: #3f3780,
+  text-1: #ebe9ff,
+  text-2: #a6a1d6,
+  text-3: #716ca0,
+  text-disabled: #47436b,
+  accent: #00e5ff,
+  accent-hover: #7af2ff,
+  on-accent: #001318,
+  income: #39ff88,
+  expense: #ff3d71,
+  investment: #6f8cff,
+  savings: #ffd60a,
+  on-investment: #07070d,
+  expense-ramp-1: #ff3d71,
+  expense-ramp-2: #cc315c,
+  expense-ramp-3: #992547,
+  expense-ramp-4: #661a32,
+  scrim: rgb(7 7 13 / 0.7),
+  color-scheme: dark,
+);
+
+$gamer-claro: (
+  bg: #f3f2ff,
+  surface: #ffffff,
+  surface-elevated: #ecebff,
+  border: #d7d3ff,
+  border-subtle: #e6e3ff,
+  border-hover: #b9b2ff,
+  text-1: #120f2e,
+  text-2: #4a4580,
+  text-3: #6c679e,
+  text-disabled: #a9a5d1,
+  accent: #7c3aed,
+  accent-hover: #6d28d9,
+  on-accent: #ffffff,
+  income: #047857,
+  expense: #e11d48,
+  investment: #2563eb,
+  savings: #a16207,
+  on-investment: #ffffff,
+  expense-ramp-1: #e11d48,
+  expense-ramp-2: #ef5679,
+  expense-ramp-3: #f78ea6,
+  expense-ramp-4: #fbc2cf,
+  scrim: rgb(18 15 46 / 0.3),
+  color-scheme: light,
+);
+
+$paletas: (
+  finance: (
+    oscuro: $finance-oscuro,
+    claro: $finance-claro,
+  ),
+  cozy: (
+    oscuro: $cozy-oscuro,
+    claro: $cozy-claro,
+  ),
+  minimal: (
+    oscuro: $minimal-oscuro,
+    claro: $minimal-claro,
+  ),
+  gamer: (
+    oscuro: $gamer-oscuro,
+    claro: $gamer-claro,
+  ),
+);
+
+@each $estilo, $modos in $paletas {
+  @each $modo, $p in $modos {
+    [data-estilo='#{$estilo}'][data-modo='#{$modo}'] {
+      @include paleta($p);
+    }
+  }
+}
+
+// ── Forma y tipografía por estilo (iguales en claro y oscuro) ────────────
+[data-estilo='finance'] {
+  --ft-radius-card: 12px;
+  --ft-radius-control: 8px;
+  --ft-radius-segment: 6px;
+  --ft-radius-stack: 6px;
+  --ft-radius-bar: 4px;
+  --ft-card-shadow: none;
+  --ft-font-heading-family: var(--ft-font-family);
+  --ft-tracking-eyebrow: 0.08em;
+}
+
+[data-estilo='cozy'] {
+  --ft-radius-card: 20px;
+  --ft-radius-control: 14px;
+  --ft-radius-segment: 11px;
+  --ft-radius-stack: 10px;
+  --ft-radius-bar: 8px;
+  --ft-radius-legend: 4px;
+  --ft-card-shadow: 0 8px 24px color-mix(in srgb, var(--ft-accent) 9%, transparent);
+  --ft-font-heading-family: var(--ft-font-family);
+  --ft-tracking-eyebrow: 0.04em;
+}
+
+[data-estilo='minimal'] {
+  --ft-radius-card: 6px;
+  --ft-radius-control: 4px;
+  --ft-radius-segment: 3px;
+  --ft-radius-stack: 3px;
+  --ft-radius-bar: 2px;
+  --ft-radius-legend: 1px;
+  --ft-card-shadow: none;
+  --ft-font-heading-family: var(--ft-font-family);
+  --ft-tracking-eyebrow: 0.12em;
+}
+
+// Títulos, cifras grandes y teclas en monoespaciada del sistema (Cascadia en
+// Windows 11, SF Mono en macOS): nada que descargar, la app sigue offline.
+[data-estilo='gamer'] {
+  --ft-radius-card: 4px;
+  --ft-radius-control: 2px;
+  --ft-radius-segment: 2px;
+  --ft-radius-stack: 2px;
+  --ft-radius-bar: 1px;
+  --ft-radius-legend: 0px;
+  --ft-card-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ft-accent) 10%, transparent),
+    0 0 24px color-mix(in srgb, var(--ft-accent) 8%, transparent);
+  --ft-font-heading-family:
+    ui-monospace, 'Cascadia Mono', 'SF Mono', 'JetBrains Mono', Consolas, 'Liberation Mono',
+    monospace;
+  --ft-tracking-eyebrow: 0.16em;
+}

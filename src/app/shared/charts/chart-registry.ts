@@ -36,7 +36,7 @@ const PIXEL_RATIO = 2;
  * renderer no sabe rasterizar: se serializa el SVG y se pinta en un canvas
  * del doble de tamaño. Sin dependencias añadidas.
  */
-export async function chartToPng(id: string, background: string = FT_COLORS.surface): Promise<ChartPng | null> {
+export async function chartToPng(id: string, background: string = chartExportBg()): Promise<ChartPng | null> {
   const instance = charts.get(id);
   if (!instance) return null;
 
@@ -112,5 +112,10 @@ export const CHART_IDS = {
   donut: 'dashboard-donut',
 } as const;
 
-/** Fondo de los gráficos exportados: la superficie de tarjeta de la app. */
-export const CHART_EXPORT_BG = FT_COLORS.surface;
+/**
+ * Fondo de los gráficos exportados: la superficie de tarjeta del tema activo,
+ * porque ejes y textos del gráfico se dibujan con los colores de ese tema.
+ */
+export function chartExportBg(): string {
+  return FT_COLORS.surface;
+}

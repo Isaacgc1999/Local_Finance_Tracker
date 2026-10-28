@@ -1,7 +1,9 @@
-// Fintrack — hoja global. El orden importa: fuentes → tokens → breakpoints
-// (redefinen tokens) → animaciones → controles.
+// Fintrack — hoja global. El orden importa: fuentes → tokens → temas
+// (redefinen colores y forma) → breakpoints (redefinen tokens) → animaciones
+// → controles.
 @use 'fonts';
 @use 'tokens';
+@use 'themes';
 @use 'breakpoints';
 @use 'animations';
 @use 'controls';
@@ -13,7 +15,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: var(--ft-color-scheme);
   background: var(--ft-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

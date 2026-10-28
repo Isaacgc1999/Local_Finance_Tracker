@@ -25,17 +25,14 @@
   --ft-savings: #fbbf24;
   --ft-on-investment: #0a0b0d; // Texto del chip "Fondo indexado" activo
 
-  // Fondos de badge/pill = color semántico con alpha 1F (12 %)
-  --ft-income-12: #22c55e1f;
-  --ft-expense-12: #f45b5b1f;
-  --ft-investment-12: #38bdf81f;
-  --ft-savings-12: #fbbf241f;
-  --ft-accent-12: #6e56f81f;
-  // Fondos de fila activa / error = alpha 14 (8 %)
-  --ft-accent-8: #6e56f814;
-  --ft-expense-8: #f45b5b14;
-  // Anillo de foco = alpha 33 (20 %)
-  --ft-accent-ring: #6e56f833;
+  // ── Apariencia (temas, desde 2026-10-28) ───────────────────────────────
+  --ft-color-scheme: dark;
+  --ft-scrim: rgb(10 11 13 / 0.6); // Velo tras modales y paneles
+  --ft-card-shadow: none; // Los estilos cozy y gamer lo usan; finance no
+
+  // Los fondos con alpha (accent-12, income-12…), el anillo de foco y las
+  // fuentes compuestas se derivan en `_themes.scss` a partir de estos colores,
+  // para que cambien solos con el tema y con el color de acento elegido.
 
   // Tono propio de cada tipo de movimiento (avatar y badge del listado): seis
   // colores distinguibles. Ampliación del sistema semántico, no del handoff:
@@ -55,29 +52,16 @@
   --ft-expense-ramp-4: #5c2a2a;
 
   // ── Convenciones ───────────────────────────────────────────────────────
-  --ft-focus-ring: 0 0 0 3px var(--ft-accent-ring);
-  --ft-skeleton-gradient: linear-gradient(
-    90deg,
-    var(--ft-surface-elevated) 25%,
-    var(--ft-border) 50%,
-    var(--ft-surface-elevated) 75%
-  );
   --ft-opacity-disabled: 0.4; // filas, tarjetas KPI
   --ft-opacity-disabled-control: 0.45; // chips, inputs
   --ft-opacity-dimmed: 0.45; // contenido tras la calculadora
 
   // ── Tipografía ─────────────────────────────────────────────────────────
+  // Las fuentes compuestas (--ft-font-display, -title, -body…) se montan en
+  // `_themes.scss` con estas familias: el estilo gamer cambia la de títulos.
   --ft-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --ft-font-display: 700 40px/1.1 var(--ft-font-family);
-  --ft-font-title: 600 24px/1 var(--ft-font-family);
+  --ft-font-heading-family: var(--ft-font-family);
   --ft-lh-title-long: 1.3;
-  --ft-font-label: 500 15px/1 var(--ft-font-family);
-  --ft-font-body: 400 15px/1.5 var(--ft-font-family);
-  --ft-font-meta: 400 13px/1 var(--ft-font-family);
-  --ft-font-meta-strong: 500 13px/1 var(--ft-font-family);
-  --ft-font-eyebrow: 500 13px/1 var(--ft-font-family);
-  --ft-font-key: 500 24px/1 var(--ft-font-family);
-  --ft-font-logo: 700 16px/1 var(--ft-font-family);
   --ft-tracking-display: -0.02em;
   --ft-tracking-num: -0.01em;
   --ft-tracking-eyebrow: 0.08em;
